@@ -1,0 +1,5 @@
+server:
+  port: 8000
+  
+  
+upload-folder: D:\projets\gde-app\tmp
