@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { NgxFileDropModule } from 'ngx-file-drop';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -10,7 +11,8 @@ import { NgxFileDropModule } from 'ngx-file-drop';
   ],
   imports: [
     BrowserModule,
-    NgxFileDropModule
+    NgxFileDropModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

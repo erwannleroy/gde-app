@@ -1,18 +1,41 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry } from 'ngx-file-drop';
+import { GdeService } from './gde.service';
+import { BVResponse } from './BVResponse';
+import { HttpEventType, HttpResponse } from '@angular/common/http';
+import { DECResponse } from './DECResponse';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'front';
 
   public bvfiles: NgxFileDropEntry[] = [];
   public decfiles: NgxFileDropEntry[] = [];
- 
 
+  public bvResponse: BVResponse;
+  public decResponse: DECResponse;
+
+  constructor(private gdeService: GdeService) {
+  }
+
+  ngOnInit() {
+    this.gdeService.getBVResponse().subscribe(data => {
+      this.bvResponse = data;
+      this.refreshResult();
+    });
+    
+    this.gdeService.getDECResponse().subscribe(data => {
+      this.decResponse = data;
+    });
+  }
+  refreshResult() {
+    this.gdeService.getResult().
+  }
+  
   public bv_dropped(files: NgxFileDropEntry[]) {
     this.bvfiles = files;
     for (const droppedFile of files) {
@@ -25,22 +48,7 @@ export class AppComponent {
           // Here you can access the real file
           console.log(droppedFile.relativePath, file);
  
-          /**
-          // You could upload it like this:
-          const formData = new FormData()
-          formData.append('logo', file, relativePath)
- 
-          // Headers
-          const headers = new HttpHeaders({
-            'security-token': 'mytoken'
-          })
- 
-          this.http.post('https://mybackend.com/api/upload/sanitize-and-save-logo', formData, { headers: headers, responseType: 'blob' })
-          .subscribe(data => {
-            // Sanitized logo returned from backend
-          })
-          **/
- 
+          this.gdeService.postBVFile(file);
         });
       } else {
         // It was a directory (empty directories are added, otherwise only files)
@@ -52,7 +60,7 @@ export class AppComponent {
 
 
   public dec_dropped(files: NgxFileDropEntry[]) {
-    this.bvfiles = files;
+    this.decfiles = files;
     for (const droppedFile of files) {
  
       // Is it a file?
@@ -63,22 +71,7 @@ export class AppComponent {
           // Here you can access the real file
           console.log(droppedFile.relativePath, file);
  
-          /**
-          // You could upload it like this:
-          const formData = new FormData()
-          formData.append('logo', file, relativePath)
- 
-          // Headers
-          const headers = new HttpHeaders({
-            'security-token': 'mytoken'
-          })
- 
-          this.http.post('https://mybackend.com/api/upload/sanitize-and-save-logo', formData, { headers: headers, responseType: 'blob' })
-          .subscribe(data => {
-            // Sanitized logo returned from backend
-          })
-          **/
- 
+          this.gdeService.postDECFile(file);
         });
       } else {
         // It was a directory (empty directories are added, otherwise only files)
@@ -87,7 +80,6 @@ export class AppComponent {
       }
     }
   }
-
 
  
   public fileOver(event){
