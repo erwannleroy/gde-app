@@ -7,6 +7,7 @@ public class ComputingResult {
 	
 	boolean inProgress = true;
 	boolean computationOk = false;
-	
+	byte[] xls;
+	//String xls;
 
 }

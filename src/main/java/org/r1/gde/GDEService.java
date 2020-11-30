@@ -61,6 +61,7 @@ public class GDEService {
 				log.error("Impossible de parser le fichier BV", e);
 				result.setFileFormatOk(false);
 				result.setErrorMessage(e.getCause().getMessage());
+				result.setError(true);
 			}
 		}
 		return result;
@@ -86,6 +87,7 @@ public class GDEService {
 				log.error("Impossible de parser le fichier DEC", e);
 				result.setFileFormatOk(false);
 				result.setErrorMessage(e.getCause().getMessage());
+				result.setError(true);
 			}
 		}
 		return result;
@@ -109,6 +111,7 @@ public class GDEService {
 				log.error("Impossible de parser le fichier BV", e);
 				result.setFileFormatOk(false);
 				result.setErrorMessage(e.getCause().getMessage());
+				result.setError(true);
 			}
 		}
 		return result;
@@ -182,15 +185,19 @@ public class GDEService {
 		Map<String, Object> map = rec.toMap();
 		Object nomField = map.get(Decanteur.NOM_FIELD);
 		dec.setNom(nomField != null ? nomField.toString() : "");
-		Object profondeurField = map.get(Decanteur.PROFONDEUR_FIELD);
-		dec.setProfondeur(profondeurField !=null ? Double.parseDouble(profondeurField.toString()) : Decanteur.PROFONDEUR_DEFAULT);
 		Object surfaceField = map.get(Decanteur.SURFACE_FIELD);
 		dec.setSurface(surfaceField != null ? Double.parseDouble(surfaceField.toString()) : Decanteur.SURFACE_DEFAULT);
+		Object profondeurField = map.get(Decanteur.PROFONDEUR_FIELD);
+		dec.setProfondeur(profondeurField !=null ? Double.parseDouble(profondeurField.toString()) : Decanteur.PROFONDEUR_DEFAULT);
+		Object profondeurDeversoirField = map.get(Decanteur.PROFONDEUR_DEVERSOIR_FIELD);
+		dec.setProfondeurDeversoir(profondeurDeversoirField!=null ? Double.parseDouble(profondeurDeversoirField.toString()) : Decanteur.PROFONDEUR_DEVERSOIR_DEFAULT);
+		Object hauteurDigueField = map.get(Decanteur.HAUTEUR_DIGUE_FIELD);
+		dec.setHauteurDigue(hauteurDigueField!=null ? Double.parseDouble(hauteurDigueField.toString()) : Decanteur.HAUTEUR_DIGUE_DEFAULT);
 		dec.setType(TypeDecanteur.toTypeDecanteur(map.get(Decanteur.TYPE_FIELD).toString()));
-		Object equipementField = map.get(Decanteur.EQUIPEMENT_FIELD);
-		dec.setEquipement(equipementField != null ? equipementField.toString() : "");
 		Object bvField = map.get(Decanteur.BV_FIELD);
 		dec.setBv(bvField != null ? bvField.toString() : "");
+		Object zoneField = map.get(Decanteur.ZONE_FIELD);
+		dec.setZone(zoneField != null ? zoneField.toString() : "");
 		return dec;
 	}
 

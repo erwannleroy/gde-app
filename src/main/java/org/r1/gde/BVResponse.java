@@ -9,4 +9,5 @@ public class BVResponse {
 	private boolean fileFormatOk = false;
 	private String errorMessage = "";
 	private int nbBassins = 0;
+	private boolean error = false;
 }

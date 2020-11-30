@@ -1,7 +1,9 @@
 package org.r1.gde;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,8 +33,6 @@ public class GDEController {
 
 	@PostMapping("/upload-bv-file")
 	public ResponseEntity<BVResponse> uploadBVFile(@RequestParam("bv") MultipartFile file) {
-		String fileName = fileStorageService.storeFile(file);
-
 		BVResponse bvResponse = this.gdeService.giveBVFile(file);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(bvResponse);
@@ -40,8 +40,6 @@ public class GDEController {
 	
 	@PostMapping("/upload-dec-file")
 	public ResponseEntity<DECResponse> uploadDECFile(@RequestParam("dec") MultipartFile file) {
-		String fileName = fileStorageService.storeFile(file);
-
 		DECResponse decResponse = this.gdeService.giveDECFile(file);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(decResponse);
@@ -55,9 +53,21 @@ public class GDEController {
 		return result;
 	}
 
-	@GetMapping("/compute-result")
-	public ComputingResult getComputeResult() {
-		return gdeComputer.getComputingResult();
+	@GetMapping("/get-result")
+	public ResponseEntity<ComputingResult> getComputeResult() {
+		return ResponseEntity.status(HttpStatus.OK).body(gdeComputer.getComputingResult());
 	}
+	
+	@GetMapping("/get-result-bytes")
+	public ResponseEntity<byte[]> getComputeResultBytes() {
+		HttpHeaders header = new HttpHeaders();
+	    header.setContentType(new MediaType("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+	    header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=gde.xlsx");
+	    byte[] bytes = gdeComputer.getComputingResult().getXls();
+	    header.setContentLength(bytes.length);
+		return ResponseEntity.status(HttpStatus.OK).headers(header).body(bytes);
+	}
+	
+	
 
 }

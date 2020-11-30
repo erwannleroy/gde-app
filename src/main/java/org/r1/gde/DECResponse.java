@@ -9,4 +9,5 @@ public class DECResponse {
 	private boolean fileFormatOk = false;
 	private String errorMessage = "";
 	private int nbDecanteurs= 0;
+	private boolean error = false;
 }

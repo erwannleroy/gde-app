@@ -15,6 +15,7 @@ public enum TypeDecanteur {
 		switch (libelle) {
 
 		case "ralentisseur":
+		case "ralenstisseur":
 			return TypeDecanteur.RALENTISSEUR;
 		case "décanteur":
 		case "d?canteur":

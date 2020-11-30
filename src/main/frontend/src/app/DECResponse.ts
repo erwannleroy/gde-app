@@ -3,4 +3,5 @@ export class DECResponse {
   fileFormatOk: boolean;
   errorMessage: string;
   nbDecanteurs: number;
+  error: boolean;
 }

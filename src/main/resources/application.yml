@@ -3,3 +3,7 @@ server:
   
   
 upload-folder: D:\projets\gde-app\tmp
+
+logging:
+  level:
+    ROOT: debug

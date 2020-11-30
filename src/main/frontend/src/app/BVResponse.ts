@@ -3,4 +3,5 @@ export class BVResponse {
   fileFormatOk: boolean;
   errorMessage: string;
   nbBassins: number;
+  error: boolean;
 }
