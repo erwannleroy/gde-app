@@ -1,4 +1,4 @@
-package org.r1.gde;
+package org.r1.gde.demo;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

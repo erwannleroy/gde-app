@@ -1,4 +1,4 @@
-package org.r1.gde;
+package org.r1.gde.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

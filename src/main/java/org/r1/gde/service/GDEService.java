@@ -1,4 +1,4 @@
-package org.r1.gde;
+package org.r1.gde.service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,20 +7,21 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.util.CellReference;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.commons.compress.utils.Lists;
+import org.r1.gde.controller.BVResponse;
+import org.r1.gde.controller.DECResponse;
+import org.r1.gde.demo.FileStorageService;
+import org.r1.gde.model.BassinVersant;
+import org.r1.gde.model.Performance;
+import org.r1.gde.model.TypeDecanteur;
+import org.r1.gde.model.decanteur.Decanteur;
+import org.r1.gde.model.decanteur.Zone;
+import org.r1.gde.xls.generator.ParametresGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -79,10 +80,10 @@ public class GDEService {
 		if (resource.exists()) {
 			result.setFileExists(true);
 			try {
-				List<Decanteur> decanteurs = parseDEC(resource.getFile());
+				List<Zone> zones = parseDEC(resource.getFile());
 				result.setFileFormatOk(true);
-				result.setNbDecanteurs(decanteurs.size());
-				gdeComputer.updateDecanteurs(decanteurs);
+				result.setNbZone(zones.size());
+				gdeComputer.updateDecanteurs(zones);
 			} catch (IOException | ParseException e) {
 				log.error("Impossible de parser le fichier DEC", e);
 				result.setFileFormatOk(false);
@@ -117,8 +118,9 @@ public class GDEService {
 		return result;
 	}
 
-	private List<Decanteur> parseDEC(File decfile) throws IOException, ParseException {
-		List<Decanteur> decanteurs = new ArrayList<Decanteur>();
+	private List<Zone> parseDEC(File decfile) throws IOException, ParseException {
+		List<Zone> zones = new ArrayList<Zone>();
+		TempDecanteursParsing tempResult = new TempDecanteursParsing();
 
 		log.debug("Parsing du bv " + decfile.getAbsolutePath());
 		Charset stringCharset = Charset.forName("Cp866");
@@ -133,12 +135,12 @@ public class GDEService {
 			while ((rec = reader.read()) != null) {
 				rec.setStringCharset(stringCharset);
 				log.debug("Record #" + rec.getRecordNumber() + ": " + rec.toMap());
-				decanteurs.add(recordDECToDecanteur(rec));
+				tempResult.addDecanteur(recordDECToDecanteur(rec));
 			}
 		}
-		log.debug("Parcours de " + decanteurs.size() + " décanteurs");
-		log.debug("Decanteurs:" + decanteurs);
-		return decanteurs;
+		log.debug("Parcours de " + tempResult.zones.size() + " zones");
+//		log.debug("Decanteurs:" + decanteurs);
+		return tempResult.getZones();
 	}
 	
 	private List<BassinVersant> parseBV(File bvFile) throws IOException, ParseException {
@@ -171,11 +173,11 @@ public class GDEService {
 		Object nomField = map.get(BassinVersant.NOM_OUVRAGE_FIELD);
 		bv.setNomOuvrage(nomField != null ? nomField.toString() : "");
 		Object deniveleField = map.get(BassinVersant.DENIVELE_FIELD);
-		bv.setDenivele(deniveleField !=null ? Integer.parseInt(deniveleField.toString()) : BassinVersant.DENIVELE_DEFAULT);
+		bv.setDenivele(deniveleField !=null ? Integer.parseInt(deniveleField.toString()) : null);
 		Object longueurField = map.get(BassinVersant.LONGUEUR_FIELD);
-		bv.setLongueur(longueurField !=null ? Integer.parseInt(longueurField.toString()) : BassinVersant.LONGUEUR_DEFAULT);
+		bv.setLongueur(longueurField !=null ? Integer.parseInt(longueurField.toString()) : null);
 		Object surfaceField = map.get(BassinVersant.SURFACE_FIELD);
-		bv.setSurface(surfaceField != null ? Double.parseDouble(surfaceField.toString()) : BassinVersant.SURFACE_DEFAULT );
+		bv.setSurface(surfaceField != null ? Double.parseDouble(surfaceField.toString()) : null);
 		bv.setPerformance(Performance.toPerformance(map.get(BassinVersant.PERFORMANCE_FIELD).toString()));
 		return bv;
 	}
@@ -186,18 +188,23 @@ public class GDEService {
 		Object nomField = map.get(Decanteur.NOM_FIELD);
 		dec.setNom(nomField != null ? nomField.toString() : "");
 		Object surfaceField = map.get(Decanteur.SURFACE_FIELD);
-		dec.setSurface(surfaceField != null ? Double.parseDouble(surfaceField.toString()) : Decanteur.SURFACE_DEFAULT);
+		dec.setSurface(surfaceField != null ? Double.parseDouble(surfaceField.toString()) : null);
 		Object profondeurField = map.get(Decanteur.PROFONDEUR_FIELD);
-		dec.setProfondeur(profondeurField !=null ? Double.parseDouble(profondeurField.toString()) : Decanteur.PROFONDEUR_DEFAULT);
+		dec.setProfondeur(profondeurField !=null ? Double.parseDouble(profondeurField.toString()) : null);
 		Object profondeurDeversoirField = map.get(Decanteur.PROFONDEUR_DEVERSOIR_FIELD);
-		dec.setProfondeurDeversoir(profondeurDeversoirField!=null ? Double.parseDouble(profondeurDeversoirField.toString()) : Decanteur.PROFONDEUR_DEVERSOIR_DEFAULT);
+		dec.setProfondeurDeversoir(profondeurDeversoirField!=null ? Double.parseDouble(profondeurDeversoirField.toString()) : null);
 		Object hauteurDigueField = map.get(Decanteur.HAUTEUR_DIGUE_FIELD);
-		dec.setHauteurDigue(hauteurDigueField!=null ? Double.parseDouble(hauteurDigueField.toString()) : Decanteur.HAUTEUR_DIGUE_DEFAULT);
+		dec.setHauteurDigue(hauteurDigueField!=null ? Double.parseDouble(hauteurDigueField.toString()) : null);
 		dec.setType(TypeDecanteur.toTypeDecanteur(map.get(Decanteur.TYPE_FIELD).toString()));
 		Object bvField = map.get(Decanteur.BV_FIELD);
-		dec.setBv(bvField != null ? bvField.toString() : "");
-		Object zoneField = map.get(Decanteur.ZONE_FIELD);
-		dec.setZone(zoneField != null ? zoneField.toString() : "");
+		List<String> bvList = Arrays.asList("Tp_B1", "Tp_B2", "Tp_B3", "Tp_B4", "Tp_B5", "Tp_B6");
+	    Collections.shuffle(bvList);
+	    dec.setBv(bvList.get(0));
+		List<String> zoneList = Arrays.asList("zone 1", "zone 2", "zone 3", "zone 4", "zone 5", "zone 6");
+	    Collections.shuffle(zoneList);
+		dec.setZone(zoneList.get(0));
+//		Object zoneField = map.get(Decanteur.ZONE_FIELD);
+//		dec.setZone(zoneField != null ? zoneField.toString() : "");
 		return dec;
 	}
 

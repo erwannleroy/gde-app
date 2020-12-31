@@ -1,4 +1,4 @@
-package org.r1.gde;
+package org.r1.gde.model;
 
 public enum TypeDecanteur {
 
@@ -11,7 +11,7 @@ public enum TypeDecanteur {
 		this.libelle = libelle;
 	}
 
-	static TypeDecanteur toTypeDecanteur(String libelle) {
+	public static TypeDecanteur toTypeDecanteur(String libelle) {
 		switch (libelle) {
 
 		case "ralentisseur":

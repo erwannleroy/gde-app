@@ -1,20 +1,21 @@
-package org.r1.gde;
+package org.r1.gde.controller;
 
+import org.r1.gde.demo.FileStorageService;
+import org.r1.gde.service.ComputingResult;
+import org.r1.gde.service.GDEComputer;
+import org.r1.gde.service.GDEService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -55,7 +56,7 @@ public class GDEController {
 
 	@GetMapping("/get-result")
 	public ResponseEntity<ComputingResult> getComputeResult() {
-		return ResponseEntity.status(HttpStatus.OK).body(gdeComputer.getComputingResult());
+		return ResponseEntity.status(HttpStatus.OK).body(gdeComputer.getComputeContext().getComputingResult());
 	}
 	
 	@GetMapping("/get-result-bytes")
@@ -63,7 +64,7 @@ public class GDEController {
 		HttpHeaders header = new HttpHeaders();
 	    header.setContentType(new MediaType("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
 	    header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=gde.xlsx");
-	    byte[] bytes = gdeComputer.getComputingResult().getXls();
+	    byte[] bytes = gdeComputer.getComputeContext().getComputingResult().getXls();
 	    header.setContentLength(bytes.length);
 		return ResponseEntity.status(HttpStatus.OK).headers(header).body(bytes);
 	}

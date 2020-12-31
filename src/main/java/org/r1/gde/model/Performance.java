@@ -1,4 +1,4 @@
-package org.r1.gde;
+package org.r1.gde.model;
 
 public enum Performance {
 
@@ -10,7 +10,7 @@ public enum Performance {
 		this.libelle = libelle;
 	}
 
-	static Performance toPerformance(String libelle) {
+	public static Performance toPerformance(String libelle) {
 		switch (libelle) {
 
 		case "moyenne" :

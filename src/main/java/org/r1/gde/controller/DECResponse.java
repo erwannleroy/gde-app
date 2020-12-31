@@ -1,13 +1,13 @@
-package org.r1.gde;
+package org.r1.gde.controller;
 
 import lombok.Data;
 
 @Data
-public class BVResponse {
+public class DECResponse {
 
 	private boolean fileExists = false;
 	private boolean fileFormatOk = false;
 	private String errorMessage = "";
-	private int nbBassins = 0;
+	private int nbZone = 0;
 	private boolean error = false;
 }

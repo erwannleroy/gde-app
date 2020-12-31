@@ -1,4 +1,6 @@
-package org.r1.gde;
+package org.r1.gde.model.decanteur;
+
+import org.r1.gde.model.TypeDecanteur;
 
 import lombok.Data;
 import lombok.ToString;

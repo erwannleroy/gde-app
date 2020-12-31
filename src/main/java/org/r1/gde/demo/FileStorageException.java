@@ -1,4 +1,4 @@
-package org.r1.gde;
+package org.r1.gde.demo;
 
 public class FileStorageException extends RuntimeException {
     public FileStorageException(String message) {
