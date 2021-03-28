@@ -27,3 +27,9 @@ hs_err_pid*
 .classpath
 .project
 .settings/
+
+**/dist/
+
+/livrable/
+
+**/node/
