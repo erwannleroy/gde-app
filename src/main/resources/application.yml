@@ -1,9 +1,16 @@
 server:
-  port: 8000
-  
-  
-upload-folder: D:\projets\gde-app\tmp
+  port: 0
 
 logging:
   level:
-    ROOT: debug
+    ROOT: DEBUG
+    
+spring:
+  web:
+    resources:
+      static-locations:
+      - classpath:/dist/
+      
+      
+#spring.banner.image:
+#  location: classpath:splash.png

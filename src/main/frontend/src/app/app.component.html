@@ -1,99 +1,209 @@
 <!-- Toolbar -->
-<div class="toolbar" style="padding: 5px;">
-  <div class="row">
-    <img class="icon" src="assets/gde.png" />
-    <h2>Bienvenue sur l'utilitaire de gestion des eaux</h2>
-  </div>
-</div>
-
 <div class="container">
-  <div class="row">
-    <div class="col-sm">
-      <h4>Dimensionnement</h4>
-      <div class="center">
-        <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="bv_dropped($event)" (onFileOver)="fileOver($event)"
-          (onFileLeave)="fileLeave($event)">
-          <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
-            Dépose ici le fichier des bassins versants
-          </ng-template>
-        </ngx-file-drop>
-        <div class="upload-table" *ngIf="bvFilled">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Fichier bassin chargé</th>
-              </tr>
-            </thead>
-            <tbody class="upload-name-style">
-              <div *ngIf="bvFilled && !bvResponse">
-                <span>Chargement </span>
-                <img class="icon" src="assets/loading.gif" />
-              </div>
-              <div *ngIf="bvResponse && !bvResponse.error">
-                <tr *ngFor="let item of bvfiles; let i=index">
-                  <td><strong>{{ item.relativePath }}</strong></td>
-                  <td>{{bvResponse.nbBassins}} bassins</td>
-                </tr>
-              </div>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
 
-
-    <div class="col-sm">
-      <h4>Décanteurs</h4>
-      <div class="center">
-        <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dec_dropped($event)"
-          (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
-          <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
-            Dépose ici le fichier des décanteurs
-          </ng-template>
-        </ngx-file-drop>
-        <div class="upload-table" *ngIf="decFilled">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Fichier décanteur chargé</th>
-              </tr>
-            </thead>
-            <tbody class="upload-name-style">
-              <div *ngIf="decFilled && !decResponse">
-                <span>Chargement </span>
-                <img class="icon" src="assets/loading.gif" />
-              </div>
-              <div *ngIf="decResponse && !decResponse.error">
-                <tr *ngFor="let item of decfiles; let i=index">
-                  <td><strong>{{ item.relativePath }}</strong></td>
-                  <td>{{decResponse.nbDecanteurs}} décanteurs</td>
-                </tr>
-              </div>
-            </tbody>
-          </table>
-        </div>
-      </div>
+  <div class="row row-flex">
+    <div class="col align-self-center" style="text-align:-webkit-center;">
+      <img class="img-fluid" src="../assets/banniere.png" />
     </div>
   </div>
-  <div class="row">
-
-
-    <div class="col-sm">
-      <h4>Fichier excel généré</h4>
-      <div *ngIf="!bvFilled && !decFilled">
-        <span>Veuillez renseignez les fichiers nécéssaires au calcul</span>
+  <div class="row row-flex" style="margin-top:1vw;">
+    <div style="background-color: #F58A07;width:2px;" [class.app-disabled]="!bvTurn" [class.app-enabled]="bvTurn"></div>
+    <div class="col" [class.app-disabled]="!bvTurn" [class.app-enabled]="bvTurn">
+      <div class="card">
+        <h3>Bassins versants</h3>
+        <div class="center">
+          <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="bv_dropped($event)"
+            (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+            <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+              Déposez ici le fichier des bassins versants
+            </ng-template>
+          </ngx-file-drop>
+          <div class="container" *ngIf="!bvFilled">
+            <div class="row">
+              <span>Aucun fichier transmis</span>
+            </div>
+          </div>
+          <div class="container" *ngIf="bvFilled">
+            <div class="row">
+              <div class="col border-bottom" *ngIf="bvSent">
+                <strong>{{ bvfiles[0].relativePath }}</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col" *ngIf="bvResponse && bvResponse.error">
+                <span>{{bvResponse.errorMessage}} </span>
+              </div>
+              <div class="col" *ngIf="bvFilled && !bvSent">
+                <span>Chargement </span>
+                <div class="spinner-grow" role="status">
+                  <span class="sr-only"></span>
+                </div>
+              </div>
+              <div class="col" *ngIf="bvResponse && !bvResponse.error">
+                <span>{{bvResponse.nbBassins}} bassins</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div *ngIf="result && result.inProgress">
-        <span>Veuillez patienter svp ...</span>
+    </div>
+    <div style="background-color: #F58A07;width:2px;" [class.app-disabled]="!decTurn" [class.app-enabled]="decTurn">
+    </div>
+    <div class="col" [class.app-disabled]="!decTurn" [class.app-enabled]="decTurn">
+      <div class="card">
+        <h3>Décanteurs</h3>
+        <div class="center">
+          <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dec_dropped($event)"
+            (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+            <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+              Déposez ici le fichier des décanteurs
+            </ng-template>
+          </ngx-file-drop>
+          <div class="container" *ngIf="!decFilled">
+            <div class="row">
+              <span>Aucun fichier transmis</span>
+            </div>
+          </div>
+          <div class="container" *ngIf="decFilled">
+            <div class="row">
+              <div class="col border-bottom" *ngIf="decSent">
+                <strong>{{ decfiles[0].relativePath }}</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col" *ngIf="decResponse && decResponse.error">
+                <span>{{decResponse.errorMessage}} </span>
+              </div>
+              <div class="col" *ngIf="decFilled && !decSent">
+                <span>Chargement </span>
+                <div class="spinner-grow" role="status">
+                  <span class="sr-only"></span>
+                </div>
+              </div>
+              <div class="col" *ngIf="decResponse && !decResponse.error">
+                <span>{{decResponse.nbDecanteurs}} décanteurs (pour {{decResponse.nbBVs}} bassins dans
+                  {{decResponse.nbZones}} zones)</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div *ngIf="bvFilled && decFilled && (!result || !result.computationOk)">
+    </div>
+    <div style="background-color: #F58A07;width:2px;" [class.app-disabled]="!exuTurn" [class.app-enabled]="exuTurn">
+    </div>
+    <div class="col" [class.app-disabled]="!exuTurn" [class.app-enabled]="exuTurn">
+      <div class="card">
+        <h3>Bassin exutoires</h3>
+        <div class="center">
+          <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="exu_dropped($event)"
+            (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+            <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+              Déposez ici le fichier des exutoires
+            </ng-template>
+          </ngx-file-drop>
+          <div class="container" *ngIf="!exuFilled">
+            <div class="row">
+              <span>Aucun fichier transmis</span>
+            </div>
+          </div>
+          <div class="container" *ngIf="exuFilled">
+            <div class="row">
+              <div class="col border-bottom" *ngIf="exuSent">
+                <strong>{{ exufiles[0].relativePath }}</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col" *ngIf="exuResponse && exuResponse.error">
+                <span>{{exuResponse.errorMessage}} </span>
+              </div>
+              <div class="col" *ngIf="exuFilled && !exuSent">
+                <span>Chargement </span>
+                <div class="spinner-grow" role="status">
+                  <span class="sr-only"></span>
+                </div>
+              </div>
+              <div class="col" *ngIf="exuResponse && !exuResponse.error">
+                <span>{{exuResponse.nbExutoires}} exutoires (pour {{exuResponse.nbCreeks}} creeks)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row row-flex" style="margin-top:1vw;">
+
+    <div style="background-color: #084887;width:2px;"></div>
+    <div class="col">
+      <h4>Génération Excel</h4>
+      <div *ngIf="bvFilled && decFilled &&exuFilled && (!result || !result.computationOk)">
         <span>Problème de génération du Excel, contactez le développeur de cette application</span>
       </div>
-      <div *ngIf="result && result.computationOk">
-        <span>Résultat prêt !</span>
-        <button (click)="downloadFile()">Télécharger</button>
+      <div class="container">
+        <div class="row row-flex">
+          <div class="col-sm onglet align-self-center" [class.waiting]="bvFilled && !bvResponse">
+            <div class="container">
+              <div class="row align-self-center">
+                <div class="col-10">Objectifs BV</div>
+              </div>
+              <div class="row align-self-center">
+                <span class="badge bg-secondary" *ngIf="!bvFilled">Pas de données</span>
+                <span class="badge bg-primary" *ngIf="bvFilled && !bvResponse">Calcul</span>
+                <span class="badge bg-success" *ngIf="bvFilled && bvResponse && !bvResponse.error">Généré</span>
+                <span class="badge bg-danger" *ngIf="bvFilled && bvResponse && bvResponse.error">Erreur</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm onglet align-self-center" [class.waiting]="decFilled && !decResponse">
+            <div class="container">
+              <div class="row align-self-center">
+                <div class="col-10">Rétention des bassins</div>
+              </div>
+              <div class="row align-self-center">
+                <span class="badge bg-secondary" *ngIf="!decFilled">Pas de données</span>
+                <span class="badge bg-primary waiting" *ngIf="decFilled && !decResponse">Calcul</span>
+                <span class="badge bg-success" *ngIf="decFilled && decResponse && !decResponse.error">Généré</span>
+                <span class="badge bg-danger" *ngIf="decFilled && decResponse && decResponse.error">Erreur</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm onglet align-self-center content" [class.waiting]="exuFilled && !exuResponse">
+            <div class="container">
+              <div class="row align-self-center">
+                <div class="col-10">Q100 et cassis-fossés</div>
+              </div>
+              <div class="row align-self-center">
+                <span class="badge bg-secondary" *ngIf="!exuFilled">Pas de données</span>
+                <span class="badge bg-primary waiting" *ngIf="exuFilled && !exuResponse">Calcul</span>
+                <span class="badge bg-success" *ngIf="exuFilled && exuResponse && !exuResponse.error">Généré</span>
+                <span class="badge bg-danger" *ngIf="exuFilled && exuResponse && exuResponse.error">Erreur</span>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="!result || !result.computationOk || !exuResponse || exuResponse.error"
+            class="col-sm onglet onglet-icon">
+            <img style="height:auto;width:80px" src="../assets/download-ko.png" />
+          </div>
+          <div *ngIf="result && result.computationOk && exuResponse && !exuResponse.error"
+            class="col-sm onglet onglet-icon" (click)="downloadFile()">
+            <img style="height:auto;width:80px;cursor: pointer;" src="../assets/download.png" />
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-</div>
+  <div class="row row-flex" style="margin-top:1vw;">
+    <div class="col-sm reset text-center" [class.reset-enable]="bvFilled" [class.reset-disable]="!bvFilled"
+      (click)="reset()">
+      Réinitialiser
+    </div>
+  </div>
+  <div class="row row-flex mention">
+    <div class="col align-self-center" style="text-align:-webkit-center;">
+      © 2021 - Kenskoaz - kenskoaz@gmail.com
+    </div>
+  </div>
+ </div> 

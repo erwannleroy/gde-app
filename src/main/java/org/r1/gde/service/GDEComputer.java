@@ -8,9 +8,12 @@ import java.util.List;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.r1.gde.model.BassinVersant;
-import org.r1.gde.model.decanteur.Decanteur;
+import org.r1.gde.model.decanteur.Ouvrage;
 import org.r1.gde.model.decanteur.Zone;
-import org.r1.gde.xls.generator.DimensionnementGenerator;
+import org.r1.gde.model.exutoire.Creek;
+import org.r1.gde.xls.generator.CassisGenerator;
+import org.r1.gde.xls.generator.ObjectifsBVGenerator;
+import org.r1.gde.xls.generator.Q100Generator;
 import org.r1.gde.xls.generator.ParametresGenerator;
 import org.r1.gde.xls.generator.RetentionGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +31,17 @@ public class GDEComputer {
 	@Autowired
 	private ParametresGenerator parametresGenerator;
 	@Autowired
-	private DimensionnementGenerator dimensionnementGenerator;
+	private ObjectifsBVGenerator dimensionnementGenerator;
 	@Autowired
 	private RetentionGenerator retentionGenerator;
+	@Autowired
+	private Q100Generator exutoireGenerator;
+	@Autowired
+	private CassisGenerator cassisGenerator;
 
-	
 	private List<BassinVersant> bassins;
 	private List<Zone> zones;
+	private List<Creek> creeks;
 
 	private ComputeContext computeContext;
 
@@ -50,19 +57,11 @@ public class GDEComputer {
 
 	public void updateBassins(List<BassinVersant> bassins) {
 		this.bassins = bassins;
-		recompute();
-	}
 
-	private void recompute() {
-		log.info("Recalcul du résultat");
-
-		this.computeContext = new ComputeContext(bassins, zones);
-
+		this.computeContext = new ComputeContext();
+		this.computeContext.setBassins(bassins);
 		parametresGenerator.generateSheet(computeContext);
 		dimensionnementGenerator.generateSheet(computeContext);
-		retentionGenerator.generateSheet(computeContext);
-
-		fillBytes();
 	}
 
 	private void fillBytes() {
@@ -104,7 +103,15 @@ public class GDEComputer {
 
 	public void updateDecanteurs(List<Zone> zones) {
 		this.zones = zones;
-		recompute();
+		this.computeContext.setZones(zones);
+		retentionGenerator.generateSheet(computeContext);
 	}
 
+	public void updateExutoires(List<Creek> creeks) {
+		this.creeks = creeks;
+		this.computeContext.setCreeks(creeks);
+		exutoireGenerator.generateSheet(computeContext);
+		cassisGenerator.generateSheet(computeContext);
+		fillBytes();
+	}
 }

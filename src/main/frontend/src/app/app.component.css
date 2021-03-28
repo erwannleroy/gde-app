@@ -1,4 +1,92 @@
-.icon {
-    margin-left: 20px;
-    margin-right: 10px;
+.onglet {
+    padding: 5px;
+    text-align: center;
+    align-items: center;
+    margin: 4px;
+    border-radius: 5px;
+    border: 1px solid;
+}
+
+.onglet-ko {
+    background-color: grey;
+    border-color: black;
+}
+
+.onglet-ok {
+    background-color: lightgreen;
+    border-color: black;
+}
+
+.onglet-icon {
+    border: 0px;
+}
+
+.mention {
+    border-top: solid 1px;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.banner-text {
+    background-color: rgba(0, 0, 0, 0.4);
+    color: white;
+    font-size: 2.5vw;
+    padding: 3px;
+}
+
+.row-flex {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.reset-enable {
+    background-color: forestgreen;
+    color: honeydew;
+    cursor: pointer;
+}
+
+.reset-disable {
+    background-color: grey;
+    opacity: 0.5;
+}
+
+.waiting {
+    animation: mymove 1s infinite alternate-reverse;
+}
+
+@keyframes mymove {
+    from {
+        background-color: rgb(228, 235, 253);
+    }
+    to {
+        background-color: rgb(183, 216, 248);
+    }
+}
+
+.reset {
+    /*display: flex;
+    text-align: center;
+    align-content: center;
+    align-content: space-around;*/
+    font-weight: bold;
+}
+
+.card {
+    border: none;
+}
+
+.app-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    border: none;
+}
+
+.app-enabled {
+    opacity: 1.0;
+    pointer-events: all;
+    border-color: #F58A07;
+    border-style: solid;
 }

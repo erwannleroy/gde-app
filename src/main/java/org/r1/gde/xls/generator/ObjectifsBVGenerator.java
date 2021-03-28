@@ -1,14 +1,6 @@
 package org.r1.gde.xls.generator;
 
-import static org.r1.gde.XlsUtils.boldCell;
-import static org.r1.gde.XlsUtils.redBoldBorderBottom;
-import static org.r1.gde.XlsUtils.redBoldBorderTop;
-import static org.r1.gde.XlsUtils.standardCell;
-import static org.r1.gde.XlsUtils.standardCellTopBorder;
-import static org.r1.gde.XlsUtils.title1;
-import static org.r1.gde.XlsUtils.title2;
-import static org.r1.gde.XlsUtils.title3;
-import static org.r1.gde.XlsUtils.title3BottomBorder;
+import static org.r1.gde.XlsUtils.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,13 +18,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class DimensionnementGenerator extends SheetGenerator {
+public class ObjectifsBVGenerator extends SheetGenerator {
 
 	private int rowIndexDimensionnement = 0;
 	private int TAILLE_LOT_BV = 15;
 	private int TAILLE_COLUMN_1 = 8;
 	private Map<String, String> volumesBV;
-	private static final String TITLE_SHEET = "Dimensionnement BV";
+	private static final String TITLE_SHEET = "Objectifs BV";
 
 	@Autowired
 	private ParametresGenerator parametresGenerator;
@@ -46,6 +38,7 @@ public class DimensionnementGenerator extends SheetGenerator {
 
 		sheet.setColumnWidth(0, TAILLE_COLUMN_1);
 
+		
 		rowIndexDimensionnement = 0;
 		volumesBV = new HashMap<>();
 
@@ -79,21 +72,26 @@ public class DimensionnementGenerator extends SheetGenerator {
 
 	private void generateLotBassins(List<BassinVersant> bassinsLot) {
 
+		int indexColumn = 1;
+		
+		int columnSize  = bassinsLot.size() + 1;
 		// une ligne vide
-		XlsUtils.mergeRowBottomBorder(computeContext, sheet, rowIndexDimensionnement, 0, TAILLE_LOT_BV + 2);
+		XlsUtils.mergeRowBottomBorder(computeContext, sheet, rowIndexDimensionnement, indexColumn, columnSize);
 
 		rowIndexDimensionnement++;
+		
+		int firstRow = rowIndexDimensionnement;
 
 		// titre
 		Row title2ParamRow = sheet.createRow(rowIndexDimensionnement);
-		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexDimensionnement, 0, TAILLE_LOT_BV + 2);
-		Cell title2ParamCell = title2ParamRow.createCell(0);
+		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexDimensionnement, indexColumn, columnSize);
+		Cell title2ParamCell = title2ParamRow.createCell(indexColumn);
 		title2(computeContext, title2ParamCell, "Paramètres hydrauliques des bassins versants associés aux ouvrages");
 
 		rowIndexDimensionnement++;
 
 		// entete tableau
-		int indexColumn = 0;
+		
 		Row ouvrageRow = sheet.createRow(rowIndexDimensionnement);
 
 		rowIndexDimensionnement++;
@@ -125,7 +123,7 @@ public class DimensionnementGenerator extends SheetGenerator {
 		rowIndexDimensionnement++;
 
 		// une ligne vide
-		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexDimensionnement, 0, TAILLE_LOT_BV + 2);
+		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexDimensionnement, indexColumn, columnSize+1);
 
 		rowIndexDimensionnement++;
 
@@ -136,13 +134,13 @@ public class DimensionnementGenerator extends SheetGenerator {
 		rowIndexDimensionnement++;
 
 		// une ligne vide
-		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexDimensionnement, 0, TAILLE_LOT_BV + 2);
+		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexDimensionnement, indexColumn, columnSize+1);
 
 		rowIndexDimensionnement++;
 
 		Row title2DimensionnementRow = sheet.createRow(rowIndexDimensionnement);
-		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexDimensionnement, 0, TAILLE_LOT_BV + 2);
-		Cell title2DimCell = title2DimensionnementRow.createCell(0);
+		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexDimensionnement, indexColumn, columnSize+1);
+		Cell title2DimCell = title2DimensionnementRow.createCell(indexColumn);
 		title2(computeContext, title2DimCell, "Dimensionnement des bassins");
 
 		rowIndexDimensionnement++;
@@ -175,30 +173,33 @@ public class DimensionnementGenerator extends SheetGenerator {
 
 			Cell superficieCell = superficieRow.createCell(indexColumn);
 			if (bv.surface != null) {
-				standardCell(computeContext, superficieCell, "").setCellValue(bv.surface / 10000);
-			} else {
-				standardCell(computeContext, superficieCell, "")
-						.setCellFormula(parametresGenerator.parametres.get(ParametresGenerator.DIM_SURFACE_PARAM));
-			}
+				standardCellDecimal2Comma(computeContext, superficieCell, "").setCellValue(bv.surface / 10000);
+			} 
+//			else {
+//				standardCell(computeContext, superficieCell, "")
+//						.setCellFormula(parametresGenerator.parametres.get(ParametresGenerator.DIM_SURFACE_PARAM));
+//			}
 
 			Cell longueurCell = longueurRow.createCell(indexColumn);
 			if (bv.longueur != null) {
-				standardCell(computeContext, longueurCell, "").setCellValue(bv.longueur);
-			} else {
-				standardCell(computeContext, longueurCell, "")
-						.setCellFormula(parametresGenerator.parametres.get(ParametresGenerator.DIM_LONGUEUR_PARAM));
-			}
+				standardCellDecimalNoComma(computeContext, longueurCell, "").setCellValue(bv.longueur);
+			} 
+//			else {
+//				standardCell(computeContext, longueurCell, "")
+//						.setCellFormula(parametresGenerator.parametres.get(ParametresGenerator.DIM_LONGUEUR_PARAM));
+//			}
 
 			Cell deniveleCell = deniveleRow.createCell(indexColumn);
 			if (bv.denivele != null) {
-				standardCell(computeContext, deniveleCell, "").setCellValue(bv.denivele);
-			} else {
-				standardCell(computeContext, deniveleCell, "")
-						.setCellFormula(parametresGenerator.parametres.get(ParametresGenerator.DIM_DENIVELE_PARAM));
-			}
+				standardCellDecimalNoComma(computeContext, deniveleCell, "").setCellValue(bv.denivele);
+			} 
+//			else {
+//				standardCell(computeContext, deniveleCell, "")
+//						.setCellFormula(parametresGenerator.parametres.get(ParametresGenerator.DIM_DENIVELE_PARAM));
+//			}
 
 			Cell penteCell = penteRow.createCell(indexColumn);
-			standardCell(computeContext, penteCell, "");
+			standardCellDecimalNoComma(computeContext, penteCell, "");
 			penteCell.setCellFormula(String.format("(%s%s/%s%s)*100",
 					CellReference.convertNumToColString(deniveleCell.getColumnIndex()), deniveleCell.getRowIndex() + 1,
 					CellReference.convertNumToColString(longueurCell.getColumnIndex()),
@@ -206,45 +207,50 @@ public class DimensionnementGenerator extends SheetGenerator {
 
 			Cell ruissellementCell = ruissellementRow.createCell(indexColumn);
 			standardCell(computeContext, ruissellementCell, "")
-					.setCellFormula(parametresGenerator.parametres.get(ParametresGenerator.DIM_COEF_RUISS_PARAM));
+					.setCellFormula(parametresGenerator.parametres.get(ParametresGenerator.CST_COEFF_RUISS_PARAM));
 
 			Cell pluieCell = pluieRow.createCell(indexColumn);
-			boldCell(computeContext, pluieCell, "").setCellValue("2H/2ANS");
+			boldCell(computeContext, pluieCell, ParametresGenerator.DIM_TPS_RETOUR_DUREE_PLUIE_DEFAULT);
 
 			Cell precipitationsCell = precipitationsRow.createCell(indexColumn);
 			standardCellTopBorder(computeContext, precipitationsCell, "").setCellValue(59.8);
 
 			Cell volEauCell = volumeEauRow.createCell(indexColumn);
-			String volEauFormula = String.format("(%s%s/1000)*(%s%s*10000)*%s%s",
+			String volEauFormula = String.format("INT((%s%s/1000)*(%s%s*10000)*%s%s)",
 					CellReference.convertNumToColString(precipitationsCell.getColumnIndex()),
 					precipitationsCell.getRowIndex() + 1,
 					CellReference.convertNumToColString(superficieCell.getColumnIndex()),
 					superficieCell.getRowIndex() + 1,
-					CellReference.convertNumToColString(ruissellementCell.getColumnIndex() + 1),
-					ruissellementCell.getRowIndex());
+					CellReference.convertNumToColString(ruissellementCell.getColumnIndex()),
+					ruissellementCell.getRowIndex() + 1);
 
 			volumesBV.put(bv.nomOuvrage, XlsUtils.getReference(volEauCell));
 
 			log.info("Formule du volume d'eau : " + volEauFormula);
-			redBoldBorderBottom(computeContext, volEauCell, "").setCellFormula(volEauFormula);
+			redBoldBorderBottomDecimalNoComma(computeContext, volEauCell, "").setCellFormula(volEauFormula);
 			indexColumn++;
 		}
 
+		XlsUtils.makeBoldBorder(sheet, firstRow, rowIndexDimensionnement-1, 1, indexColumn-1);
+		
 	}
 
 	public String getReferenceVolumeEauBV(String nomBV) {
-		return "'" + TITLE_SHEET + "'!" + volumesBV.get(nomBV);
+		return volumesBV.get(nomBV);
 	}
 
 	private void generateTitleBlock() {
 		Row titleRow = sheet.createRow(rowIndexDimensionnement);
 
-		XlsUtils.mergeRow(computeContext, sheet, 0, 0, TAILLE_LOT_BV + 2);
+		// une colonne vide
+		int indexColumn = 1;
+		
+		XlsUtils.mergeRow(computeContext, sheet, 0, indexColumn, TAILLE_LOT_BV + 2);
 
 		titleRow.setRowStyle(XlsUtils.blankRow(computeContext));
 		String title = "Objectif de rétention pour chaque sous-bassin versant de la mine ";
-		Cell headerCell = titleRow.createCell(0);
-		title1(computeContext, headerCell, title).setCellFormula("CONCAT(\"" + title + "\","
+		Cell headerCell = titleRow.createCell(1);
+		title1(computeContext, headerCell, title).setCellFormula("CONCATENATE(\"" + title + "\","
 				+ parametresGenerator.parametres.get(ParametresGenerator.GLO_NOM_MINE_PARAM) + ")");
 
 		rowIndexDimensionnement++;

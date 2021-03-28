@@ -5,10 +5,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.r1.gde.model.decanteur.BassinVersant;
-import org.r1.gde.model.decanteur.Decanteur;
+import org.r1.gde.model.decanteur.Ouvrage;
 import org.r1.gde.model.decanteur.Zone;
 
-public class TempDecanteursParsing {
+public class TempOuvragesParsing {
 
 	List<Zone> zones = new ArrayList<Zone>();
 
@@ -16,9 +16,9 @@ public class TempDecanteursParsing {
 		return zones;
 	}
 
-	public void addDecanteur(Decanteur dec) {
-		BassinVersant bv = getBassinVersant(dec.getZone(), dec.getBv());
-		bv.decanteurs.add(dec);
+	public void addOuvrage(Ouvrage ouv) {
+		BassinVersant bv = getBassinVersant(ouv.getZone(), ouv.getBv());
+		bv.ouvrages.add(ouv);
 	}
 
 	private BassinVersant getBassinVersant(String nomZone, String nomBv) {

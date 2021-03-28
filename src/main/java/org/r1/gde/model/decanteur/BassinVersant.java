@@ -11,5 +11,5 @@ import lombok.ToString;
 public class BassinVersant {
 
 	public String nom;
-	public List<Decanteur> decanteurs = new ArrayList<Decanteur>();
+	public List<Ouvrage> ouvrages = new ArrayList<Ouvrage>();
 }
