@@ -1,4 +1,4 @@
-package org.r1.gde.model.decanteur;
+package org.r1.gde.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +8,9 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class BassinVersant {
+public class Zone {
 
+	
 	public String nom;
-	public List<Ouvrage> ouvrages = new ArrayList<Ouvrage>();
+	public List<BassinVersant> bassins = new ArrayList<>();
 }

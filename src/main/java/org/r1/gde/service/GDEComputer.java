@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.r1.gde.model.BassinVersant;
-import org.r1.gde.model.decanteur.Ouvrage;
-import org.r1.gde.model.decanteur.Zone;
-import org.r1.gde.model.exutoire.Creek;
+import org.r1.gde.model.BVDecanteur;
+import org.r1.gde.model.Creek;
+import org.r1.gde.model.Decanteur;
+import org.r1.gde.model.Zone;
 import org.r1.gde.xls.generator.CassisGenerator;
-import org.r1.gde.xls.generator.ObjectifsBVGenerator;
+import org.r1.gde.xls.generator.ObjectifsRetentionGenerator;
 import org.r1.gde.xls.generator.Q100Generator;
 import org.r1.gde.xls.generator.ParametresGenerator;
 import org.r1.gde.xls.generator.RetentionGenerator;
@@ -31,7 +31,7 @@ public class GDEComputer {
 	@Autowired
 	private ParametresGenerator parametresGenerator;
 	@Autowired
-	private ObjectifsBVGenerator dimensionnementGenerator;
+	private ObjectifsRetentionGenerator dimensionnementGenerator;
 	@Autowired
 	private RetentionGenerator retentionGenerator;
 	@Autowired
@@ -39,7 +39,7 @@ public class GDEComputer {
 	@Autowired
 	private CassisGenerator cassisGenerator;
 
-	private List<BassinVersant> bassins;
+	private List<BVDecanteur> bassins;
 	private List<Zone> zones;
 	private List<Creek> creeks;
 
@@ -55,7 +55,7 @@ public class GDEComputer {
 		return this.computeContext;
 	}
 
-	public void updateBassins(List<BassinVersant> bassins) {
+	public void updateBassins(List<BVDecanteur> bassins) {
 		this.bassins = bassins;
 
 		this.computeContext = new ComputeContext();

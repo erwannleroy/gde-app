@@ -3,10 +3,10 @@ package org.r1.gde.service;
 import java.util.List;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.r1.gde.model.BassinVersant;
-import org.r1.gde.model.decanteur.Ouvrage;
-import org.r1.gde.model.decanteur.Zone;
-import org.r1.gde.model.exutoire.Creek;
+import org.r1.gde.model.BVDecanteur;
+import org.r1.gde.model.Creek;
+import org.r1.gde.model.Decanteur;
+import org.r1.gde.model.Zone;
 
 import lombok.Data;
 
@@ -14,7 +14,7 @@ import lombok.Data;
 public class ComputeContext {
 
 	public XSSFWorkbook workbook;
-	List<BassinVersant> bassins;
+	List<BVDecanteur> bassins;
 	List<Zone> zones;
 	List<Creek> creeks;
 	private ComputingResult computingResult;

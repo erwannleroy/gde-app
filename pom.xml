@@ -170,44 +170,45 @@
 						<artifactId>spring-boot-maven-plugin</artifactId>
 					</plugin>
 
-<!-- 					<plugin> -->
-<!-- 						<groupId>com.akathist.maven.plugins.launch4j</groupId> -->
-<!-- 						<artifactId>launch4j-maven-plugin</artifactId> -->
-<!-- 						<version>1.5.1</version> -->
-<!-- 						<executions> -->
-<!-- 							<execution> -->
-<!-- 								<id>l4j-clui</id> -->
-<!-- 								<phase>package</phase> -->
-<!-- 								<goals> -->
-<!-- 									<goal>launch4j</goal> -->
-<!-- 								</goals> -->
-<!-- 								<configuration> -->
-<!-- 									<headerType>gui</headerType> -->
-<!-- 									<jar>${project.build.directory}/${artifactId}-${version}.jar</jar> -->
-<!-- 									<outfile>${project.build.directory}/gde.exe</outfile> -->
-<!-- 									<classPath> -->
-<!-- 										<mainClass>org.r1.gde.GDEApplication</mainClass> -->
-<!-- 									</classPath> -->
-<!-- 									<icon>src/main/resources/gde.ico</icon> -->
-<!-- 									<jre> -->
-<!-- 										<minVersion>1.8.0</minVersion> -->
-<!-- 									</jre> -->
-<!-- 									<versionInfo> -->
-<!-- 										<fileVersion>1.0.0.0</fileVersion> -->
-<!-- 										<txtFileVersion>1.0.0.0</txtFileVersion> -->
-<!-- 										<fileDescription>Gestion des eaux</fileDescription> -->
-<!-- 										<copyright>2021 Kenskoaz</copyright> -->
-<!-- 										<productVersion>1.0.0.0</productVersion> -->
-<!-- 										<txtProductVersion>1.0.0.0</txtProductVersion> -->
-<!-- 										<productName>GDE</productName> -->
-<!-- 										<companyName>Kenskoaz</companyName> -->
-<!-- 										<internalName>gde</internalName> -->
-<!-- 										<originalFilename>gde.exe</originalFilename> -->
-<!-- 									</versionInfo> -->
-<!-- 								</configuration> -->
-<!-- 							</execution> -->
-<!-- 						</executions> -->
-<!-- 					</plugin> -->
+					<plugin>
+						<groupId>com.akathist.maven.plugins.launch4j</groupId>
+						<artifactId>launch4j-maven-plugin</artifactId>
+						<version>1.5.1</version>
+						<executions>
+							<execution>
+								<id>l4j-clui</id>
+								<phase>package</phase>
+								<goals>
+									<goal>launch4j</goal>
+								</goals>
+								<configuration>
+									<headerType>gui</headerType>
+									<jar>${project.build.directory}/${artifactId}-${version}.jar</jar>
+									<outfile>${project.build.directory}/gde.exe</outfile>
+									<classPath>
+										<mainClass>org.r1.gde.GDEApplication</mainClass>
+									</classPath>
+									<icon>src/main/resources/gde.ico</icon>
+									<jre>
+										<minVersion>1.8.0</minVersion>
+									</jre>
+									
+									<versionInfo>
+										<fileVersion>1.0.0.0</fileVersion>
+										<txtFileVersion>1.0.0.0</txtFileVersion>
+										<fileDescription>Gestion des eaux</fileDescription>
+										<copyright>2021 Kenskoaz</copyright>
+										<productVersion>1.0.0.0</productVersion>
+										<txtProductVersion>1.0.0.0</txtProductVersion>
+										<productName>GDE</productName>
+										<companyName>Kenskoaz</companyName>
+										<internalName>gde</internalName>
+										<originalFilename>gde.exe</originalFilename>
+									</versionInfo>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.record.DefaultRowHeightRecord;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -18,11 +19,11 @@ import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.r1.gde.XlsUtils;
-import org.r1.gde.model.decanteur.BassinVersant;
-import org.r1.gde.model.decanteur.Ouvrage;
-import org.r1.gde.model.decanteur.Zone;
-import org.r1.gde.model.exutoire.Creek;
-import org.r1.gde.model.exutoire.Exutoire;
+import org.r1.gde.model.BVExutoire;
+import org.r1.gde.model.BassinVersant;
+import org.r1.gde.model.Creek;
+import org.r1.gde.model.Decanteur;
+import org.r1.gde.model.Zone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Q100Generator extends SheetGenerator {
 
 	private int rowIndexExutoire = 0;
-	private static final String TITLE_SHEET = "Q100 EI";
+	private static final String TITLE_SHEET = "Q100";
 	private static final int TAILLE_LOT = 15;
 
 	@Autowired
@@ -43,15 +44,19 @@ public class Q100Generator extends SheetGenerator {
 	protected void startGeneration() {
 		log.info("Génération de l'onglet Exutoire");
 
-		sheet = workbook().createSheet(TITLE_SHEET);
+		sheet = workbook().getSheet(TITLE_SHEET);
+		
+		if (null != sheet) {
+			workbook().removeSheetAt(3);
+		} 
 
+		sheet = workbook().createSheet(TITLE_SHEET);
+		
 		sheet.setColumnWidth(0, 2);
 
 		rowIndexExutoire = 0;
 
 		generateTitleBlock();
-
-		generateLegend();
 
 		if (creeks() != null) {
 			generateCreeks();
@@ -92,8 +97,6 @@ public class Q100Generator extends SheetGenerator {
 
 //		// une ligne vide
 //		XlsUtils.mergeRowBottomBorder(computeContext, sheet, rowIndexExutoire, indexColumn, TAILLE_LOT + 2);
-
-		rowIndexExutoire++;
 
 		int firstRow = rowIndexExutoire;
 
@@ -192,7 +195,8 @@ public class Q100Generator extends SheetGenerator {
 		rowIndexExutoire++;
 
 		// une ligne vide
-//		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexExutoire, 0, TAILLE_LOT + 2);
+		Row blankRow = sheet.createRow(rowIndexExutoire);
+		blankRow.setHeight((short) (DefaultRowHeightRecord.DEFAULT_ROW_HEIGHT/2));
 
 		rowIndexExutoire++;
 
@@ -268,7 +272,7 @@ public class Q100Generator extends SheetGenerator {
 
 			List<Cell> cells = new ArrayList<>();
 
-			for (Exutoire e : c.getExutoires()) {
+			for (BVExutoire e : c.getExutoires()) {
 
 				Cell exuNomCell = exutoireRow.createCell(indexColumn);
 				redBoldBorderLeftRight(computeContext, exuNomCell, e.getNom());
@@ -310,11 +314,13 @@ public class Q100Generator extends SheetGenerator {
 				standardCellDecimal2Comma(computeContext, calculTpsConcCell, "").setCellFormula(calculTpsConcFormula);
 
 				Cell tpsConcRetenuCell = tpsConcentrationRetenuRow.createCell(indexColumn);
-				String tpsConcRetenuFormula = String.format("IF(%s%s>6,%s%s, \"6\")",
+				String tpsConcRetenuFormula = String.format("IF(%s%s>%s,%s%s, %s)",
 						CellReference.convertNumToColString(calculTpsConcCell.getColumnIndex()),
 						calculTpsConcCell.getRowIndex() + 1,
+						parametresGenerator.parametres.get(ParametresGenerator.METEO_TPS_CONCENTRATION_PARAM),
 						CellReference.convertNumToColString(calculTpsConcCell.getColumnIndex()),
-						calculTpsConcCell.getRowIndex() + 1);
+						calculTpsConcCell.getRowIndex() + 1,
+						parametresGenerator.parametres.get(ParametresGenerator.METEO_TPS_CONCENTRATION_PARAM));
 				standardCell(computeContext, tpsConcRetenuCell, "").setCellFormula(tpsConcRetenuFormula);
 
 				Cell calculAverseCell = intensiteAverseRow.createCell(indexColumn);
@@ -427,40 +433,6 @@ public class Q100Generator extends SheetGenerator {
 				+ parametresGenerator.parametres.get(ParametresGenerator.GLO_NOM_MINE_PARAM) + ")");
 
 		rowIndexExutoire++;
-	}
-
-	private void generateLegend() {
-
-		// une colonne vide
-		int indexColumn = 3;
-
-		rowIndexExutoire++;
-		rowIndexExutoire++;
-
-		Row legend1Row = sheet.createRow(rowIndexExutoire);
-		Cell legend1Color = legend1Row.createCell(indexColumn);
-		Cell legend1Text = legend1Row.createCell(indexColumn + 1);
-		colorCell(computeContext, legend1Color, IndexedColors.LIME);
-		standardCell(computeContext, legend1Text, "exutoire stable (talweg végétalisé/fond rocheux)");
-
-		rowIndexExutoire++;
-
-		Row legend2Row = sheet.createRow(rowIndexExutoire);
-		Cell legend2Color = legend2Row.createCell(indexColumn);
-		Cell legend2Text = legend2Row.createCell(indexColumn + 1);
-		colorCell(computeContext, legend2Color, IndexedColors.GOLD);
-		standardCell(computeContext, legend2Text, "exutoire stable pour le débit reçu mais à ne pas suralimenter");
-
-		rowIndexExutoire++;
-
-		Row legend3Row = sheet.createRow(rowIndexExutoire);
-		Cell legend3Color = legend3Row.createCell(indexColumn);
-		Cell legend3Text = legend3Row.createCell(indexColumn + 1);
-		colorCell(computeContext, legend3Color, IndexedColors.ORANGE);
-		standardCell(computeContext, legend3Text, "exutoire instable à fort risque d'érosion regressive");
-
-		rowIndexExutoire++;
-
 	}
 
 	@Override

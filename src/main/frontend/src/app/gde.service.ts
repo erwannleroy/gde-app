@@ -52,7 +52,7 @@ export class GdeService {
     console.log("postBVFile : " + file);
     const formData: FormData = new FormData();
     formData.append('bv', file);
-    this.http.post<BVResponse>('gde/upload-bv-file', formData).subscribe(data => {
+    this.http.post<BVResponse>('gde/upload-bv-decanteurs-file', formData).subscribe(data => {
       console.log("retour du WS");
       console.log(data);
       this.subjectBV.next(data);
@@ -70,7 +70,7 @@ export class GdeService {
     console.log("postDECFile : " + file);
     const formData: FormData = new FormData();
     formData.append('dec', file);
-    this.http.post<DECResponse>('gde/upload-dec-file', formData).subscribe(data => {
+    this.http.post<DECResponse>('gde/upload-decanteurs-file', formData).subscribe(data => {
       console.log("retour du WS");
       console.log(data);
       this.subjectDEC.next(data);
@@ -87,7 +87,7 @@ export class GdeService {
     console.log("postEXUFile : " + file);
     const formData: FormData = new FormData();
     formData.append('exu', file);
-    this.http.post<EXUResponse>('gde/upload-exu-file', formData).subscribe(data => {
+    this.http.post<EXUResponse>('gde/upload-bv-exutoires-file', formData).subscribe(data => {
       console.log("retour du WS");
       console.log(data);
       this.subjectEXU.next(data);

@@ -17,6 +17,11 @@
     border-color: black;
 }
 
+.params-popup {
+}
+
+
+
 .onglet-icon {
     border: 0px;
 }
@@ -59,10 +64,10 @@
 
 @keyframes mymove {
     from {
-        background-color: rgb(228, 235, 253);
+        background-color: rgb(220, 229, 253);
     }
     to {
-        background-color: rgb(183, 216, 248);
+        background-color: rgb(62, 135, 209);
     }
 }
 

@@ -1,4 +1,4 @@
-package org.r1.gde.model.decanteur;
+package org.r1.gde.model;
 
 
 import lombok.Data;
@@ -6,12 +6,12 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class Ouvrage {
+public class Decanteur {
 
-	public static final String NOM_FIELD = "NOM_OUVRAG";
+	public static final String NOM_FIELD = "NOM";
 	public static final String SURFACE_FIELD = "SURFACE";
 	public static final String PROFONDEUR_FIELD = "PROFONDEUR";
-	public static final String PROFONDEUR_DEVERSOIR_FIELD = "D_VERSOIR";
+	public static final String PROFONDEUR_DEVERSOIR_FIELD = "PROF_DEVER";
 	public static final String HAUTEUR_DIGUE_FIELD = "DIGUE";
 	public static final String BV_FIELD = "BV";
 	public static final String ZONE_FIELD = "ZONE";

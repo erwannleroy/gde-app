@@ -6,14 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.record.DefaultRowHeightRecord;
+import org.apache.poi.ss.formula.FormulaParseException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
 import org.r1.gde.XlsUtils;
-import org.r1.gde.model.decanteur.BassinVersant;
-import org.r1.gde.model.decanteur.Ouvrage;
-import org.r1.gde.model.decanteur.Zone;
+import org.r1.gde.model.BassinVersant;
+import org.r1.gde.model.Decanteur;
+import org.r1.gde.model.Zone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,12 +34,18 @@ public class RetentionGenerator extends SheetGenerator {
 	private ParametresGenerator parametresGenerator;
 
 	@Autowired
-	ObjectifsBVGenerator dimensionnementGenerator;
+	ObjectifsRetentionGenerator dimensionnementGenerator;
 
 	@Override
-	public void startGeneration() {
+	public void startGeneration() throws GDEException {
 
 		log.info("Génération de l'onglet Rétention");
+
+		sheet = workbook().getSheet(TITLE_SHEET);
+
+		if (null != sheet) {
+			workbook().removeSheetAt(2);
+		}
 
 		sheet = workbook().createSheet(TITLE_SHEET);
 
@@ -49,7 +57,6 @@ public class RetentionGenerator extends SheetGenerator {
 
 		generateLegend();
 
-		
 		if (zones() != null) {
 			for (Zone z : zones()) {
 				generateZone(z);
@@ -63,7 +70,7 @@ public class RetentionGenerator extends SheetGenerator {
 		}
 	}
 
-	private void generateZone(Zone zone) {
+	private void generateZone(Zone zone) throws GDEException {
 
 		List<BassinVersant> remainList = zone.getBassins();
 		List<BassinVersant> bassinsSubList = new ArrayList<BassinVersant>();
@@ -84,7 +91,7 @@ public class RetentionGenerator extends SheetGenerator {
 
 	}
 
-	private void generateLotZone(Zone zone, List<BassinVersant> bassins) {
+	private void generateLotZone(Zone zone, List<BassinVersant> bassins) throws GDEException {
 
 		int columnSize = bassins.size() + 1;
 
@@ -92,8 +99,7 @@ public class RetentionGenerator extends SheetGenerator {
 		int indexColumn = 1;
 
 		// une ligne vide
-//		XlsUtils.mergeRowBottomBorder(computeContext, sheet, rowIndexRetention, indexColumn, columnSize);
-
+		rowIndexRetention++;
 		rowIndexRetention++;
 
 		int firstRow = rowIndexRetention;
@@ -123,7 +129,9 @@ public class RetentionGenerator extends SheetGenerator {
 
 		rowIndexRetention++;
 
+		
 		Row blankRow1 = sheet.createRow(rowIndexRetention);
+		blankRow1.setHeight((short) (DefaultRowHeightRecord.DEFAULT_ROW_HEIGHT/2));
 		Cell bl1Cell = blankRow1.createCell(indexColumn);
 		title3LeftTopBorder(computeContext, bl1Cell, "");
 		Cell bl1CellCol2 = bvRow.createCell(indexColumn);
@@ -186,6 +194,7 @@ public class RetentionGenerator extends SheetGenerator {
 		rowIndexRetention++;
 
 		Row blankRow2 = sheet.createRow(rowIndexRetention);
+		blankRow2.setHeight((short) (DefaultRowHeightRecord.DEFAULT_ROW_HEIGHT/2));
 		Cell bl2Cell = blankRow2.createCell(indexColumn);
 		title3LeftTopBorder(computeContext, bl2Cell, "");
 		Cell bl2CellCol2 = blankRow2.createCell(indexColumn);
@@ -230,8 +239,10 @@ public class RetentionGenerator extends SheetGenerator {
 						indexColumn + bv.ouvrages.size() - 1);
 			}
 			Cell objRetCell = objRetRow.createCell(indexColumn);
+
+			log.info("objRetCell " + bv);
 			standardCellLeftRightBorderDecimalNoComma(computeContext, objRetCell, "")
-					.setCellFormula("INT("+dimensionnementGenerator.getReferenceVolumeEauBV(bv.nom)+")");
+					.setCellFormula("INT(" + dimensionnementGenerator.getReferenceVolumeEauBV(bv.nom) + ")");
 
 			if (bv.getOuvrages().size() > 1) {
 				XlsUtils.mergeRow(computeContext, sheet, capaCumulRow.getRowNum(), indexColumn,
@@ -247,9 +258,9 @@ public class RetentionGenerator extends SheetGenerator {
 
 			List<Cell> cells = new ArrayList<>();
 
-			for (Ouvrage d : bv.getOuvrages()) {
+			for (Decanteur d : bv.getOuvrages()) {
 				nbOuvrage++;
-				
+
 				Cell decNomCell = ouvrageRow.createCell(indexColumn);
 				boldCell(computeContext, decNomCell, d.getNom());
 
@@ -259,7 +270,7 @@ public class RetentionGenerator extends SheetGenerator {
 				Cell decProfCell = profRow.createCell(indexColumn);
 				if (d.getProfondeur() != null) {
 					standardCellDecimal1Comma(computeContext, decProfCell, "").setCellValue(d.getProfondeur());
-				} 
+				}
 
 				Cell decProfDevCell = profDevRow.createCell(indexColumn);
 				Double profondeurDeversoir = d.getProfondeurDeversoir();
@@ -268,18 +279,17 @@ public class RetentionGenerator extends SheetGenerator {
 				if (profondeurDeversoir != null) {
 					standardCell(computeContext, decProfDevCell, "").setCellValue(profondeurDeversoir);
 				} else {
-					standardCell(computeContext, decProfDevCell, "").setCellFormula(
-							parametresGenerator.parametres.get(ParametresGenerator.OUVRAGE_PROFONDEUR_DEVERSOIR_PARAM));
+					standardCell(computeContext, decProfDevCell, "").setCellFormula(parametresGenerator.parametres
+							.get(ParametresGenerator.PARAM_DEC_PROFONDEUR_DEVERSOIR_PARAM));
 					;
 				}
-				
-				
+
 				Cell decHauteurDigueCell = hauteurDigueRow.createCell(indexColumn);
 				if (d.getHauteurDigue() != null) {
 					standardCell(computeContext, decHauteurDigueCell, "").setCellValue(d.getHauteurDigue());
 				} else {
 					standardCell(computeContext, decHauteurDigueCell, "").setCellFormula(
-							parametresGenerator.parametres.get(ParametresGenerator.OUVRAGE_HAUTEUR_DIGUE_PARAM));
+							parametresGenerator.parametres.get(ParametresGenerator.PARAM_DEC_HAUTEUR_DIGUE_PARAM));
 					;
 				}
 
@@ -318,12 +328,12 @@ public class RetentionGenerator extends SheetGenerator {
 
 		}
 
-		XlsUtils.makeBoldBorder(sheet, firstRow+1, firstRow+2, 1, nbOuvrage+2);
-		XlsUtils.makeBoldBorder(sheet, firstRow+4, rowIndexRetention-4, 1, nbOuvrage+2);
-		XlsUtils.makeBoldBorder(sheet, firstRow+5, rowIndexRetention-4, 1, nbOuvrage+2);
-		XlsUtils.makeBoldBorder(sheet, firstRow+4, rowIndexRetention-1, 1, nbOuvrage+2);
-		XlsUtils.makeBoldBorder(sheet, rowIndexRetention-2, rowIndexRetention-1, 1, nbOuvrage+2);
-		XlsUtils.makeBoldBorder(sheet, rowIndexRetention-3, rowIndexRetention-1, 1, nbOuvrage+2);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 2, 1, nbOuvrage + 2);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 4, rowIndexRetention - 4, 1, nbOuvrage + 2);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 5, rowIndexRetention - 4, 1, nbOuvrage + 2);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 4, rowIndexRetention - 1, 1, nbOuvrage + 2);
+		XlsUtils.makeBoldBorder(sheet, rowIndexRetention - 2, rowIndexRetention - 1, 1, nbOuvrage + 2);
+		XlsUtils.makeBoldBorder(sheet, rowIndexRetention - 3, rowIndexRetention - 1, 1, nbOuvrage + 2);
 	}
 
 	private void generateTitleBlock() {
@@ -340,39 +350,39 @@ public class RetentionGenerator extends SheetGenerator {
 		title1(computeContext, headerCell, title);
 		rowIndexRetention++;
 	}
-	
+
 	private void generateLegend() {
 
 		// une colonne vide
-		int indexColumn = 3;
+		int indexColumn = 1;
 
 		rowIndexRetention++;
 		rowIndexRetention++;
-		
+
 		Row legend1Row = sheet.createRow(rowIndexRetention);
-		Cell legend1Color = legend1Row.createCell(indexColumn);
-		Cell legend1Text = legend1Row.createCell(indexColumn+1);
+		Cell legend1Text = legend1Row.createCell(indexColumn);
+		Cell legend1Color = legend1Row.createCell(indexColumn + 1);
 		colorCell(computeContext, legend1Color, IndexedColors.LIME);
 		standardCell(computeContext, legend1Text, "capacité de rétention > 100%  2h/2ans");
-		
+
 		rowIndexRetention++;
 
 		Row legend2Row = sheet.createRow(rowIndexRetention);
-		Cell legend2Color = legend2Row.createCell(indexColumn);
-		Cell legend2Text = legend2Row.createCell(indexColumn+1);
+		Cell legend2Text = legend2Row.createCell(indexColumn);
+		Cell legend2Color = legend2Row.createCell(indexColumn + 1);
 		colorCell(computeContext, legend2Color, IndexedColors.GOLD);
 		standardCell(computeContext, legend2Text, "80% < capacité de rétention < 100%  2h/2ans");
-		
+
 		rowIndexRetention++;
-		
+
 		Row legend3Row = sheet.createRow(rowIndexRetention);
-		Cell legend3Color = legend3Row.createCell(indexColumn);
-		Cell legend3Text = legend3Row.createCell(indexColumn+1);
+		Cell legend3Text = legend3Row.createCell(indexColumn);
+		Cell legend3Color = legend3Row.createCell(indexColumn + 1);
 		colorCell(computeContext, legend3Color, IndexedColors.ORANGE);
 		standardCell(computeContext, legend3Text, "capacité de rétention < 80%  2h/2ans");
-		
+
 		rowIndexRetention++;
-		
+
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.record.DefaultRowHeightRecord;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -18,11 +19,11 @@ import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.r1.gde.XlsUtils;
-import org.r1.gde.model.decanteur.BassinVersant;
-import org.r1.gde.model.decanteur.Ouvrage;
-import org.r1.gde.model.decanteur.Zone;
-import org.r1.gde.model.exutoire.Creek;
-import org.r1.gde.model.exutoire.Exutoire;
+import org.r1.gde.model.BVExutoire;
+import org.r1.gde.model.BassinVersant;
+import org.r1.gde.model.Creek;
+import org.r1.gde.model.Decanteur;
+import org.r1.gde.model.Zone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,9 +43,15 @@ public class CassisGenerator extends SheetGenerator {
 	@Override
 	protected void startGeneration() {
 		log.info("Génération de l'onglet Cassis");
+		
+		sheet = workbook().getSheet(TITLE_SHEET);
+		
+		if (null != sheet) {
+			workbook().removeSheetAt(4);
+		} 
 
 		sheet = workbook().createSheet(TITLE_SHEET);
-
+		
 		sheet.setColumnWidth(0, 2);
 
 		rowIndexExutoire = 0;
@@ -85,6 +92,11 @@ public class CassisGenerator extends SheetGenerator {
 
 	private void generateLotCreek(List<Creek> creeks) {
 
+		int nbOuvrage = 0;
+		for(Creek c : creeks) {
+			nbOuvrage += c.exutoires.size();
+		}
+		
 		// une colonne vide
 		int indexColumn = 1;
 
@@ -191,11 +203,13 @@ public class CassisGenerator extends SheetGenerator {
 
 		// une ligne vide
 //		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexExutoire, 0, TAILLE_LOT + 2);
+		Row blankRow = sheet.createRow(rowIndexExutoire);
+		blankRow.setHeight((short) (DefaultRowHeightRecord.DEFAULT_ROW_HEIGHT/2));
 
 		rowIndexExutoire++;
 
 		Row title2Row = sheet.createRow(rowIndexExutoire);
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, indexColumn, TAILLE_LOT + 2);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, indexColumn, nbOuvrage + 2);
 		title2Row.setRowStyle(XlsUtils.blankRow(computeContext));
 		String title = "Sections des fossés et cassis";
 		Cell headerCell = title2Row.createCell(indexColumn);
@@ -204,7 +218,7 @@ public class CassisGenerator extends SheetGenerator {
 		rowIndexExutoire++;
 
 		Row desc2Row = sheet.createRow(rowIndexExutoire);
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, indexColumn, TAILLE_LOT + 2);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, indexColumn, nbOuvrage + 2);
 		desc2Row.setRowStyle(XlsUtils.blankRow(computeContext));
 		String description = "Le cassis est assimilé à un fossé rectangulaire.\nApproximation par section rectangulaire et formules de Manning-Strickler / Chezy   (comparaison des 2 membres de la formule)";
 		Cell descCell = desc2Row.createCell(indexColumn);
@@ -273,7 +287,7 @@ public class CassisGenerator extends SheetGenerator {
 
 		Row dimResumeRow = sheet.createRow(rowIndexExutoire);
 		Cell dimResumeCell = dimResumeRow.createCell(indexColumn);
-		title3(computeContext, dimResumeCell, "Dimensions retenu");
+		title3(computeContext, dimResumeCell, "Dimensions retenues");
 		XlsUtils.mergeCol(computeContext, sheet, indexColumn, rowIndexExutoire, rowIndexExutoire + 1);
 
 		Cell dimResumeLCell2 = dimResumeRow.createCell(indexColumn + 1);
@@ -307,7 +321,7 @@ public class CassisGenerator extends SheetGenerator {
 
 			List<Cell> cells = new ArrayList<>();
 
-			for (Exutoire e : c.getExutoires()) {
+			for (BVExutoire e : c.getExutoires()) {
 
 				Cell exuNomCell = exutoireRow.createCell(indexColumn);
 				redBoldBorderLeftRight(computeContext, exuNomCell, e.getNom());
@@ -375,7 +389,7 @@ public class CassisGenerator extends SheetGenerator {
 
 				Cell calculPenteFosseCell = penteFosseRow.createCell(indexColumn);
 				String penteFosseFormula = String.format("%s",
-						parametresGenerator.parametres.get(ParametresGenerator.OUVRAGE_PENTE_PARAM));
+						parametresGenerator.parametres.get(ParametresGenerator.CST_PENTE_PARAM));
 				standardCell(computeContext, calculPenteFosseCell, "").setCellFormula(penteFosseFormula);
 
 				Cell calculHauteurLameEauCell = lameEauRow.createCell(indexColumn);
@@ -409,8 +423,8 @@ public class CassisGenerator extends SheetGenerator {
 				standardCellDecimal2Comma(computeContext, calculPremierMembreCell, "")
 						.setCellFormula(calculPremierMembreFormula);
 
-				Cell calculDeuxiemeMembreCell = premierMembreRow.createCell(indexColumn);
-				String calculDeuxiemeMembreFormula = String.format("(POWER(F28*F31,5/2))/(2*F28+F31)",
+				Cell calculDeuxiemeMembreCell = deuxiemeMembreRow.createCell(indexColumn);
+				String calculDeuxiemeMembreFormula = String.format("(POWER(%s%s*%s%s,5/2))/(2*%s%s+%s%s)",
 						CellReference.convertNumToColString(calculHauteurLameEauCell.getColumnIndex()),
 						calculHauteurLameEauCell.getRowIndex() + 1,
 						CellReference.convertNumToColString(calculLargeurFosseCell.getColumnIndex()),
@@ -449,7 +463,7 @@ public class CassisGenerator extends SheetGenerator {
 						calculLargeurFosseCell.getRowIndex() + 1,
 						CellReference.convertNumToColString(calculPenteFosseCell.getColumnIndex()),
 						calculPenteFosseCell.getRowIndex() + 1);
-				standardCell(computeContext, calculVitMaxCell, "").setCellFormula(calculVitMaxFormula);
+				standardCellDecimal2Comma(computeContext, calculVitMaxCell, "").setCellFormula(calculVitMaxFormula);
 
 				indexColumn++;
 
@@ -460,6 +474,7 @@ public class CassisGenerator extends SheetGenerator {
 		XlsUtils.makeBoldBorder(sheet, firstRow + 3, firstRow + 13, 1, 2);
 		XlsUtils.makeBoldBorder(sheet, firstRow + 15, firstRow + 22, 1, 2);
 
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 27, 1, indexColumn - 1);
 		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 13, 1, indexColumn - 1);
 
 		XlsUtils.makeBoldBorder(sheet, firstRow + 15, firstRow + 15, 1, indexColumn - 1);

@@ -21,7 +21,7 @@ import org.apache.poi.ss.util.RegionUtil;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.r1.gde.service.ComputeContext;
-import org.r1.gde.xls.generator.ObjectifsBVGenerator;
+import org.r1.gde.xls.generator.ObjectifsRetentionGenerator;
 import org.r1.gde.xls.generator.SheetGenerator;
 
 public class XlsUtils {
@@ -405,6 +405,30 @@ public class XlsUtils {
 
 		return cell;
 	}
+
+	public static Cell decimalCell(ComputeContext computeContext, Cell cell, double value) {
+		CellStyle style = computeContext.workbook.createCellStyle();
+
+//		style.setFillBackgroundColor(IndexedColors.BLACK.getIndex());
+
+		style.setBorderBottom(BorderStyle.THIN);
+		style.setBorderLeft(BorderStyle.THIN);
+		style.setBorderRight(BorderStyle.THIN);
+		style.setBorderTop(BorderStyle.THIN);
+
+		style.setAlignment(HorizontalAlignment.CENTER);
+
+		style.setFont(makeStandardFont(computeContext));
+		style.setWrapText(true);
+
+		cell.setCellStyle(style);
+
+		cell.setCellValue(value);
+		
+
+		return cell;
+	}
+
 	
 	public static Cell standardCellDecimalNoComma(ComputeContext computeContext, Cell cell, String value) {
 		CellStyle style = computeContext.workbook.createCellStyle();

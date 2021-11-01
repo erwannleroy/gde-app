@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.r1.gde.model.BassinVersant;
+import org.r1.gde.model.BVDecanteur;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,7 +16,7 @@ public class GDEProcess {
 
 	private File bvFile;
 	private File decanteursFile;
-	private List<BassinVersant> bassins = new ArrayList<>();
+	private List<BVDecanteur> bassins = new ArrayList<>();
 	private Map<String, Object> map;
 	private Workbook workbook = new XSSFWorkbook();
 

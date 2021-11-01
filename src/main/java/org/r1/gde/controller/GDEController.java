@@ -37,31 +37,31 @@ public class GDEController {
 
 	private LocalDateTime lastPing;
 
-	@PostMapping("/upload-bv-file")
-	public ResponseEntity<BVResponse> uploadBVFile(@RequestParam("bv") MultipartFile file) {
-		BVResponse bvResponse = this.gdeService.giveBVFile(file);
+	@PostMapping("/upload-bv-decanteurs-file")
+	public ResponseEntity<BVDecanteurResponse> uploadBVDecanteurFile(@RequestParam("bv") MultipartFile file) {
+		BVDecanteurResponse bvResponse = this.gdeService.giveBVDecanteurFile(file);
 
 		return ResponseEntity.status(HttpStatus.OK).body(bvResponse);
 	}
 
-	@PostMapping("/upload-dec-file")
-	public ResponseEntity<DECResponse> uploadDECFile(@RequestParam("dec") MultipartFile file) {
-		DECResponse decResponse = this.gdeService.giveDECFile(file);
+	@PostMapping("/upload-decanteurs-file")
+	public ResponseEntity<DecanteurResponse> uploadDecanteurFile(@RequestParam("dec") MultipartFile file) {
+		DecanteurResponse decResponse = this.gdeService.giveDecanteurFile(file);
 
 		return ResponseEntity.status(HttpStatus.OK).body(decResponse);
 	}
 
-	@PostMapping("/upload-exu-file")
-	public ResponseEntity<EXUResponse> uploadEXUFile(@RequestParam("exu") MultipartFile file) {
-		EXUResponse exuResponse = this.gdeService.giveEXUFile(file);
+	@PostMapping("/upload-bv-exutoires-file")
+	public ResponseEntity<BVExutoireResponse> uploadBVExutoireFile(@RequestParam("exu") MultipartFile file) {
+		BVExutoireResponse exuResponse = this.gdeService.giveBVExutoireFile(file);
 
 		return ResponseEntity.status(HttpStatus.OK).body(exuResponse);
 	}
 
 	@PostMapping("/upload-bv-file-by-path")
-	public BVResponse uploadFileByPath(@RequestParam("bv") String bvFilePath) {
+	public BVDecanteurResponse uploadFileByPath(@RequestParam("bv") String bvFilePath) {
 
-		BVResponse result = this.gdeService.giveBVFilePath(bvFilePath);
+		BVDecanteurResponse result = this.gdeService.giveBVFilePath(bvFilePath);
 
 		return result;
 	}

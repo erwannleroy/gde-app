@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.r1.gde.model.decanteur.BassinVersant;
-import org.r1.gde.model.decanteur.Ouvrage;
-import org.r1.gde.model.decanteur.Zone;
+import org.r1.gde.model.BassinVersant;
+import org.r1.gde.model.Decanteur;
+import org.r1.gde.model.Zone;
 
 public class TempOuvragesParsing {
 
@@ -16,7 +16,7 @@ public class TempOuvragesParsing {
 		return zones;
 	}
 
-	public void addOuvrage(Ouvrage ouv) {
+	public void addOuvrage(Decanteur ouv) {
 		BassinVersant bv = getBassinVersant(ouv.getZone(), ouv.getBv());
 		bv.ouvrages.add(ouv);
 	}

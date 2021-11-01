@@ -7,6 +7,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { saveAs } from 'file-saver';
 import { BVResponse, DECResponse, EXUResponse } from './Response';
 import { Subscription, interval } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-root',
@@ -39,7 +40,8 @@ export class AppComponent implements OnInit {
 
   aliveSub: Subscription;
 
-  constructor(private gdeService: GdeService, private sanitizer: DomSanitizer) {
+  constructor(private gdeService: GdeService, private sanitizer: DomSanitizer,
+    private modalService: NgbModal) {
   }
 
   ngOnInit() {
@@ -99,6 +101,12 @@ export class AppComponent implements OnInit {
   refreshResult() {
     this.gdeService.refreshResult();
   }
+
+  openPopup(content) {
+    this.modalService.open(content,
+      {ariaLabelledBy: 'modal-basic-title'}).result.then((result) => {}, (reason) => {});
+  }
+
 
   public bv_dropped(files: NgxFileDropEntry[]) {
     console.log("bv_dropped");
