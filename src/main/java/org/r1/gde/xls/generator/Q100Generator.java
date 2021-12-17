@@ -5,12 +5,14 @@ import static org.r1.gde.XlsUtils.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.record.DefaultRowHeightRecord;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -35,24 +37,33 @@ public class Q100Generator extends SheetGenerator {
 
 	private int rowIndexExutoire = 0;
 	private static final String TITLE_SHEET = "Q100";
-	private static final int TAILLE_LOT = 15;
-
+	private static final int TAILLE_LOT = 30;
+	private int nbOuvragesTraites = 0;
+	private int nbOuvragesTotal = 0;
+	
 	@Autowired
 	ParametresGenerator parametresGenerator;
 
-	@Override
-	protected void startGeneration() {
+	public void run() {
 		log.info("Génération de l'onglet Exutoire");
 
-		sheet = workbook().getSheet(TITLE_SHEET);
-		
-		if (null != sheet) {
-			workbook().removeSheetAt(3);
-		} 
 
-		sheet = workbook().createSheet(TITLE_SHEET);
+		this.computeContext.getComputingResult().setQ100Computing(true);
 		
-		sheet.setColumnWidth(0, 2);
+		sheet = workbook().getSheet(TITLE_SHEET);
+
+		if (null != sheet) {
+			workbook().removeSheetAt(workbook().getSheetIndex(sheet));
+		}
+		
+		sheet = workbook().createSheet(TITLE_SHEET);
+		sheet.getPrintSetup().setLandscape(true);
+		sheet.getPrintSetup().setPaperSize(PrintSetup.A3_PAPERSIZE);
+		sheet.setMargin(Sheet.RightMargin, 0.4);
+		sheet.setMargin(Sheet.LeftMargin, 0.4);
+		sheet.setMargin(Sheet.TopMargin, 0.4);
+		sheet.setMargin(Sheet.BottomMargin, 0.4);
+		sheet.setColumnWidth(0, 1);
 
 		rowIndexExutoire = 0;
 
@@ -66,34 +77,95 @@ public class Q100Generator extends SheetGenerator {
 		while (column < TAILLE_LOT + 2) {
 			sheet.autoSizeColumn(column);
 			column++;
+			if (column >= 2) {
+				sheet.setColumnWidth(column, 5);
+			}
 		}
+		notifyListeners(SheetGeneratorEvent.Q100_SHEET_GENERATED, null);
 	}
 
 	private void generateCreeks() {
 
-		List<Creek> remainList = creeks();
-		List<Creek> creeksSubList = new ArrayList<Creek>();
+		List<Creek> remainList = Lists.newArrayList(creeks().iterator());
+		List<List<Creek>> sharedCreeks = new ArrayList<List<Creek>>();
 
-		int nbExutoires = 0;
+		sharedCreeks = shareCreeks(sharedCreeks, remainList, new ArrayList<Creek>());
 
-		for (Creek creek : remainList) {
-			creeksSubList.add(creek);
-			nbExutoires += creek.getExutoires().size();
-
-			if (nbExutoires >= TAILLE_LOT || creeks().indexOf(creek) == (remainList.size() - 1)) {
-				generateLotCreek(creeksSubList);
-				creeksSubList.clear();
-				nbExutoires = 0;
-			}
+		nbOuvragesTraites = 0;
+		nbOuvragesTotal = countBVTotal(sharedCreeks);
+		
+		log.info("nombre de pages après répartition : " + sharedCreeks.size());
+		for (List<Creek> creeks : sharedCreeks) {
+			generateLotCreek(creeks);
 			rowIndexExutoire++;
+			sheet.setRowBreak(rowIndexExutoire);
+			log.info("nouvelle page");
 		}
 
 	}
 
+	private List<List<Creek>> shareCreeks(List<List<Creek>> sharedCreeks, List<Creek> remainCreeks, List<Creek> lot) {
+
+		if (remainCreeks.size() > 0) {
+			Creek next = remainCreeks.get(0);
+
+			int nbBV = next.getExutoires().size();
+
+			int nbBVLot = countBVLot(lot);
+			if (nbBVLot == TAILLE_LOT) {
+				sharedCreeks.add(lot);
+				return shareCreeks(sharedCreeks, remainCreeks, new ArrayList<Creek>());
+			}
+			if (nbBVLot + nbBV > TAILLE_LOT) {
+				List<BVExutoire> exus = next.getExutoires().subList(0, TAILLE_LOT - nbBVLot);
+				Creek c2 = next.clone();
+				c2.setExutoires(exus);
+				lot.add(c2);
+				sharedCreeks.add(lot);
+
+				List<BVExutoire> exus3 = next.getExutoires().subList(TAILLE_LOT - nbBVLot, nbBV);
+				Creek c3 = next.clone();
+				c3.setExutoires(exus3);
+				remainCreeks.remove(0);
+				remainCreeks.add(0, c3);
+
+				return shareCreeks(sharedCreeks, remainCreeks, new ArrayList<Creek>());
+			} else {
+				lot.add(next);
+				// sharedCreeks.add(lot);
+				remainCreeks.remove(0);
+				return shareCreeks(sharedCreeks, remainCreeks, lot);
+			}
+		} else {
+			if (lot.size() > 0) {
+				sharedCreeks.add(lot);
+			}
+			return sharedCreeks;
+		}
+	}
+
+	private int countBVTotal(List<List<Creek>> sharedCreeks) {
+		int nb = 0;
+		for (List<Creek> lot : sharedCreeks) {
+			nb += countBVLot(lot);
+		}
+		return nb;
+	}
+	
+	private int countBVLot(List<Creek> lot) {
+		int nb = 0;
+		for (Creek c : lot) {
+			nb += c.getExutoires().size();
+		}
+		return nb;
+	}
+
 	private void generateLotCreek(List<Creek> creeks) {
 
-		// une colonne vide
-		int indexColumn = 1;
+		int nbOuvrage = countBVLot(creeks);
+
+		// on commence au bord
+		int indexColumn = 0;
 
 //		// une ligne vide
 //		XlsUtils.mergeRowBottomBorder(computeContext, sheet, rowIndexExutoire, indexColumn, TAILLE_LOT + 2);
@@ -110,8 +182,8 @@ public class Q100Generator extends SheetGenerator {
 
 		// entete tableau
 		Row creekRow = sheet.createRow(rowIndexExutoire);
-//		Cell creekTitleCell = creekRow.createCell(indexColumn);
-//		title3LeftTopBorder(computeContext, creekTitleCell, "");
+		Cell creekTitleCell = creekRow.createCell(indexColumn);
+		title2(computeContext, creekTitleCell, "Creek récepteur");
 //		Cell bvTitleCellCol2 = creekRow.createCell(indexColumn);
 //		title3LeftTopBorder(computeContext, bvTitleCellCol2, "");
 
@@ -119,6 +191,7 @@ public class Q100Generator extends SheetGenerator {
 
 		Row exutoireRow = sheet.createRow(rowIndexExutoire);
 		Cell exutoireCell = exutoireRow.createCell(indexColumn);
+		title3(computeContext, exutoireCell, "Exutoire");
 
 		rowIndexExutoire++;
 
@@ -196,12 +269,12 @@ public class Q100Generator extends SheetGenerator {
 
 		// une ligne vide
 		Row blankRow = sheet.createRow(rowIndexExutoire);
-		blankRow.setHeight((short) (DefaultRowHeightRecord.DEFAULT_ROW_HEIGHT/2));
+		blankRow.setHeight((short) (DefaultRowHeightRecord.DEFAULT_ROW_HEIGHT / 2));
 
 		rowIndexExutoire++;
 
 		Row title2Row = sheet.createRow(rowIndexExutoire);
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, indexColumn, TAILLE_LOT + 2);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, indexColumn, nbOuvrage + 1);
 		title2Row.setRowStyle(XlsUtils.blankRow(computeContext));
 		String title = "Dimensionnement des sections des ouvrages de transit pour une crue centennale";
 		Cell headerCell = title2Row.createCell(indexColumn);
@@ -262,6 +335,8 @@ public class Q100Generator extends SheetGenerator {
 
 		for (Creek c : creeks) {
 
+			log.info("génération du creek " + c.getNom());
+
 			if (c.getExutoires().size() > 1) {
 				XlsUtils.mergeRow(computeContext, sheet, creekRow.getRowNum(), indexColumn,
 						indexColumn + c.exutoires.size() - 1);
@@ -288,7 +363,7 @@ public class Q100Generator extends SheetGenerator {
 				standardCellDecimalNoComma(computeContext, deniveleCell, "").setCellValue(e.getDenivele().intValue());
 
 				Cell penteCell = penteRow.createCell(indexColumn);
-				String penteFormula = String.format("INT((%s%s/%s%s)*100)",
+				String penteFormula = String.format("(%s%s/%s%s)*100",
 						CellReference.convertNumToColString(deniveleCell.getColumnIndex()),
 						deniveleCell.getRowIndex() + 1,
 						CellReference.convertNumToColString(lgHydroCell.getColumnIndex()),
@@ -300,7 +375,7 @@ public class Q100Generator extends SheetGenerator {
 						.setCellFormula(parametresGenerator.parametres.get(ParametresGenerator.CST_COEFF_RUISS_PARAM));
 
 				Cell ecoulementCell = ecoulementRow.createCell(indexColumn);
-				String ecoulementFormula = String.format("IF(%s%s<10,\"1\", IF(%s%s>15, \"4\", \"2\"))",
+				String ecoulementFormula = String.format("IF(%s%s<5,\"1\", IF(%s%s>15, \"4\", \"2\"))",
 						CellReference.convertNumToColString(penteCell.getColumnIndex()), penteCell.getRowIndex() + 1,
 						CellReference.convertNumToColString(penteCell.getColumnIndex()), penteCell.getRowIndex() + 1);
 				standardCell(computeContext, ecoulementCell, "").setCellFormula(ecoulementFormula);
@@ -324,7 +399,7 @@ public class Q100Generator extends SheetGenerator {
 				standardCell(computeContext, tpsConcRetenuCell, "").setCellFormula(tpsConcRetenuFormula);
 
 				Cell calculAverseCell = intensiteAverseRow.createCell(indexColumn);
-				String calculAverseFormula = String.format("%s*(%s%s^%s)",
+				String calculAverseFormula = String.format("%s*(%s%s^-%s)",
 						parametresGenerator.parametres.get(ParametresGenerator.METEO_COEFF_MONTANA_A_PARAM),
 						CellReference.convertNumToColString(tpsConcRetenuCell.getColumnIndex()),
 						tpsConcRetenuCell.getRowIndex() + 1,
@@ -339,7 +414,7 @@ public class Q100Generator extends SheetGenerator {
 						calculAverseCell.getRowIndex() + 1,
 						CellReference.convertNumToColString(exuSurfCell.getColumnIndex()),
 						exuSurfCell.getRowIndex() + 1);
-				standardCellDecimal2Comma(computeContext, calculDebitCell, "").setCellFormula(calculDebitFormula);
+				standardCellDecimal1Comma(computeContext, calculDebitCell, "").setCellFormula(calculDebitFormula);
 
 				Cell calculHauteurLameEauCell = lameEauRow.createCell(indexColumn);
 				String calculHauteurLameEauFormula = String.format("%s",
@@ -352,40 +427,45 @@ public class Q100Generator extends SheetGenerator {
 				standardCellDecimal2Comma(computeContext, calculRevancheCell, "").setCellFormula(calculRevancheFormula);
 
 				Cell calculLargeurEvacuateurCell = evacuateurRow.createCell(indexColumn);
-				String calculLargeurEvacuateurFormula = String.format("%s%s+%s%s",
-						CellReference.convertNumToColString(calculHauteurLameEauCell.getColumnIndex()),
-						calculHauteurLameEauCell.getRowIndex() + 1,
-						CellReference.convertNumToColString(calculRevancheCell.getColumnIndex()),
-						calculRevancheCell.getRowIndex() + 1);
-				standardCellDecimal2Comma(computeContext, calculLargeurEvacuateurCell, "")
-						.setCellFormula(calculLargeurEvacuateurFormula);
-
-				Cell calculHChargeSeuilCell = seuilRow.createCell(indexColumn);
-				String calculHChargeSeuilFormula = String.format("%s%s/(%s*POWER(2*%s,0.5)*POWER(%s%s,3/2))",
+				String calculLargeurEvacuateurFormula = String.format("%s%s/(%s*POWER(2*%s,0.5)*POWER(%s%s,3/2))",
 						CellReference.convertNumToColString(calculDebitCell.getColumnIndex()),
 						calculDebitCell.getRowIndex() + 1,
 						parametresGenerator.parametres.get(ParametresGenerator.CST_N_PARAM),
 						parametresGenerator.parametres.get(ParametresGenerator.CST_G_PARAM),
 						CellReference.convertNumToColString(calculHauteurLameEauCell.getColumnIndex()),
 						calculHauteurLameEauCell.getRowIndex() + 1);
+				standardCellDecimal2Comma(computeContext, calculLargeurEvacuateurCell, "")
+						.setCellFormula(calculLargeurEvacuateurFormula);
+
+				Cell calculHChargeSeuilCell = seuilRow.createCell(indexColumn);
+				String calculHChargeSeuilFormula = String.format("%s%s+%s%s",
+						CellReference.convertNumToColString(calculHauteurLameEauCell.getColumnIndex()),
+						calculHauteurLameEauCell.getRowIndex() + 1,
+						CellReference.convertNumToColString(calculRevancheCell.getColumnIndex()),
+						calculRevancheCell.getRowIndex() + 1);
 				standardCellDecimal2Comma(computeContext, calculHChargeSeuilCell, "")
 						.setCellFormula(calculHChargeSeuilFormula);
 
 				Cell calculDimResumeLCell = dimResumeRow.createCell(indexColumn);
-				String calculDimResumeLFormula = String.format("%s%s",
+				String calculDimResumeLFormula = String.format("MROUND(%s%s+0.25,0.5)",
 						CellReference.convertNumToColString(calculLargeurEvacuateurCell.getColumnIndex()),
 						calculLargeurEvacuateurCell.getRowIndex() + 1);
 				standardCellDecimal2Comma(computeContext, calculDimResumeLCell, "")
 						.setCellFormula(calculDimResumeLFormula);
 
 				Cell calculDimResumeHCell = dimResumeHRow2.createCell(indexColumn);
-				String calculDimResumeHFormula = String.format("MROUND(%s%s+0.25,0.5)",
+				String calculDimResumeHFormula = String.format("%s%s",
 						CellReference.convertNumToColString(calculHChargeSeuilCell.getColumnIndex()),
 						calculHChargeSeuilCell.getRowIndex() + 1);
 				standardCellDecimal2Comma(computeContext, calculDimResumeHCell, "")
 						.setCellFormula(calculDimResumeHFormula);
 
 				indexColumn++;
+
+				nbOuvragesTraites++;
+				double progress = (double) 100 / nbOuvragesTotal * nbOuvragesTraites;
+				notifyListeners(SheetGeneratorEvent.Q100_SHEET_PROGRESS, (int) progress);
+
 			}
 
 		}
@@ -400,18 +480,18 @@ public class Q100Generator extends SheetGenerator {
 //		XlsUtils.makeBoldBorder(sheet, rowIndexExutoire-7, rowIndexExutoire-6, 1, indexColumn-1);
 //		XlsUtils.makeBoldBorder(sheet, rowIndexExutoire-2, rowIndexExutoire, 1, indexColumn-1);
 
-		XlsUtils.makeBoldBorder(sheet, firstRow + 3, firstRow + 13, 1, 2);
-		XlsUtils.makeBoldBorder(sheet, firstRow + 15, firstRow + 22, 1, 2);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 3, firstRow + 13, 0, 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 15, firstRow + 22, 0, 1);
 
-		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 13, 1, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 13, 0, indexColumn - 1);
 
-		XlsUtils.makeBoldBorder(sheet, firstRow + 15, firstRow + 15, 1, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 15, firstRow + 15, 0, indexColumn - 1);
 
-		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 22, 1, 2);
-		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 22, 1, indexColumn - 1);
-		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 22, 1, indexColumn - 1);
-		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 2, 3, indexColumn - 1);
-		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 1, 3, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 22, 0, 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 22, 0, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 22, 0, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 2, 2, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 1, 2, indexColumn - 1);
 
 //		XlsUtils.makeBoldBorder(sheet, firstRow - 1, firstRow + 22, 1, indexColumn - 1);
 //		XlsUtils.makeBoldBorder(sheet, firstRow - 1, firstRow, 3, indexColumn - 1);
@@ -422,13 +502,13 @@ public class Q100Generator extends SheetGenerator {
 		Row titleRow = sheet.createRow(rowIndexExutoire);
 
 		// une colonne vide
-		int indexColumn = 1;
+		int indexColumn = 0;
 
 		XlsUtils.mergeRow(computeContext, sheet, 0, indexColumn, TAILLE_LOT + 2);
 
 		titleRow.setRowStyle(XlsUtils.blankRow(computeContext));
 		String title = "Caractéristiques des bassins versants d'exutoires et débits associés à l'état initial ";
-		Cell headerCell = titleRow.createCell(1);
+		Cell headerCell = titleRow.createCell(indexColumn);
 		title1(computeContext, headerCell, title).setCellFormula("CONCATENATE(\"" + title + "\","
 				+ parametresGenerator.parametres.get(ParametresGenerator.GLO_NOM_MINE_PARAM) + ")");
 

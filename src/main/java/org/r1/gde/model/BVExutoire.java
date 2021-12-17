@@ -22,4 +22,15 @@ public class BVExutoire {
 	Double longueurHydro;
 	Double denivele;
 	String creek;
+
+	@Override
+	public BVExutoire clone() {
+		BVExutoire bv = new BVExutoire();
+		bv.setNom(this.nom);
+		bv.setSurface(this.surface);
+		bv.setLongueurHydro(this.longueurHydro);
+		bv.setDenivele(this.denivele);
+		bv.setCreek(this.creek);
+		return bv;
+	}
 }

@@ -53,6 +53,7 @@ public class GDEController {
 
 	@PostMapping("/upload-bv-exutoires-file")
 	public ResponseEntity<BVExutoireResponse> uploadBVExutoireFile(@RequestParam("exu") MultipartFile file) {
+		log.info("upload-bv-exutoires-file");
 		BVExutoireResponse exuResponse = this.gdeService.giveBVExutoireFile(file);
 
 		return ResponseEntity.status(HttpStatus.OK).body(exuResponse);
@@ -66,12 +67,21 @@ public class GDEController {
 		return result;
 	}
 
+	
+	
 	@PostMapping("/ping")
 	public ResponseEntity ping() {
 		this.lastPing = LocalDateTime.now();
 		return new ResponseEntity(HttpStatus.OK);
 	}
 
+	@PostMapping("/reset")
+	public ResponseEntity reset() {
+		log.debug("appel de reset");
+		this.gdeComputer.reset();
+		return new ResponseEntity(HttpStatus.OK);
+	}
+	
 	@Scheduled(fixedDelay = 2000)
 	public void testAlive() {
 		if (this.lastPing != null) {

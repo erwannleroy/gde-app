@@ -5,12 +5,14 @@ import static org.r1.gde.XlsUtils.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.record.DefaultRowHeightRecord;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -35,24 +37,26 @@ public class CassisGenerator extends SheetGenerator {
 
 	private int rowIndexExutoire = 0;
 	private static final String TITLE_SHEET = "Dimensionnement cassis fossés";
-	private static final int TAILLE_LOT = 15;
+	private static final int TAILLE_LOT = 30;
+	private int nbOuvragesTraites = 0;
+	private int nbOuvragesTotal = 0;
 
 	@Autowired
 	ParametresGenerator parametresGenerator;
 
-	@Override
-	protected void startGeneration() {
+	public void run() {
 		log.info("Génération de l'onglet Cassis");
+
+		this.computeContext.getComputingResult().setCassisComputing(true);
 		
 		sheet = workbook().getSheet(TITLE_SHEET);
-		
+
 		if (null != sheet) {
-			workbook().removeSheetAt(4);
-		} 
+			workbook().removeSheetAt(workbook().getSheetIndex(sheet));
+		}
 
 		sheet = workbook().createSheet(TITLE_SHEET);
-		
-		sheet.setColumnWidth(0, 2);
+		super.setup();
 
 		rowIndexExutoire = 0;
 
@@ -66,39 +70,100 @@ public class CassisGenerator extends SheetGenerator {
 		while (column < TAILLE_LOT + 2) {
 			sheet.autoSizeColumn(column);
 			column++;
+			if (column >= 2) {
+				sheet.setColumnWidth(column, 5);
+			}
 		}
+		notifyListeners(SheetGeneratorEvent.CASSIS_SHEET_GENERATED, null);
 	}
 
 	private void generateCreeks() {
 
-		List<Creek> remainList = creeks();
-		List<Creek> creeksSubList = new ArrayList<Creek>();
+		List<Creek> remainList = Lists.newArrayList(creeks().iterator());
+		List<List<Creek>> sharedCreeks = new ArrayList<List<Creek>>();
 
-		int nbExutoires = 0;
+		sharedCreeks = shareCreeks(sharedCreeks, remainList, new ArrayList<Creek>());
 
-		for (Creek creek : remainList) {
-			creeksSubList.add(creek);
-			nbExutoires += creek.getExutoires().size();
+		nbOuvragesTraites = 0;
+		nbOuvragesTotal = countBVTotal(sharedCreeks);
 
-			if (nbExutoires >= TAILLE_LOT || creeks().indexOf(creek) == (remainList.size() - 1)) {
-				generateLotCreek(creeksSubList);
-				creeksSubList.clear();
-				nbExutoires = 0;
-			}
+		
+		log.info("nombre de pages après répartition : " + sharedCreeks.size());
+		for (List<Creek> creeks : sharedCreeks) {
+			generateLotCreek(creeks);
 			rowIndexExutoire++;
+			sheet.setRowBreak(rowIndexExutoire);
+			log.info("nouvelle page");
 		}
 
+	}
+
+	private int countBVTotal(List<List<Creek>> sharedCreeks) {
+		int nb = 0;
+		for (List<Creek> lot : sharedCreeks) {
+			nb += countBVLot(lot);
+		}
+		return nb;
+	}
+	
+	private int countBVLot(List<Creek> lot) {
+		int nb = 0;
+		for (Creek c : lot) {
+			nb += c.getExutoires().size();
+		}
+		return nb;
+	}
+
+	private List<List<Creek>> shareCreeks(List<List<Creek>> sharedCreeks, List<Creek> remainCreeks, List<Creek> lot) {
+
+		if (remainCreeks.size() > 0) {
+			Creek next = remainCreeks.get(0);
+
+			int nbBV = next.getExutoires().size();
+
+			int nbBVLot = countBVLot(lot);
+
+			if (nbBVLot == TAILLE_LOT) {
+				sharedCreeks.add(lot);
+				return shareCreeks(sharedCreeks, remainCreeks, new ArrayList<Creek>());
+			}
+			if (nbBVLot + nbBV > TAILLE_LOT) {
+				List<BVExutoire> exus = next.getExutoires().subList(0, TAILLE_LOT - nbBVLot);
+				Creek c2 = next.clone();
+				c2.setExutoires(exus);
+				lot.add(c2);
+				sharedCreeks.add(lot);
+
+				List<BVExutoire> exus3 = next.getExutoires().subList(TAILLE_LOT - nbBVLot, nbBV);
+				Creek c3 = next.clone();
+				c3.setExutoires(exus3);
+				remainCreeks.remove(0);
+				remainCreeks.add(0, c3);
+
+				return shareCreeks(sharedCreeks, remainCreeks, new ArrayList<Creek>());
+			} else {
+				lot.add(next);
+				// sharedCreeks.add(lot);
+				remainCreeks.remove(0);
+				return shareCreeks(sharedCreeks, remainCreeks, lot);
+			}
+		} else {
+			if (lot.size() > 0) {
+				sharedCreeks.add(lot);
+			}
+			return sharedCreeks;
+		}
 	}
 
 	private void generateLotCreek(List<Creek> creeks) {
 
 		int nbOuvrage = 0;
-		for(Creek c : creeks) {
+		for (Creek c : creeks) {
 			nbOuvrage += c.exutoires.size();
 		}
-		
-		// une colonne vide
-		int indexColumn = 1;
+
+		// on commence au bord
+		int indexColumn = 0;
 
 //		// une ligne vide
 //		XlsUtils.mergeRowBottomBorder(computeContext, sheet, rowIndexExutoire, indexColumn, TAILLE_LOT + 2);
@@ -117,8 +182,8 @@ public class CassisGenerator extends SheetGenerator {
 
 		// entete tableau
 		Row creekRow = sheet.createRow(rowIndexExutoire);
-//		Cell creekTitleCell = creekRow.createCell(indexColumn);
-//		title3LeftTopBorder(computeContext, creekTitleCell, "");
+		Cell creekTitleCell = creekRow.createCell(indexColumn);
+		title2(computeContext, creekTitleCell, "Creek récepteur");;
 //		Cell bvTitleCellCol2 = creekRow.createCell(indexColumn);
 //		title3LeftTopBorder(computeContext, bvTitleCellCol2, "");
 
@@ -126,7 +191,8 @@ public class CassisGenerator extends SheetGenerator {
 
 		Row exutoireRow = sheet.createRow(rowIndexExutoire);
 		Cell exutoireCell = exutoireRow.createCell(indexColumn);
-
+		title3(computeContext, exutoireCell, "Exutoire");
+		
 		rowIndexExutoire++;
 
 		Row superficieRow = sheet.createRow(rowIndexExutoire);
@@ -204,12 +270,12 @@ public class CassisGenerator extends SheetGenerator {
 		// une ligne vide
 //		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexExutoire, 0, TAILLE_LOT + 2);
 		Row blankRow = sheet.createRow(rowIndexExutoire);
-		blankRow.setHeight((short) (DefaultRowHeightRecord.DEFAULT_ROW_HEIGHT/2));
+		blankRow.setHeight((short) (DefaultRowHeightRecord.DEFAULT_ROW_HEIGHT / 2));
 
 		rowIndexExutoire++;
 
 		Row title2Row = sheet.createRow(rowIndexExutoire);
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, indexColumn, nbOuvrage + 2);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, indexColumn, nbOuvrage + 1);
 		title2Row.setRowStyle(XlsUtils.blankRow(computeContext));
 		String title = "Sections des fossés et cassis";
 		Cell headerCell = title2Row.createCell(indexColumn);
@@ -218,7 +284,7 @@ public class CassisGenerator extends SheetGenerator {
 		rowIndexExutoire++;
 
 		Row desc2Row = sheet.createRow(rowIndexExutoire);
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, indexColumn, nbOuvrage + 2);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, indexColumn, nbOuvrage + 1);
 		desc2Row.setRowStyle(XlsUtils.blankRow(computeContext));
 		String description = "Le cassis est assimilé à un fossé rectangulaire.\nApproximation par section rectangulaire et formules de Manning-Strickler / Chezy   (comparaison des 2 membres de la formule)";
 		Cell descCell = desc2Row.createCell(indexColumn);
@@ -341,14 +407,14 @@ public class CassisGenerator extends SheetGenerator {
 						deniveleCell.getRowIndex() + 1,
 						CellReference.convertNumToColString(lgHydroCell.getColumnIndex()),
 						lgHydroCell.getRowIndex() + 1);
-				standardCellDecimal2Comma(computeContext, penteCell, "").setCellFormula(penteFormula);
+				standardCellDecimalNoComma(computeContext, penteCell, "").setCellFormula(penteFormula);
 
 				Cell ruissellementCell = ruissellementRow.createCell(indexColumn);
 				standardCell(computeContext, ruissellementCell, "")
 						.setCellFormula(parametresGenerator.parametres.get(ParametresGenerator.CST_COEFF_RUISS_PARAM));
 
 				Cell ecoulementCell = ecoulementRow.createCell(indexColumn);
-				String ecoulementFormula = String.format("IF(%s%s<10,\"1\", IF(%s%s>15, \"4\", \"2\"))",
+				String ecoulementFormula = String.format("IF(%s%s<5,\"1\", IF(%s%s>15, \"4\", \"2\"))",
 						CellReference.convertNumToColString(penteCell.getColumnIndex()), penteCell.getRowIndex() + 1,
 						CellReference.convertNumToColString(penteCell.getColumnIndex()), penteCell.getRowIndex() + 1);
 				standardCell(computeContext, ecoulementCell, "").setCellFormula(ecoulementFormula);
@@ -362,15 +428,17 @@ public class CassisGenerator extends SheetGenerator {
 				standardCellDecimal2Comma(computeContext, calculTpsConcCell, "").setCellFormula(calculTpsConcFormula);
 
 				Cell tpsConcRetenuCell = tpsConcentrationRetenuRow.createCell(indexColumn);
-				String tpsConcRetenuFormula = String.format("IF(%s%s>6,%s%s, \"6\")",
+				String tpsConcRetenuFormula = String.format("IF(%s%s>%s,%s%s, %s)",
 						CellReference.convertNumToColString(calculTpsConcCell.getColumnIndex()),
 						calculTpsConcCell.getRowIndex() + 1,
+						parametresGenerator.parametres.get(ParametresGenerator.METEO_TPS_CONCENTRATION_PARAM),
 						CellReference.convertNumToColString(calculTpsConcCell.getColumnIndex()),
-						calculTpsConcCell.getRowIndex() + 1);
-				standardCellDecimal2Comma(computeContext, tpsConcRetenuCell, "").setCellFormula(tpsConcRetenuFormula);
-
+						calculTpsConcCell.getRowIndex() + 1,
+						parametresGenerator.parametres.get(ParametresGenerator.METEO_TPS_CONCENTRATION_PARAM));
+				standardCell(computeContext, tpsConcRetenuCell, "").setCellFormula(tpsConcRetenuFormula);
+				
 				Cell calculAverseCell = intensiteAverseRow.createCell(indexColumn);
-				String calculAverseFormula = String.format("%s*(%s%s^%s)",
+				String calculAverseFormula = String.format("%s*(%s%s^-%s)",
 						parametresGenerator.parametres.get(ParametresGenerator.METEO_COEFF_MONTANA_A_PARAM),
 						CellReference.convertNumToColString(tpsConcRetenuCell.getColumnIndex()),
 						tpsConcRetenuCell.getRowIndex() + 1,
@@ -385,7 +453,7 @@ public class CassisGenerator extends SheetGenerator {
 						calculAverseCell.getRowIndex() + 1,
 						CellReference.convertNumToColString(exuSurfCell.getColumnIndex()),
 						exuSurfCell.getRowIndex() + 1);
-				standardCellDecimal2Comma(computeContext, calculDebitCell, "").setCellFormula(calculDebitFormula);
+				standardCellDecimal1Comma(computeContext, calculDebitCell, "").setCellFormula(calculDebitFormula);
 
 				Cell calculPenteFosseCell = penteFosseRow.createCell(indexColumn);
 				String penteFosseFormula = String.format("%s",
@@ -403,15 +471,16 @@ public class CassisGenerator extends SheetGenerator {
 				standardCell(computeContext, calculRevancheCell, "").setCellFormula(calculRevancheFormula);
 
 				Cell calculLargeurFosseCell = largeurFosseRow.createCell(indexColumn);
-				String calculLargeurFosseFormula = String.format("%s%s+%s%s",
+				standardCellDecimal2Comma(computeContext, calculLargeurFosseCell, "0");
+
+				Cell calculHauteurFosseCell = hauteurFosseRow.createCell(indexColumn);
+				String calculHauteurFosseFormula = String.format("%s%s+%s%s",
 						CellReference.convertNumToColString(calculHauteurLameEauCell.getColumnIndex()),
 						calculHauteurLameEauCell.getRowIndex() + 1,
 						CellReference.convertNumToColString(calculRevancheCell.getColumnIndex()),
 						calculRevancheCell.getRowIndex() + 1);
-				standardCellDecimal2Comma(computeContext, calculLargeurFosseCell, "")
-						.setCellFormula(calculLargeurFosseFormula);
-
-				Cell calculHauteurFosseCell = hauteurFosseRow.createCell(indexColumn);
+				standardCellDecimal2Comma(computeContext, calculHauteurFosseCell, "")
+						.setCellFormula(calculHauteurFosseFormula);
 
 				Cell calculPremierMembreCell = premierMembreRow.createCell(indexColumn);
 				String calculPremierMembreFormula = String.format("POWER(%s%s/(%s*POWER(%s%s,1/2)),3/2)",
@@ -467,39 +536,43 @@ public class CassisGenerator extends SheetGenerator {
 
 				indexColumn++;
 
+
+				nbOuvragesTraites++;
+				double progress = (double) 100 / nbOuvragesTotal * nbOuvragesTraites;
+				notifyListeners(SheetGeneratorEvent.CASSIS_SHEET_PROGRESS, (int) progress);
 			}
 
 		}
 
-		XlsUtils.makeBoldBorder(sheet, firstRow + 3, firstRow + 13, 1, 2);
-		XlsUtils.makeBoldBorder(sheet, firstRow + 15, firstRow + 22, 1, 2);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 3, firstRow + 13, 0, 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 15, firstRow + 22, 0, 1);
 
-		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 27, 1, indexColumn - 1);
-		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 13, 1, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 27, 0, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 13, 0, indexColumn - 1);
 
-		XlsUtils.makeBoldBorder(sheet, firstRow + 15, firstRow + 15, 1, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 15, firstRow + 15, 0, indexColumn - 1);
 
-		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 22, 1, 2);
-		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 22, 1, indexColumn - 1);
-		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 22, 1, indexColumn - 1);
-		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 2, 3, indexColumn - 1);
-		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 1, 3, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 22, 0, 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 22, 0, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 22, 0, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 2, 2, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, firstRow + 1, 2, indexColumn - 1);
 
-		XlsUtils.makeBoldBorder(sheet, firstRow + 14, firstRow + 15, 1, indexColumn - 1);
-		XlsUtils.makeBoldBorder(sheet, firstRow + 1, rowIndexExutoire - 1, 1, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 14, firstRow + 15, 0, indexColumn - 1);
+		XlsUtils.makeBoldBorder(sheet, firstRow + 1, rowIndexExutoire - 1, 0, indexColumn - 1);
 	}
 
 	private void generateTitleBlock() {
 		Row titleRow = sheet.createRow(rowIndexExutoire);
 
 		// une colonne vide
-		int indexColumn = 1;
+		int indexColumn = 0;
 
 		XlsUtils.mergeRow(computeContext, sheet, 0, indexColumn, TAILLE_LOT + 2);
 
 		titleRow.setRowStyle(XlsUtils.blankRow(computeContext));
 		String title = "Dimensionnement des ouvrages de canalisation à créer sur le site ";
-		Cell headerCell = titleRow.createCell(1);
+		Cell headerCell = titleRow.createCell(indexColumn);
 		title1(computeContext, headerCell, title);
 //		.setCellFormula("CONCATENATE(\"" + title + "\","
 //				+ parametresGenerator.parametres.get(ParametresGenerator.GLO_NOM_MINE_PARAM) + ")");

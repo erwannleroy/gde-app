@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.PatternFormatting;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.SheetConditionalFormatting;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
@@ -94,7 +95,7 @@ public class XlsUtils {
 	public static int mergeRow(ComputeContext computeContext, Sheet sheet, int rowIndex, int firstCol, int lastCol) {
 		return sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, firstCol, lastCol));
 	}
-	
+
 	public static int mergeCol(ComputeContext computeContext, Sheet sheet, int colIndex, int firstRow, int lastRow) {
 		return sheet.addMergedRegion(new CellRangeAddress(firstRow, lastRow, colIndex, colIndex));
 	}
@@ -112,7 +113,7 @@ public class XlsUtils {
 		sheet.addMergedRegion(region);
 		RegionUtil.setBorderLeft(BorderStyle.MEDIUM, region, sheet);
 	}
-	
+
 	public static void makeBoldBorder(Sheet sheet, int firstRow, int lastRow, int firstCol, int lastCol) {
 		CellRangeAddress region = new CellRangeAddress(firstRow, lastRow, firstCol, lastCol);
 		RegionUtil.setBorderLeft(BorderStyle.MEDIUM, region, sheet);
@@ -121,7 +122,6 @@ public class XlsUtils {
 		RegionUtil.setBorderBottom(BorderStyle.MEDIUM, region, sheet);
 	}
 
-	
 	public static void mergeRowTopBorder(ComputeContext computeContext, Sheet sheet, int rowIndex, int firstCol,
 			int lastCol) {
 		CellRangeAddress region = new CellRangeAddress(rowIndex, rowIndex, firstCol, lastCol);
@@ -148,7 +148,8 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.NONE);
 
 		style.setAlignment(HorizontalAlignment.CENTER);
-
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		
 		style.setFont(makeTitle1Font(computeContext));
 
 		cell.setCellStyle(style);
@@ -169,7 +170,8 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.MEDIUM);
 
 		style.setAlignment(HorizontalAlignment.LEFT);
-
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		
 		style.setFont(makeTitle2Font(computeContext));
 
 		cell.setCellStyle(style);
@@ -178,7 +180,7 @@ public class XlsUtils {
 
 		return cell;
 	}
-	
+
 	public static Cell title2LeftBorder(ComputeContext computeContext, Cell cell, String title) {
 		CellStyle style = computeContext.workbook.createCellStyle();
 
@@ -190,7 +192,8 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.LEFT);
-
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		
 		style.setFont(makeTitle2Font(computeContext));
 
 		cell.setCellStyle(style);
@@ -199,7 +202,7 @@ public class XlsUtils {
 
 		return cell;
 	}
-	
+
 	public static Cell titleZone(ComputeContext computeContext, Cell cell, String value) {
 		CellStyle style = computeContext.workbook.createCellStyle();
 
@@ -211,7 +214,8 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.MEDIUM);
 
 		style.setAlignment(HorizontalAlignment.LEFT);
-
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		
 		style.setFont(makeZoneFont(computeContext));
 
 		cell.setCellStyle(style);
@@ -232,7 +236,8 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.LEFT);
-
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		
 		style.setFont(makeTitle3Font(computeContext));
 
 		style.setWrapText(true);
@@ -243,7 +248,7 @@ public class XlsUtils {
 
 		return cell;
 	}
-	
+
 	public static Cell title3RightBorder(ComputeContext computeContext, Cell cell, String title) {
 		CellStyle style = computeContext.workbook.createCellStyle();
 
@@ -255,7 +260,8 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.LEFT);
-
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		
 		style.setFont(makeTitle3Font(computeContext));
 
 		style.setWrapText(true);
@@ -266,7 +272,7 @@ public class XlsUtils {
 
 		return cell;
 	}
-	
+
 	public static Cell title3LeftBorder(ComputeContext computeContext, Cell cell, String title) {
 		CellStyle style = computeContext.workbook.createCellStyle();
 
@@ -278,7 +284,8 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.LEFT);
-
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		
 		style.setFont(makeTitle3Font(computeContext));
 
 		style.setWrapText(true);
@@ -301,7 +308,8 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.MEDIUM);
 
 		style.setAlignment(HorizontalAlignment.LEFT);
-
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		
 		style.setFont(makeTitle3Font(computeContext));
 
 		style.setWrapText(true);
@@ -313,7 +321,6 @@ public class XlsUtils {
 		return cell;
 	}
 
-	
 	public static Cell title3RightBottomBorder(ComputeContext computeContext, Cell cell, String title) {
 		CellStyle style = computeContext.workbook.createCellStyle();
 
@@ -325,7 +332,8 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.LEFT);
-
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		
 		style.setFont(makeTitle3Font(computeContext));
 
 		style.setWrapText(true);
@@ -336,7 +344,7 @@ public class XlsUtils {
 
 		return cell;
 	}
-	
+
 	public static Cell title3LeftBottomBorder(ComputeContext computeContext, Cell cell, String title) {
 		CellStyle style = computeContext.workbook.createCellStyle();
 
@@ -348,7 +356,8 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.LEFT);
-
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		
 		style.setFont(makeTitle3Font(computeContext));
 
 		style.setWrapText(true);
@@ -371,7 +380,8 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.LEFT);
-
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		
 		style.setFont(makeTitle3Font(computeContext));
 
 		style.setWrapText(true);
@@ -394,6 +404,7 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeStandardFont(computeContext));
 		style.setWrapText(true);
@@ -401,7 +412,27 @@ public class XlsUtils {
 		cell.setCellStyle(style);
 
 		cell.setCellValue(value);
-		
+
+		return cell;
+	}
+
+	public static Cell decimalCellEmpty(ComputeContext computeContext, Cell cell) {
+		CellStyle style = computeContext.workbook.createCellStyle();
+
+//		style.setFillBackgroundColor(IndexedColors.BLACK.getIndex());
+
+		style.setBorderBottom(BorderStyle.THIN);
+		style.setBorderLeft(BorderStyle.THIN);
+		style.setBorderRight(BorderStyle.THIN);
+		style.setBorderTop(BorderStyle.THIN);
+
+		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+
+		style.setFont(makeStandardFont(computeContext));
+		style.setWrapText(true);
+
+		cell.setCellStyle(style);
 
 		return cell;
 	}
@@ -417,6 +448,7 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeStandardFont(computeContext));
 		style.setWrapText(true);
@@ -424,12 +456,10 @@ public class XlsUtils {
 		cell.setCellStyle(style);
 
 		cell.setCellValue(value);
-		
 
 		return cell;
 	}
 
-	
 	public static Cell standardCellDecimalNoComma(ComputeContext computeContext, Cell cell, String value) {
 		CellStyle style = computeContext.workbook.createCellStyle();
 
@@ -441,6 +471,7 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeStandardFont(computeContext));
 		style.setDataFormat(computeContext.workbook.createDataFormat().getFormat("0"));
@@ -449,7 +480,6 @@ public class XlsUtils {
 		cell.setCellStyle(style);
 
 		cell.setCellValue(value);
-		
 
 		return cell;
 	}
@@ -465,6 +495,7 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeStandardFont(computeContext));
 		style.setDataFormat(computeContext.workbook.createDataFormat().getFormat("0.00"));
@@ -473,7 +504,6 @@ public class XlsUtils {
 		cell.setCellStyle(style);
 
 		cell.setCellValue(value);
-		
 
 		return cell;
 	}
@@ -489,6 +519,7 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeStandardFont(computeContext));
 		style.setDataFormat(computeContext.workbook.createDataFormat().getFormat("0.0"));
@@ -497,7 +528,6 @@ public class XlsUtils {
 		cell.setCellStyle(style);
 
 		cell.setCellValue(value);
-		
 
 		return cell;
 	}
@@ -513,7 +543,8 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.LEFT);
-
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		
 		style.setFont(makeStandardFont(computeContext));
 
 		style.setWrapText(true);
@@ -524,7 +555,7 @@ public class XlsUtils {
 
 		return cell;
 	}
-	
+
 	public static Cell objectifRetentionCell(ComputeContext computeContext, Cell cell, String value) {
 		CellStyle style = computeContext.workbook.createCellStyle();
 
@@ -536,6 +567,7 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 		style.setDataFormat(computeContext.workbook.createDataFormat().getFormat("0"));
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeBoldFont(computeContext));
 
@@ -548,23 +580,26 @@ public class XlsUtils {
 		SheetConditionalFormatting sheetCF = cell.getSheet().getSheetConditionalFormatting();
 
 //		ConditionalFormattingRule ruleOrange = sheetCF.createConditionalFormattingRule("$C1<80");
-		ConditionalFormattingRule ruleOrange = sheetCF.createConditionalFormattingRule(ComparisonOperator.LE, "80", null);
+		ConditionalFormattingRule ruleOrange = sheetCF.createConditionalFormattingRule(ComparisonOperator.LE, "80",
+				null);
 		PatternFormatting fillOrange = ruleOrange.createPatternFormatting();
-		fillOrange.setFillBackgroundColor(IndexedColors.ORANGE.index);
+		fillOrange.setFillBackgroundColor(IndexedColors.LIGHT_ORANGE.index);
 		fillOrange.setFillPattern(PatternFormatting.SOLID_FOREGROUND);
 
 //		ConditionalFormattingRule ruleJaune= sheetCF.createConditionalFormattingRule("$C1>80 AND $C1<100");
-		ConditionalFormattingRule ruleJaune= sheetCF.createConditionalFormattingRule(ComparisonOperator.BETWEEN, "80.001", "99.999");
+		ConditionalFormattingRule ruleJaune = sheetCF.createConditionalFormattingRule(ComparisonOperator.BETWEEN,
+				"80.001", "99.999");
 		PatternFormatting fillJaune = ruleJaune.createPatternFormatting();
-		fillJaune.setFillBackgroundColor(IndexedColors.GOLD.index);
+		fillJaune.setFillBackgroundColor(IndexedColors.YELLOW.index);
 		fillJaune.setFillPattern(PatternFormatting.SOLID_FOREGROUND);
 
 //		ConditionalFormattingRule ruleVert = sheetCF.createConditionalFormattingRule("$C1>100");
-		ConditionalFormattingRule ruleVert= sheetCF.createConditionalFormattingRule(ComparisonOperator.GE, "100", null);
+		ConditionalFormattingRule ruleVert = sheetCF.createConditionalFormattingRule(ComparisonOperator.GE, "100",
+				null);
 		PatternFormatting fillVert = ruleVert.createPatternFormatting();
-		fillVert.setFillBackgroundColor(IndexedColors.LIME.index);
+		fillVert.setFillBackgroundColor(IndexedColors.BRIGHT_GREEN.index);
 		fillVert.setFillPattern(PatternFormatting.SOLID_FOREGROUND);
-		
+
 		ConditionalFormattingRule[] cfRules = new ConditionalFormattingRule[] { ruleOrange, ruleJaune, ruleVert };
 
 		CellRangeAddress[] regions = new CellRangeAddress[] { CellRangeAddress.valueOf(getReference(cell)) };
@@ -596,6 +631,7 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeBoldFont(computeContext));
 
@@ -619,6 +655,7 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.MEDIUM);
 
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeStandardFont(computeContext));
 
@@ -642,6 +679,7 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeStandardFont(computeContext));
 
@@ -653,8 +691,9 @@ public class XlsUtils {
 
 		return cell;
 	}
-	
-	public static Cell standardCellLeftRightBorderDecimalNoComma(ComputeContext computeContext, Cell cell, String value) {
+
+	public static Cell standardCellLeftRightBorderDecimalNoComma(ComputeContext computeContext, Cell cell,
+			String value) {
 		CellStyle style = computeContext.workbook.createCellStyle();
 
 		style.setFillBackgroundColor(IndexedColors.BLACK.getIndex());
@@ -666,6 +705,7 @@ public class XlsUtils {
 
 		style.setDataFormat(computeContext.workbook.createDataFormat().getFormat("0"));
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeStandardFont(computeContext));
 
@@ -677,7 +717,7 @@ public class XlsUtils {
 
 		return cell;
 	}
-	
+
 	public static Cell cell(ComputeContext computeContext, Cell cell, String value) {
 		CellStyle style = computeContext.workbook.createCellStyle();
 
@@ -689,6 +729,7 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.MEDIUM);
 
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeRedBoldFont(computeContext));
 
@@ -710,6 +751,7 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.MEDIUM);
 
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeRedBoldFont(computeContext));
 
@@ -720,7 +762,6 @@ public class XlsUtils {
 		return cell;
 	}
 
-	
 	public static Cell redBoldBorderTopLeftRight(ComputeContext computeContext, Cell cell, String value) {
 		CellStyle style = computeContext.workbook.createCellStyle();
 
@@ -732,6 +773,7 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.MEDIUM);
 
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeRedBoldFont(computeContext));
 
@@ -741,7 +783,7 @@ public class XlsUtils {
 
 		return cell;
 	}
-	
+
 	public static Cell redBoldBorderLeftRight(ComputeContext computeContext, Cell cell, String value) {
 		CellStyle style = computeContext.workbook.createCellStyle();
 
@@ -753,6 +795,7 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.THIN);
 
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeRedBoldFont(computeContext));
 
@@ -762,7 +805,7 @@ public class XlsUtils {
 
 		return cell;
 	}
-	
+
 	public static Cell backBlueBoldBorderTopLeftRight(ComputeContext computeContext, Cell cell, String value) {
 		CellStyle style = computeContext.workbook.createCellStyle();
 
@@ -775,6 +818,7 @@ public class XlsUtils {
 		style.setBorderTop(BorderStyle.MEDIUM);
 
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeBoldFont(computeContext));
 
@@ -784,9 +828,7 @@ public class XlsUtils {
 
 		return cell;
 	}
-	
 
-	
 	public static Cell redBoldBorderBottomDecimalNoComma(ComputeContext computeContext, Cell cell, String value) {
 		CellStyle style = computeContext.workbook.createCellStyle();
 
@@ -799,6 +841,7 @@ public class XlsUtils {
 
 		style.setDataFormat(computeContext.workbook.createDataFormat().getFormat("0"));
 		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeRedBoldFont(computeContext));
 
@@ -851,7 +894,7 @@ public class XlsUtils {
 		font.setColor(IndexedColors.BLACK.getIndex());
 		return font;
 	}
-	
+
 	private static XSSFFont makeZoneFont(ComputeContext computeContext) {
 		XSSFFont font = computeContext.workbook.createFont();
 		font.setFontHeightInPoints((short) 14);
@@ -924,8 +967,8 @@ public class XlsUtils {
 	}
 
 	public static String getReference(Cell cell) {
-		return "'"+cell.getSheet().getSheetName()+"'!"+
-				CellReference.convertNumToColString(cell.getColumnIndex()) + (cell.getRowIndex() + 1);
+		return "'" + cell.getSheet().getSheetName() + "'!" + CellReference.convertNumToColString(cell.getColumnIndex())
+				+ (cell.getRowIndex() + 1);
 	}
 
 }

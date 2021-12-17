@@ -19,15 +19,44 @@ export class GdeService {
   private nbTry: number = 0;
   private computationProblem: boolean = false;
   private bvParsingError = false;
+  private subjectBVSent = new Subject<Object>();
+  private subjectDECSent = new Subject<Object>();
+  private subjectEXUSent = new Subject<Object>();
+
+  private subjectReset = new Subject<Object>();
 
   constructor(private http: HttpClient) {
   }
 
   ping(): void {
-    console.log("ping back end");
+    //console.log("ping back end");
     this.http.post<any>('gde/ping', null).subscribe(data => {
-      console.log("rest ping");
+      //console.log("rest ping");
     });
+  }
+
+
+  reset(): void {
+    console.log("reset compute");
+    this.http.post<any>('gde/reset', null).subscribe(data => {
+      console.log("rest reset");
+    });
+    this.subjectReset.next();
+  }
+
+  getResetOrder(): Observable<Object> {
+    return this.subjectReset.asObservable();
+  }
+
+
+  getBVSent(): Observable<Object> {
+    return this.subjectBVSent.asObservable();
+  }
+  getDECSent(): Observable<Object> {
+    return this.subjectDECSent.asObservable();
+  }
+  getEXUSent(): Observable<Object> {
+    return this.subjectEXUSent.asObservable();
   }
 
   getBVResponse(): Observable<BVResponse> {
@@ -52,6 +81,7 @@ export class GdeService {
     console.log("postBVFile : " + file);
     const formData: FormData = new FormData();
     formData.append('bv', file);
+    this.subjectBVSent.next();
     this.http.post<BVResponse>('gde/upload-bv-decanteurs-file', formData).subscribe(data => {
       console.log("retour du WS");
       console.log(data);
@@ -70,6 +100,7 @@ export class GdeService {
     console.log("postDECFile : " + file);
     const formData: FormData = new FormData();
     formData.append('dec', file);
+    this.subjectDECSent.next();
     this.http.post<DECResponse>('gde/upload-decanteurs-file', formData).subscribe(data => {
       console.log("retour du WS");
       console.log(data);
@@ -87,6 +118,7 @@ export class GdeService {
     console.log("postEXUFile : " + file);
     const formData: FormData = new FormData();
     formData.append('exu', file);
+    this.subjectEXUSent.next();
     this.http.post<EXUResponse>('gde/upload-bv-exutoires-file', formData).subscribe(data => {
       console.log("retour du WS");
       console.log(data);
@@ -106,32 +138,28 @@ export class GdeService {
 
   async refreshResult() {
     console.log("refreshResult");
-    if (this.nbTry < 5) {
-      this.http.get<ComputingResult>('gde/get-result').subscribe(async data => {
-        console.log("retour du WS", data);
-        console.log(data);
-        this.subjectResult.next(data);
-        if (data && data.inProgress) {
-          console.log("Résultat pas encore prêt, on attend");
-          await this.delay(500);
-          this.refreshResult();
-          this.nbTry++;
-        } else if (data && !data.inProgress) {
-          this.http.get('gde/get-result-bytes', { responseType: 'blob' }).subscribe(async data => {
-            console.log("Résultat prêt", data);
-            console.log(data);
-            this.subjectBytes.next(data);
-          });
-        } else {
-          this.nbTry = 0;
 
-        }
-      });
+    this.http.get<ComputingResult>('gde/get-result').subscribe(async data => {
+      console.log("retour du WS", data);
+      console.log(data);
+      this.subjectResult.next(data);
+      if (data && data.inProgress) {
+        console.log("Résultat pas encore prêt, on attend");
+        await this.delay(2000);
+        this.refreshResult();
+        this.nbTry++;
+      } else if (data && !data.inProgress) {
+        this.http.get('gde/get-result-bytes', { responseType: 'blob' }).subscribe(async data => {
+          console.log("Résultat prêt", data);
+          console.log(data);
+          this.subjectBytes.next(data);
+        });
+      } else {
+        this.nbTry = 0;
 
-    } else {
-      this.computationProblem = true;
-      this.nbTry = 0;
-    }
+      }
+    });
+
 
   }
 

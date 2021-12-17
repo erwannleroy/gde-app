@@ -124,7 +124,7 @@ public class GDEService {
 				result.setFileFormatOk(true);
 				fillResult(result, creeks);
 				gdeComputer.updateExutoires(creeks);
-			} catch (IOException | ParseException e) {
+			} catch (Exception e) {
 				log.error("Impossible de parser le fichier EXU", e);
 				result.setFileFormatOk(false);
 				result.setErrorMessage(e.getCause().getMessage());
@@ -200,7 +200,7 @@ public class GDEService {
 		TempExutoiresParsing tempResult = new TempExutoiresParsing();
 
 		log.debug("Parsing du exuFile " + exufile.getAbsolutePath());
-		Charset stringCharset = Charset.forName("Cp866");
+		Charset stringCharset = Charset.forName("ISO-8859-1");
 
 		InputStream dbf = new FileInputStream(exufile);
 

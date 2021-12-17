@@ -2,6 +2,7 @@ package org.r1.gde.xls.generator;
 
 import static org.r1.gde.XlsUtils.standardCell;
 import static org.r1.gde.XlsUtils.decimalCell;
+import static org.r1.gde.XlsUtils.decimalCellEmpty;
 import static org.r1.gde.XlsUtils.title2;
 import static org.r1.gde.XlsUtils.title3;
 
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.r1.gde.XlsUtils;
 import org.springframework.stereotype.Component;
@@ -70,8 +72,7 @@ public class ParametresGenerator extends SheetGenerator {
 
 	int indexColumn = 0;
 
-	@Override
-	public void startGeneration() {
+	public void run() {
 
 		log.info("Génération de l'onglet Paramètres");
 
@@ -82,7 +83,9 @@ public class ParametresGenerator extends SheetGenerator {
 		} 
 
 		sheet = workbook().createSheet(TITLE_SHEET);
-		
+		sheet.getPrintSetup().setLandscape(true);
+		sheet.getPrintSetup().setPaperSize(PrintSetup.A3_PAPERSIZE);
+
 		sheet.setColumnWidth(0, 15);
 
 		rowIndexParametres = 0;
@@ -111,7 +114,7 @@ public class ParametresGenerator extends SheetGenerator {
 		rowIndexParametres++;
 
 		Row titleParam = sheet.createRow(rowIndexParametres);
-		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
+//		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
 		Cell titleParamCell = titleParam.createCell(0);
 		title2(computeContext, titleParamCell, "Paramètres globaux");
 
@@ -131,6 +134,16 @@ public class ParametresGenerator extends SheetGenerator {
 		rowIndexParametres++;
 	}
 	
+	private void createParamDecimalEmpty(String keyParam, String titleParam) {
+		Row row = sheet.createRow(rowIndexParametres);
+		Cell titleParamCell = row.createCell(indexColumn);
+		title3(computeContext, titleParamCell, titleParam);
+		Cell paramValueCell = row.createCell(indexColumn + 1);
+		parametres.put(keyParam, XlsUtils.getReference(paramValueCell));
+		decimalCellEmpty(computeContext, paramValueCell);
+		rowIndexParametres++;
+	}
+	
 	private void createParamDecimal(String keyParam, String titleParam, double defaultValue) {
 		Row row = sheet.createRow(rowIndexParametres);
 		Cell titleParamCell = row.createCell(indexColumn);
@@ -147,16 +160,15 @@ public class ParametresGenerator extends SheetGenerator {
 		rowIndexParametres++;
 
 		Row titleParam = sheet.createRow(rowIndexParametres);
-		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
+//		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
 		Cell titleParamCell = titleParam.createCell(0);
 		title2(computeContext, titleParamCell, "Données météorologiques");
 
 		rowIndexParametres++;
 
-		createParamDecimal(METEO_QTE_MAX_PRECIPITATIONS_PARAM, "Quantité max de précipitations",
-				METEO_QTE_MAX_PRECIPITATIONS_DEFAULT);
-		createParamDecimal(METEO_COEFF_MONTANA_A_PARAM, "Coefficient de Montana A", METEO_COEFF_MONTANA_A_DEFAULT);
-		createParamDecimal(METEO_COEFF_MONTANA_B_PARAM, "Coefficient de Montana B", METEO_COEFF_MONTANA_B_DEFAULT);
+		createParamDecimalEmpty(METEO_QTE_MAX_PRECIPITATIONS_PARAM, "Quantité max de précipitations");
+		createParamDecimalEmpty(METEO_COEFF_MONTANA_A_PARAM, "Coefficient de Montana A");
+		createParamDecimalEmpty(METEO_COEFF_MONTANA_B_PARAM, "Coefficient de Montana B");
 		createParamDecimal(METEO_TPS_CONCENTRATION_PARAM, "Temps de concentration minimal retenu (min)", METEO_TPS_CONCENTRATION_DEFAULT);
 
 	}
@@ -167,7 +179,7 @@ public class ParametresGenerator extends SheetGenerator {
 		rowIndexParametres++;
 
 		Row titleParam = sheet.createRow(rowIndexParametres);
-		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
+//		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
 		Cell titleParamCell = titleParam.createCell(0);
 		title2(computeContext, titleParamCell, "Paramètres par défaut des décanteurs");
 
@@ -185,7 +197,7 @@ public class ParametresGenerator extends SheetGenerator {
 		rowIndexParametres++;
 
 		Row titleParam = sheet.createRow(rowIndexParametres);
-		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
+//		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
 		Cell titleParamCell = titleParam.createCell(0);
 		title2(computeContext, titleParamCell, "Paramètres par défaut des ouvrages de transit");
 
@@ -202,7 +214,7 @@ public class ParametresGenerator extends SheetGenerator {
 		rowIndexParametres++;
 
 		Row titleParam = sheet.createRow(rowIndexParametres);
-		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
+//		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
 		Cell titleParamCell = titleParam.createCell(0);
 		title2(computeContext, titleParamCell, "Constantes de dimensionnement par défaut");
 
