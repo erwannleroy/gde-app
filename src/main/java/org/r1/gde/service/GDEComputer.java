@@ -4,10 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.r1.gde.model.BVDecanteur;
 import org.r1.gde.model.Creek;
@@ -102,21 +105,21 @@ public class GDEComputer implements SheetGeneratorListener {
 	}
 
 	private ByteArrayOutputStream writeBytes() throws IOException {
-		System.out.println("Ecriture du fichier Excel");
-		File currDir = new File(".");
-		String path = currDir.getAbsolutePath();
-		String fileLocation = path.substring(0, path.length() - 1) + "temp.xlsx";
-
+		log.info("Ecriture du fichier Excel");
+		Path temp = Files.createTempFile("", "temp.xlsx");
+		
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
-		if (this.fileTestEnabled) {
-			log.info("Ecriture du fichier : " + fileLocation);
-			FileOutputStream file = new FileOutputStream(fileLocation);
-			workbook().write(file);
-			file.close();
-		}
+//		if (this.fileTestEnabled) {
+//			log.info("Ecriture du fichier : " + temp.getFileName());
+//			FileOutputStream file = new FileOutputStream(temp.toFile());
+//			workbook().write(file);
+//			file.close();
+//		}
+		XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook());
 		workbook().write(bytes);
 		bytes.close();
+//		workbook().close();
 		return bytes;
 	}
 

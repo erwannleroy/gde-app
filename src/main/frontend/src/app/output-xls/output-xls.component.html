@@ -6,33 +6,35 @@
 
     <div class="container">
       <div class="row row-flex">
-        <div class="col-sm onglet align-self-center" [class.waiting]="bvSent && result.bvDecSent && (!result.objectifsGenere || result.objectifsComputing)">
+        <div class="col-sm onglet align-self-center"
+          [class.waiting]="bvSent && result.bvDecSent && (!result.objectifsGenere || result.objectifsComputing)">
           <div class="container">
             <div class="row align-self-center">
               <div class="col-10">Objectifs de rétention</div>
             </div>
             <div class="row align-self-center">
               <span class="badge bg-secondary" *ngIf="!bvSent">Pas de données</span>
-              <span class="badge bg-primary" *ngIf="bvSent && result.bvDecSent && (!result.objectifsGenere || result.objectifsComputing)">Calcul
+              <span class="badge bg-primary"
+                *ngIf="bvSent && result.bvDecSent && (!result.objectifsGenere || result.objectifsComputing)">Calcul
                 {{result.objectifsInProgress}}%</span>
               <span class="badge bg-success" *ngIf="result && result.objectifsGenere">Généré</span>
-              <span class="badge bg-danger"
-                *ngIf="bvSent && result && !result.bvDecSent">Erreur</span>
+              <span class="badge bg-danger" *ngIf="bvSent && result && !result.bvDecSent">Erreur</span>
             </div>
           </div>
         </div>
-        <div class="col-sm onglet align-self-center" [class.waiting]="decSent && result.decSent && (!result.retentionGenere || result.retentionComputing)">
+        <div class="col-sm onglet align-self-center"
+          [class.waiting]="decSent && result.decSent && (!result.retentionGenere || result.retentionComputing)">
           <div class="container">
             <div class="row align-self-center">
               <div class="col-10">Rétention des bassins</div>
             </div>
             <div class="row align-self-center">
               <span class="badge bg-secondary" *ngIf="!decSent">Pas de données</span>
-              <span class="badge bg-primary waiting" *ngIf="decSent && result.decSent && (!result.retentionGenere || result.retentionComputing)">Calcul
+              <span class="badge bg-primary waiting"
+                *ngIf="decSent && result.decSent && (!result.retentionGenere || result.retentionComputing)">Calcul
                 {{result.retentionInProgress}}%</span>
               <span class="badge bg-success" *ngIf="result && result.retentionGenere">Généré</span>
-              <span class="badge bg-danger"
-                *ngIf="decSent && result && !result.decSent">Erreur</span>
+              <span class="badge bg-danger" *ngIf="decSent && result && !result.decSent">Erreur</span>
             </div>
           </div>
         </div>
@@ -45,11 +47,11 @@
             <div class="row align-self-center">
               <span class="badge bg-secondary" *ngIf="!exuSent">Pas de données</span>
               <span class="badge bg-primary waiting"
-                *ngIf="exuSent && result.bvExuSent && (result.q100Computing || result.cassisComputing)">Calcul Q100({{result.q100InProgress}}%)
+                *ngIf="exuSent && result.bvExuSent && (result.q100Computing || result.cassisComputing)">Calcul
+                Q100({{result.q100InProgress}}%)
                 - Cassis({{result.cassisInProgress}}%)</span>
               <span class="badge bg-success" *ngIf="result && result.q100Genere && result.cassisGenere">Généré</span>
-              <span class="badge bg-danger"
-                *ngIf="exuSent && result && !result.bvExuSent">Erreur</span>
+              <span class="badge bg-danger" *ngIf="exuSent && result && !result.bvExuSent">Erreur</span>
             </div>
           </div>
         </div>
@@ -58,8 +60,8 @@
         </div>
         <div *ngIf="result && result.computationOk && !result.inProgress" class="col-sm onglet onglet-icon"
           (click)="downloadFile()">
-          <img style="height:auto;width:80px;cursor: pointer;" src="../../assets/download.png" />
-        </div>
+              <img style="height:auto;width:80px;cursor: pointer;" src="../../assets/download.png" />
+          </div>
       </div>
     </div>
   </div>

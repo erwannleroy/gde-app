@@ -4,6 +4,7 @@ import { GdeService } from '../gde.service';
 import { Subscription } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BVResponse, DECResponse, EXUResponse } from '../Response';
+import { ComputingResult } from '../ComputingResult';
 
 @Component({
   selector: 'app-input-dbf',
@@ -14,6 +15,8 @@ export class InputDbfComponent implements OnInit {
 
   title = 'front';
 
+  public result: ComputingResult;
+  
   public bvfiles: NgxFileDropEntry[] = [];
   public decfiles: NgxFileDropEntry[] = [];
   public exufiles: NgxFileDropEntry[] = [];
@@ -30,6 +33,7 @@ export class InputDbfComponent implements OnInit {
   public decSent: boolean = false;
   public exuSent: boolean = false;
 
+  public freeze: boolean = false;
   public fileUrl: any;
 
   public bytes: Blob;
@@ -73,6 +77,18 @@ export class InputDbfComponent implements OnInit {
       this.reset();
     });
 
+    this.gdeService.getResult().subscribe(data => {
+      console.log("Réception d'un résultat", data);
+      this.result = data;
+      if (!this.result.inProgress) {
+        this.freeze = false;
+        console.log("defrost");
+      } else {
+        this.freeze = true;
+        console.log("freeze");
+        console.log("freeze " + this.freeze + " - bvTurn " + this.bvTurn);
+      }
+    });
   }
 
   reset() {
@@ -96,6 +112,7 @@ export class InputDbfComponent implements OnInit {
 
   public bv_dropped(files: NgxFileDropEntry[]) {
     console.log("bv_dropped");
+    this.freeze = true;
     this.bvFilled = true;
     this.bvResponse = null;
     this.bvfiles = files;
@@ -127,6 +144,7 @@ export class InputDbfComponent implements OnInit {
     this.decFilled = true;
     this.decResponse = null;
     this.decfiles = files;
+    this.freeze = true;
     for (const droppedFile of files) {
 
       // Is it a file?
@@ -152,6 +170,7 @@ export class InputDbfComponent implements OnInit {
   }
 
   public exu_dropped(files: NgxFileDropEntry[]) {
+    this.freeze = true;
     this.exuFilled = true;
     this.exuResponse = null;
     this.exufiles = files;

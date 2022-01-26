@@ -1,35 +1,22 @@
 package org.r1.gde.xls.generator;
 
-import static org.r1.gde.XlsUtils.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.utils.Lists;
+import org.apache.poi.hssf.record.DefaultRowHeightRecord;
+//import org.apache.poi.hssf.record.DefaultRowHeightRecord;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.CellReference;
+import org.r1.gde.XlsUtils;
+import org.r1.gde.model.BVExutoire;
+import org.r1.gde.model.Creek;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.compress.utils.Lists;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.record.DefaultRowHeightRecord;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.PrintSetup;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.r1.gde.XlsUtils;
-import org.r1.gde.model.BVExutoire;
-import org.r1.gde.model.BassinVersant;
-import org.r1.gde.model.Creek;
-import org.r1.gde.model.Decanteur;
-import org.r1.gde.model.Zone;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import lombok.extern.slf4j.Slf4j;
+import static org.r1.gde.XlsUtils.*;
 
 @Component
 @Slf4j
@@ -82,15 +69,18 @@ public class CassisGenerator extends SheetGenerator {
 		List<Creek> remainList = Lists.newArrayList(creeks().iterator());
 		List<List<Creek>> sharedCreeks = new ArrayList<List<Creek>>();
 
+		log.info("Partage des creeks - debut");
 		sharedCreeks = shareCreeks(sharedCreeks, remainList, new ArrayList<Creek>());
+		log.info("Partage des creeks - debut");
 
 		nbOuvragesTraites = 0;
 		nbOuvragesTotal = countBVTotal(sharedCreeks);
 
-		
 		log.info("nombre de pages après répartition : " + sharedCreeks.size());
 		for (List<Creek> creeks : sharedCreeks) {
+			log.info("Génération d'un lot de creeks - debut");
 			generateLotCreek(creeks);
+			log.info("Génération d'un lot de creeks - fin");
 			rowIndexExutoire++;
 			sheet.setRowBreak(rowIndexExutoire);
 			log.info("nouvelle page");
@@ -143,7 +133,6 @@ public class CassisGenerator extends SheetGenerator {
 				return shareCreeks(sharedCreeks, remainCreeks, new ArrayList<Creek>());
 			} else {
 				lot.add(next);
-				// sharedCreeks.add(lot);
 				remainCreeks.remove(0);
 				return shareCreeks(sharedCreeks, remainCreeks, lot);
 			}
@@ -165,18 +154,9 @@ public class CassisGenerator extends SheetGenerator {
 		// on commence au bord
 		int indexColumn = 0;
 
-//		// une ligne vide
-//		XlsUtils.mergeRowBottomBorder(computeContext, sheet, rowIndexExutoire, indexColumn, TAILLE_LOT + 2);
-
 		rowIndexExutoire++;
 
 		int firstRow = rowIndexExutoire;
-
-//		// titre
-//		Row title2ParamRow = sheet.createRow(rowIndexExutoire);
-//		XlsUtils.mergeRowLeftBorder(computeContext, sheet, rowIndexExutoire, indexColumn, TAILLE_LOT_DEC + 2);
-//		Cell title2ParamCell = title2ParamRow.createCell(indexColumn);
-//		titleZone(computeContext, title2ParamCell, zone.nom);
 
 		rowIndexExutoire++;
 
@@ -184,8 +164,6 @@ public class CassisGenerator extends SheetGenerator {
 		Row creekRow = sheet.createRow(rowIndexExutoire);
 		Cell creekTitleCell = creekRow.createCell(indexColumn);
 		title2(computeContext, creekTitleCell, "Creek récepteur");;
-//		Cell bvTitleCellCol2 = creekRow.createCell(indexColumn);
-//		title3LeftTopBorder(computeContext, bvTitleCellCol2, "");
 
 		rowIndexExutoire++;
 
@@ -268,7 +246,6 @@ public class CassisGenerator extends SheetGenerator {
 		rowIndexExutoire++;
 
 		// une ligne vide
-//		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexExutoire, 0, TAILLE_LOT + 2);
 		Row blankRow = sheet.createRow(rowIndexExutoire);
 		blankRow.setHeight((short) (DefaultRowHeightRecord.DEFAULT_ROW_HEIGHT / 2));
 
@@ -284,6 +261,8 @@ public class CassisGenerator extends SheetGenerator {
 		rowIndexExutoire++;
 
 		Row desc2Row = sheet.createRow(rowIndexExutoire);
+		float hRow = 26;
+		desc2Row.setHeightInPoints(hRow);
 		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, indexColumn, nbOuvrage + 1);
 		desc2Row.setRowStyle(XlsUtils.blankRow(computeContext));
 		String description = "Le cassis est assimilé à un fossé rectangulaire.\nApproximation par section rectangulaire et formules de Manning-Strickler / Chezy   (comparaison des 2 membres de la formule)";
@@ -295,16 +274,12 @@ public class CassisGenerator extends SheetGenerator {
 		Row penteFosseRow = sheet.createRow(rowIndexExutoire);
 		Cell penteFosseCell = penteFosseRow.createCell(indexColumn);
 		title3(computeContext, penteFosseCell, "Pente fossé-cassis (m/m)");
-//		Cell lameEauCell2 = lameEauRow.createCell(indexColumn + 1);
-//		title3RightBorder(computeContext, lameEauCell2, "(m)");
 
 		rowIndexExutoire++;
 
 		Row coefStricklerRow = sheet.createRow(rowIndexExutoire);
 		Cell coefStricklerCell = coefStricklerRow.createCell(indexColumn);
 		title3(computeContext, coefStricklerCell, "Coef. rugosié Strickler (Ks) lié à fossé-cassis");
-//		Cell revancheCell2 = coefStricklerRow.createCell(indexColumn + 1);
-//		title3RightBorder(computeContext, revancheCell2, "(m)");
 
 		Row lameEauRow = sheet.createRow(rowIndexExutoire);
 		Cell lameEauCell = lameEauRow.createCell(indexColumn);
@@ -325,16 +300,12 @@ public class CassisGenerator extends SheetGenerator {
 		Row largeurFosseRow = sheet.createRow(rowIndexExutoire);
 		Cell largeurFosseCell = largeurFosseRow.createCell(indexColumn);
 		title3(computeContext, largeurFosseCell, "L:  Largeur du fossé-cassis (m)");
-//		Cell evacuateurCell2 = evacuateurRow.createCell(indexColumn + 1);
-//		title3RightBorder(computeContext, evacuateurCell2, "L déversoir (m)");
 
 		rowIndexExutoire++;
 
 		Row hauteurFosseRow = sheet.createRow(rowIndexExutoire);
 		Cell hauteurFosseCell = hauteurFosseRow.createCell(indexColumn);
 		title3(computeContext, hauteurFosseCell, "H:  Hauteur du fossé-cassis");
-//		Cell seuilCell2 = hauteurFosseRow.createCell(indexColumn + 1);
-//		title3RightBorder(computeContext, seuilCell2, "H déversoir (m)");
 
 		rowIndexExutoire++;
 		rowIndexExutoire++;
@@ -375,8 +346,9 @@ public class CassisGenerator extends SheetGenerator {
 		indexColumn++;
 		indexColumn++;
 
+		log.info("Génération des creeks - debut");
 		for (Creek c : creeks) {
-
+			log.info("Génération du creek " +c.nom +" - debut");
 			if (c.getExutoires().size() > 1) {
 				XlsUtils.mergeRow(computeContext, sheet, creekRow.getRowNum(), indexColumn,
 						indexColumn + c.exutoires.size() - 1);
@@ -387,6 +359,7 @@ public class CassisGenerator extends SheetGenerator {
 
 			List<Cell> cells = new ArrayList<>();
 
+			log.info("Génération des exutoires - debut");
 			for (BVExutoire e : c.getExutoires()) {
 
 				Cell exuNomCell = exutoireRow.createCell(indexColumn);
@@ -471,7 +444,7 @@ public class CassisGenerator extends SheetGenerator {
 				standardCell(computeContext, calculRevancheCell, "").setCellFormula(calculRevancheFormula);
 
 				Cell calculLargeurFosseCell = largeurFosseRow.createCell(indexColumn);
-				standardCellDecimal2Comma(computeContext, calculLargeurFosseCell, "0");
+				standardCellDecimal2Comma(computeContext, calculLargeurFosseCell, "0.00").setCellValue(0d);
 
 				Cell calculHauteurFosseCell = hauteurFosseRow.createCell(indexColumn);
 				String calculHauteurFosseFormula = String.format("%s%s+%s%s",
@@ -541,9 +514,13 @@ public class CassisGenerator extends SheetGenerator {
 				double progress = (double) 100 / nbOuvragesTotal * nbOuvragesTraites;
 				notifyListeners(SheetGeneratorEvent.CASSIS_SHEET_PROGRESS, (int) progress);
 			}
-
+			log.info("Génération des exutoires - fin");
+			log.info("Génération du creek " +c.nom +" - fin");
 		}
 
+		log.info("Génération des creeks - fin");
+
+		log.info("Génération des bordures - debut");
 		XlsUtils.makeBoldBorder(sheet, firstRow + 3, firstRow + 13, 0, 1);
 		XlsUtils.makeBoldBorder(sheet, firstRow + 15, firstRow + 22, 0, 1);
 
@@ -560,6 +537,7 @@ public class CassisGenerator extends SheetGenerator {
 
 		XlsUtils.makeBoldBorder(sheet, firstRow + 14, firstRow + 15, 0, indexColumn - 1);
 		XlsUtils.makeBoldBorder(sheet, firstRow + 1, rowIndexExutoire - 1, 0, indexColumn - 1);
+		log.info("Génération des bordures - fin");
 	}
 
 	private void generateTitleBlock() {

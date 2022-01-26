@@ -145,7 +145,7 @@ export class GdeService {
       this.subjectResult.next(data);
       if (data && data.inProgress) {
         console.log("Résultat pas encore prêt, on attend");
-        await this.delay(2000);
+        await this.delay(1000);
         this.refreshResult();
         this.nbTry++;
       } else if (data && !data.inProgress) {

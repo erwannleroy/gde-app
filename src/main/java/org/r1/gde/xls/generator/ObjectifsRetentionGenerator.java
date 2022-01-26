@@ -1,11 +1,6 @@
 package org.r1.gde.xls.generator;
 
-import static org.r1.gde.XlsUtils.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
@@ -13,12 +8,14 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellReference;
 import org.r1.gde.XlsUtils;
 import org.r1.gde.model.BVDecanteur;
-import org.r1.gde.model.BassinVersant;
-import org.r1.gde.model.Zone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.r1.gde.XlsUtils.*;
 
 @Component
 @Slf4j
@@ -261,7 +258,7 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
 
 			volumesBV.put(bv.nomOuvrage, XlsUtils.getReference(volEauCell));
 
-			log.info("Formule du volume d'eau : " + volEauFormula);
+//			log.info("Formule du volume d'eau : " + volEauFormula);
 			redBoldBorderBottomDecimalNoComma(computeContext, volEauCell, "").setCellFormula(volEauFormula);
 			indexColumn++;
 

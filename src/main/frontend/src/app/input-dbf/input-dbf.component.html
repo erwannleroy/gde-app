@@ -1,6 +1,7 @@
 <div class="row row-flex" style="margin-top:1vw;">
-    <div style="background-color: #F58A07;width:2px;" [class.app-disabled]="!bvTurn" [class.app-enabled]="bvTurn"></div>
-    <div class="col" [class.app-disabled]="!bvTurn" [class.app-enabled]="bvTurn">
+    <div style="background-color: #F58A07;width:2px;" 
+    [class.app-disabled]="freeze || !bvTurn" [class.app-enabled]="!freeze && bvTurn"></div>
+    <div class="col" [class.app-disabled]="freeze || !bvTurn" [class.app-enabled]="!freeze && bvTurn">
       <div class="card">
         <div class="container">
           <div class="row">
@@ -99,9 +100,11 @@
         </div>
       </div>
     </div>
-    <div style="background-color: #F58A07;width:2px;" [class.app-disabled]="!decTurn" [class.app-enabled]="decTurn">
+
+    <div style="background-color: #F58A07;width:2px;" 
+    [class.app-disabled]="freeze || !decTurn" [class.app-enabled]="!freeze && decTurn">
     </div>
-    <div class="col" [class.app-disabled]="!decTurn" [class.app-enabled]="decTurn">
+    <div class="col" [class.app-disabled]="freeze || !decTurn" [class.app-enabled]="!freeze && decTurn">
       <div class="card">
 
         <div class="container">
@@ -226,9 +229,11 @@
         </div>
       </div>
     </div>
-    <div style="background-color: #F58A07;width:2px;" [class.app-disabled]="!exuTurn" [class.app-enabled]="exuTurn">
+
+    <div style="background-color: #F58A07;width:2px;" 
+    [class.app-disabled]="freeze || !exuTurn" [class.app-enabled]="!freeze && exuTurn">
     </div>
-    <div class="col" [class.app-disabled]="!exuTurn" [class.app-enabled]="exuTurn">
+    <div class="col" [class.app-disabled]="freeze || !exuTurn" [class.app-enabled]="!freeze && exuTurn">
       <div class="card">
 
         <div class="container">

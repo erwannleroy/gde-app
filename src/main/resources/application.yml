@@ -1,10 +1,15 @@
 server:
   port: 0
 
-logging:
-  level:
-    ROOT: INFO
-    
+
+#logging:
+#  pattern:
+#    console: "%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1} [%X{user}] - %m%n"
+#  level:
+#    ROOT: INFO
+
+
+
 spring:
   web:
     resources:

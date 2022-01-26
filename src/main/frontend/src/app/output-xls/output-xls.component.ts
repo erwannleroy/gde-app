@@ -106,7 +106,7 @@ export class OutputXlsComponent implements OnInit {
 
     // create file, attach to hidden element and open hidden element
     a.href = url;
-    a.download = "gde.xlsx";
+    a.download = "gde-dimensionnement.xlsx";
     a.click();
     return url;
   }
