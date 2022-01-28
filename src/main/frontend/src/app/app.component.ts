@@ -22,6 +22,7 @@ export class AppComponent implements OnInit {
 
   reset() {
     this.gdeService.reset();
+    window.location.reload();
   }
 
 

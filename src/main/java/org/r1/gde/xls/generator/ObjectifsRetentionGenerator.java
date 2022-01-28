@@ -268,7 +268,7 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
 
 		}
 
-		XlsUtils.makeBoldBorder(sheet, firstRow, rowIndexDimensionnement - 1, 1, indexColumn - 1);
+//		XlsUtils.makeBoldBorder(sheet, firstRow, rowIndexDimensionnement - 1, 1, indexColumn - 1);
 
 	}
 
