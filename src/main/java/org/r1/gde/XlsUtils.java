@@ -1,5 +1,7 @@
 package org.r1.gde;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -79,13 +81,15 @@ public class XlsUtils {
 		return row;
 	}
 
-	public static int mergeRow(ComputeContext computeContext, Sheet sheet, int rowIndex, int firstCol, int lastCol) {
+	public static void mergeRow(ComputeContext computeContext, Sheet sheet, int rowIndex, int firstCol, int lastCol) {
 		log.info("merge row=" + rowIndex + ", col1=" + firstCol + ", col2=" + lastCol);
-		return sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, firstCol, lastCol));
+		int index = sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, firstCol, lastCol));
+//		borderMergedCellRange(sheet.getMergedRegion(index), sheet);
 	}
 
-	public static int mergeCol(ComputeContext computeContext, Sheet sheet, int colIndex, int firstRow, int lastRow) {
-		return sheet.addMergedRegion(new CellRangeAddress(firstRow, lastRow, colIndex, colIndex));
+	public static void mergeCol(ComputeContext computeContext, Sheet sheet, int colIndex, int firstRow, int lastRow) {
+		int index = sheet.addMergedRegion(new CellRangeAddress(firstRow, lastRow, colIndex, colIndex));
+//		borderMergedCellRange(sheet.getMergedRegion(index), sheet);
 	}
 
 	public static void mergeRowBottomBorder(ComputeContext computeContext, Sheet sheet, int rowIndex, int firstCol,
@@ -110,11 +114,10 @@ public class XlsUtils {
 		RegionUtil.setBorderTop(BorderStyle.MEDIUM, region, sheet);
 		RegionUtil.setBorderBottom(BorderStyle.THIN, region, sheet);
 	}
-	
-	public static void makeBottomBorder(Sheet sheet, int firstRow, int lastRow, int firstCol,
-			int lastCol) {
+
+	public static void makeBottomBorder(Sheet sheet, int firstRow, int lastRow, int firstCol, int lastCol) {
 		CellRangeAddress region = new CellRangeAddress(firstRow, lastRow, firstCol, lastCol);
-		
+
 		RegionUtil.setBorderLeft(BorderStyle.THIN, region, sheet);
 		RegionUtil.setBorderRight(BorderStyle.THIN, region, sheet);
 		RegionUtil.setBorderTop(BorderStyle.THIN, region, sheet);
@@ -128,7 +131,7 @@ public class XlsUtils {
 		cs.setBorderRight(BorderStyle.MEDIUM);
 		cs.setBorderTop(BorderStyle.MEDIUM);
 	}
-	
+
 	public static void makeLeftTopBorder(Cell c) {
 		CellStyle cs = c.getCellStyle();
 		cs.setBorderBottom(BorderStyle.THIN);
@@ -160,7 +163,7 @@ public class XlsUtils {
 		cs.setBorderRight(BorderStyle.MEDIUM);
 		cs.setBorderTop(BorderStyle.THIN);
 	}
-	
+
 	public static void makeLeftBottomBorder(Cell c) {
 		CellStyle cs = c.getCellStyle();
 		cs.setBorderBottom(BorderStyle.MEDIUM);
@@ -168,7 +171,7 @@ public class XlsUtils {
 		cs.setBorderRight(BorderStyle.THIN);
 		cs.setBorderTop(BorderStyle.THIN);
 	}
-	
+
 	public static void makeRightBottomBorder(Cell c) {
 		CellStyle cs = c.getCellStyle();
 		cs.setBorderBottom(BorderStyle.MEDIUM);
@@ -176,7 +179,7 @@ public class XlsUtils {
 		cs.setBorderRight(BorderStyle.MEDIUM);
 		cs.setBorderTop(BorderStyle.THIN);
 	}
-	
+
 	public static void makeRightTopBorder(Cell c) {
 		CellStyle cs = c.getCellStyle();
 		cs.setBorderBottom(BorderStyle.THIN);
@@ -200,7 +203,7 @@ public class XlsUtils {
 		cs.setBorderRight(BorderStyle.MEDIUM);
 		cs.setBorderTop(BorderStyle.MEDIUM);
 	}
-	
+
 	public static void makeTopBottomBorder(Cell c) {
 		CellStyle cs = c.getCellStyle();
 		cs.setBorderBottom(BorderStyle.MEDIUM);
@@ -216,7 +219,7 @@ public class XlsUtils {
 		cs.setBorderRight(BorderStyle.THIN);
 		cs.setBorderTop(BorderStyle.MEDIUM);
 	}
-	
+
 	public static void makeLeftBorder(Cell c) {
 		CellStyle cs = c.getCellStyle();
 		cs.setBorderBottom(BorderStyle.THIN);
@@ -224,7 +227,7 @@ public class XlsUtils {
 		cs.setBorderRight(BorderStyle.THIN);
 		cs.setBorderTop(BorderStyle.THIN);
 	}
-	
+
 	public static void makeRightBorder(Cell c) {
 		CellStyle cs = c.getCellStyle();
 		cs.setBorderBottom(BorderStyle.THIN);
@@ -232,7 +235,7 @@ public class XlsUtils {
 		cs.setBorderRight(BorderStyle.MEDIUM);
 		cs.setBorderTop(BorderStyle.THIN);
 	}
-	
+
 	public static void makeAllBoldExceptTopBorder(Sheet sheet, int firstRow, int lastRow, int firstCol, int lastCol) {
 		CellRangeAddress region = new CellRangeAddress(firstRow, lastRow, firstCol, lastCol);
 		RegionUtil.setBorderLeft(BorderStyle.MEDIUM, region, sheet);
@@ -277,6 +280,7 @@ public class XlsUtils {
 		style.setAlignment(HorizontalAlignment.CENTER);
 		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
+		style.setWrapText(true);
 		style.setFont(makeTitle1Font(computeContext));
 
 		cell.setCellStyle(style);
@@ -291,14 +295,15 @@ public class XlsUtils {
 
 //		
 
-		style.setBorderBottom(BorderStyle.MEDIUM);
-		style.setBorderLeft(BorderStyle.NONE);
-		style.setBorderRight(BorderStyle.NONE);
-		style.setBorderTop(BorderStyle.MEDIUM);
+		style.setBorderBottom(BorderStyle.THIN);
+		style.setBorderLeft(BorderStyle.THIN);
+		style.setBorderRight(BorderStyle.THIN);
+		style.setBorderTop(BorderStyle.THIN);
 
-		style.setAlignment(HorizontalAlignment.LEFT);
+		style.setAlignment(HorizontalAlignment.CENTER);
 		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
+		style.setWrapText(true);
 		style.setFont(makeTitle2Font(computeContext));
 
 		cell.setCellStyle(style);
@@ -319,6 +324,7 @@ public class XlsUtils {
 		style.setAlignment(HorizontalAlignment.LEFT);
 		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
+		style.setWrapText(true);
 		style.setFont(makeTitle2Font(computeContext));
 
 		cell.setCellStyle(style);
@@ -333,6 +339,7 @@ public class XlsUtils {
 
 //		
 
+		style.setWrapText(true);
 		style.setBorderBottom(BorderStyle.MEDIUM);
 		style.setBorderLeft(BorderStyle.MEDIUM);
 		style.setBorderRight(BorderStyle.MEDIUM);
@@ -360,7 +367,7 @@ public class XlsUtils {
 		style.setBorderRight(BorderStyle.THIN);
 		style.setBorderTop(BorderStyle.THIN);
 
-		style.setAlignment(HorizontalAlignment.LEFT);
+		style.setAlignment(HorizontalAlignment.CENTER);
 		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeTitle3Font(computeContext));
@@ -544,6 +551,45 @@ public class XlsUtils {
 
 		return cell;
 	}
+	
+	public static Cell standardCellVATop(ComputeContext computeContext, Cell cell, String value) {
+		CellStyle style = buildDefaultStyle(computeContext, cell);
+
+//		
+
+		style.setBorderBottom(BorderStyle.THIN);
+		style.setBorderLeft(BorderStyle.THIN);
+		style.setBorderRight(BorderStyle.THIN);
+		style.setBorderTop(BorderStyle.THIN);
+
+		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.TOP);
+
+		style.setFont(makeStandardFont(computeContext));
+		style.setWrapText(true);
+
+		cell.setCellStyle(style);
+
+		cell.setCellValue(value);
+
+		return cell;
+	}
+
+	public static Cell standardCellNoBorder(ComputeContext computeContext, Cell cell, String value) {
+		CellStyle style = buildDefaultStyle(computeContext, cell);
+
+		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+
+		style.setFont(makeStandardFont(computeContext));
+		style.setWrapText(true);
+
+		cell.setCellStyle(style);
+
+		cell.setCellValue(value);
+
+		return cell;
+	}
 
 	public static Cell fillCell(ComputeContext computeContext, Cell cell, String value) {
 		CellStyle style = buildDefaultStyle(computeContext, cell);
@@ -628,27 +674,44 @@ public class XlsUtils {
 		return cell;
 	}
 
-	public static Cell standardCellDecimalNoComma(ComputeContext computeContext, Cell cell, String value) {
-		CellStyle style = buildDefaultStyle(computeContext, cell);
-
-		style.setBorderBottom(BorderStyle.THIN);
-		style.setBorderLeft(BorderStyle.THIN);
-		style.setBorderRight(BorderStyle.THIN);
-		style.setBorderTop(BorderStyle.THIN);
-
-		style.setAlignment(HorizontalAlignment.CENTER);
-		style.setVerticalAlignment(VerticalAlignment.CENTER);
-
-		style.setFont(makeStandardFont(computeContext));
-		style.setDataFormat(computeContext.workbook.createDataFormat().getFormat("0"));
-		style.setWrapText(true);
-
-		cell.setCellStyle(style);
-
-		cell.setCellValue(value);
-
-		return cell;
+	public static void borderMergedSheet(Sheet sheet) {
+		List<CellRangeAddress> mergedRegions = sheet.getMergedRegions();
+		for (CellRangeAddress rangeAddress : mergedRegions) {
+			RegionUtil.setBorderTop(BorderStyle.THIN, rangeAddress, sheet);
+			RegionUtil.setBorderLeft(BorderStyle.THIN, rangeAddress, sheet);
+			RegionUtil.setBorderRight(BorderStyle.THIN, rangeAddress, sheet);
+			RegionUtil.setBorderBottom(BorderStyle.THIN, rangeAddress, sheet);
+		}
 	}
+
+	public static void borderMergedCellRange(CellRangeAddress cra, Sheet sheet) {
+		RegionUtil.setBorderTop(BorderStyle.THIN, cra, sheet);
+		RegionUtil.setBorderLeft(BorderStyle.THIN, cra, sheet);
+		RegionUtil.setBorderRight(BorderStyle.THIN, cra, sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THIN, cra, sheet);
+	}
+
+//	public static Cell standardCellDecimalNoComma(ComputeContext computeContext, Cell cell, String value) {
+//		CellStyle style = buildDefaultStyle(computeContext, cell);
+//
+//		style.setBorderBottom(BorderStyle.THIN);
+//		style.setBorderLeft(BorderStyle.THIN);
+//		style.setBorderRight(BorderStyle.THIN);
+//		style.setBorderTop(BorderStyle.THIN);
+//
+//		style.setAlignment(HorizontalAlignment.CENTER);
+//		style.setVerticalAlignment(VerticalAlignment.CENTER);
+//
+//		style.setFont(makeStandardFont(computeContext));
+//		style.setDataFormat(computeContext.workbook.createDataFormat().getFormat("0"));
+//		style.setWrapText(true);
+//
+//		cell.setCellStyle(style);
+//
+//		cell.setCellValue(value);
+//
+//		return cell;
+//	}
 
 	public static Cell standardCellDecimal2Comma(ComputeContext computeContext, Cell cell, String value) {
 		CellStyle style = buildDefaultStyle(computeContext, cell);
@@ -719,13 +782,13 @@ public class XlsUtils {
 	public static Cell objectifRetentionCell(ComputeContext computeContext, Cell cell, String value) {
 		CellStyle style = buildDefaultStyle(computeContext, cell);
 
-		style.setBorderBottom(BorderStyle.MEDIUM);
-		style.setBorderLeft(BorderStyle.MEDIUM);
-		style.setBorderRight(BorderStyle.MEDIUM);
-		style.setBorderTop(BorderStyle.THIN);
+//		style.setBorderBottom(BorderStyle.MEDIUM);
+//		style.setBorderLeft(BorderStyle.MEDIUM);
+//		style.setBorderRight(BorderStyle.MEDIUM);
+//		style.setBorderTop(BorderStyle.THIN);
 		style.setDataFormat(computeContext.workbook.createDataFormat().getFormat("0"));
 		style.setAlignment(HorizontalAlignment.CENTER);
-		style.setVerticalAlignment(VerticalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.TOP);
 
 		style.setFont(makeBoldFont(computeContext));
 
@@ -868,6 +931,50 @@ public class XlsUtils {
 		return cell;
 	}
 
+	public static Cell standardCellDecimalNoComma(ComputeContext computeContext, Cell cell, String value) {
+		CellStyle style = buildDefaultStyle(computeContext, cell);
+
+		style.setBorderBottom(BorderStyle.THIN);
+		style.setBorderLeft(BorderStyle.THIN);
+		style.setBorderRight(BorderStyle.THIN);
+		style.setBorderTop(BorderStyle.THIN);
+		style.setDataFormat(computeContext.workbook.createDataFormat().getFormat("0"));
+		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+
+		style.setFont(makeStandardFont(computeContext));
+
+		style.setWrapText(true);
+
+		cell.setCellStyle(style);
+
+		cell.setCellValue(value);
+
+		return cell;
+	}
+	
+	public static Cell standardCellDecimalNoCommaVATop(ComputeContext computeContext, Cell cell, String value) {
+		CellStyle style = buildDefaultStyle(computeContext, cell);
+
+		style.setBorderBottom(BorderStyle.THIN);
+		style.setBorderLeft(BorderStyle.THIN);
+		style.setBorderRight(BorderStyle.THIN);
+		style.setBorderTop(BorderStyle.THIN);
+		style.setDataFormat(computeContext.workbook.createDataFormat().getFormat("0"));
+		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.TOP);
+
+		style.setFont(makeStandardFont(computeContext));
+
+		style.setWrapText(true);
+
+		cell.setCellStyle(style);
+
+		cell.setCellValue(value);
+
+		return cell;
+	}
+
 	public static Cell cell(ComputeContext computeContext, Cell cell, String value) {
 		CellStyle style = buildDefaultStyle(computeContext, cell);
 
@@ -880,6 +987,7 @@ public class XlsUtils {
 		style.setVerticalAlignment(VerticalAlignment.CENTER);
 
 		style.setFont(makeRedBoldFont(computeContext));
+		style.setWrapText(true);
 
 		cell.setCellStyle(style);
 
@@ -908,6 +1016,7 @@ public class XlsUtils {
 		return cell;
 	}
 
+
 	public static Cell redBoldBorderTopLeftRight(ComputeContext computeContext, Cell cell, String value) {
 		CellStyle style = buildDefaultStyle(computeContext, cell);
 
@@ -921,6 +1030,46 @@ public class XlsUtils {
 
 		style.setFont(makeRedBoldFont(computeContext));
 
+		cell.setCellStyle(style);
+
+		cell.setCellValue(value);
+
+		return cell;
+	}
+
+	public static Cell redBold(ComputeContext computeContext, Cell cell, String value) {
+		CellStyle style = buildDefaultStyle(computeContext, cell);
+
+		style.setBorderBottom(BorderStyle.THIN);
+		style.setBorderLeft(BorderStyle.THIN);
+		style.setBorderRight(BorderStyle.THIN);
+		style.setBorderTop(BorderStyle.THIN);
+
+		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+
+		style.setFont(makeRedBoldFont(computeContext));
+		style.setWrapText(true);
+		cell.setCellStyle(style);
+
+		cell.setCellValue(value);
+
+		return cell;
+	}
+	
+	public static Cell redBoldVATop(ComputeContext computeContext, Cell cell, String value) {
+		CellStyle style = buildDefaultStyle(computeContext, cell);
+
+		style.setBorderBottom(BorderStyle.THIN);
+		style.setBorderLeft(BorderStyle.THIN);
+		style.setBorderRight(BorderStyle.THIN);
+		style.setBorderTop(BorderStyle.THIN);
+
+		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.TOP);
+
+		style.setFont(makeRedBoldFont(computeContext));
+		style.setWrapText(true);
 		cell.setCellStyle(style);
 
 		cell.setCellValue(value);
@@ -975,6 +1124,27 @@ public class XlsUtils {
 		CellStyle style = buildDefaultStyle(computeContext, cell);
 
 		style.setBorderBottom(BorderStyle.MEDIUM);
+		style.setBorderLeft(BorderStyle.THIN);
+		style.setBorderRight(BorderStyle.THIN);
+		style.setBorderTop(BorderStyle.THIN);
+
+		style.setDataFormat(computeContext.workbook.createDataFormat().getFormat("0"));
+		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+
+		style.setFont(makeRedBoldFont(computeContext));
+
+		cell.setCellStyle(style);
+
+		cell.setCellValue(value);
+
+		return cell;
+	}
+
+	public static Cell redBoldDecimalNoComma(ComputeContext computeContext, Cell cell, String value) {
+		CellStyle style = buildDefaultStyle(computeContext, cell);
+
+		style.setBorderBottom(BorderStyle.THIN);
 		style.setBorderLeft(BorderStyle.THIN);
 		style.setBorderRight(BorderStyle.THIN);
 		style.setBorderTop(BorderStyle.THIN);

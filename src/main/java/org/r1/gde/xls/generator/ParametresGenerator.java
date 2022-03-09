@@ -106,22 +106,21 @@ public class ParametresGenerator extends SheetGenerator {
 			sheet.autoSizeColumn(column);
 			column++;
 		}
+		
+
+		sheet.setColumnWidth(1, 20 * 256);
 	}
 
 	private void generateParametresGlobaux() {
-		int indexColumn = 0;
-
 		rowIndexParametres++;
 
 		Row titleParam = sheet.createRow(rowIndexParametres);
-//		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
 		Cell titleParamCell = titleParam.createCell(0);
 		title2(computeContext, titleParamCell, "Paramètres globaux");
 
 		rowIndexParametres++;
 
 		createParamText(GLO_NOM_MINE_PARAM, "Nom de la mine", "");
-
 	}
 
 	private void createParamText(String keyParam, String titleParam, String defaultValue) {
@@ -155,12 +154,10 @@ public class ParametresGenerator extends SheetGenerator {
 	}
 
 	private void generateParametresMeteo() {
-		int indexColumn = 0;
 
 		rowIndexParametres++;
 
 		Row titleParam = sheet.createRow(rowIndexParametres);
-//		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
 		Cell titleParamCell = titleParam.createCell(0);
 		title2(computeContext, titleParamCell, "Données météorologiques");
 
@@ -179,7 +176,6 @@ public class ParametresGenerator extends SheetGenerator {
 		rowIndexParametres++;
 
 		Row titleParam = sheet.createRow(rowIndexParametres);
-//		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
 		Cell titleParamCell = titleParam.createCell(0);
 		title2(computeContext, titleParamCell, "Paramètres par défaut des décanteurs");
 
@@ -192,12 +188,10 @@ public class ParametresGenerator extends SheetGenerator {
 	}
 	
 	private void generateParametresOuvragesTransit() {
-		int indexColumn = 0;
 
 		rowIndexParametres++;
 
 		Row titleParam = sheet.createRow(rowIndexParametres);
-//		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
 		Cell titleParamCell = titleParam.createCell(0);
 		title2(computeContext, titleParamCell, "Paramètres par défaut des ouvrages de transit");
 
@@ -209,12 +203,10 @@ public class ParametresGenerator extends SheetGenerator {
 	}
 
 	private void generateConstantesDimensionnementDéfaut() {
-		int indexColumn = 0;
 
 		rowIndexParametres++;
 
 		Row titleParam = sheet.createRow(rowIndexParametres);
-//		XlsUtils.mergeRowBothBorder(computeContext, sheet, rowIndexParametres, indexColumn, indexColumn + 1);
 		Cell titleParamCell = titleParam.createCell(0);
 		title2(computeContext, titleParamCell, "Constantes de dimensionnement par défaut");
 

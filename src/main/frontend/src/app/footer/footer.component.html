@@ -215,10 +215,19 @@
         </tr>
       </tbody>
     </table>
-    <h3>Impression</h3>
-    Par convention, les feuilles du classeur Excel généré sont configurées pour appliquer 
-    des sauts de tableau dès qu'on atteint la 30ème colonne de donnée (en dehors des 2 premières colonnes d'entête).
-    <br/>Ce choix est adapté pour une impression A3 avec l'option 'Ajuster à la largeur'
+    <h3>Sous Excel</h3>
+
+    <h4>Affichage</h4>
+    Dans le cas de fichiers ayant beaucoup de lignes, les entêtes des tableaux restent 
+    affichées lors du défilement. 
+    <br/>Cela permet d'avoir à tout moment la signification d'une cellule.
+    <br/>Ces choix sont évidemment modifiables dans l'application Excel via le menu 'Affichage'.
+    <h4>Impression</h4>
+    A l'impression, les entêtes des tableaux se répètent également sur chaque page.
+    <br/>Les deux premiers onglets sont paramétrés pour être imprimé sur du format A4 
+    en mode Paysage. <br/>Les deux derniers, étant plus riches, sont paramétrés pour être 
+    imprimé sur du format A3 en mode Paysage.
+    <br/>Ces choix sont évidemment modifiables dans l'application Excel via le menu 'Mise en page'.
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Fermer</button>

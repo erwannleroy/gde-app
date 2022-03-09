@@ -64,14 +64,5 @@ public abstract class SheetGenerator implements Runnable {
 
 	public abstract String getTitleSheet();
 
-	public void setup() {
 
-		sheet.getPrintSetup().setLandscape(true);
-		sheet.getPrintSetup().setPaperSize(PrintSetup.A3_PAPERSIZE);
-		sheet.setMargin(Sheet.RightMargin, 0.4);
-		sheet.setMargin(Sheet.LeftMargin, 0.4);
-		sheet.setMargin(Sheet.TopMargin, 0.4);
-		sheet.setMargin(Sheet.BottomMargin, 0.4);
-		sheet.setColumnWidth(0, 0);
-	}
 }
