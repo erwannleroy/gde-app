@@ -1,0 +1,344 @@
+<div class="row row-flex" style="margin-top:1vw;">
+    <div style="background-color: #F58A07;width:2px;" 
+    [class.app-disabled]="freeze || !bvTurn" [class.app-enabled]="!freeze && bvTurn"></div>
+    <div class="col" [class.app-disabled]="freeze || !bvTurn" [class.app-enabled]="!freeze && bvTurn">
+      <div class="card">
+        <div class="container">
+          <div class="row">
+            <h3 class="col-10">BV décanteurs</h3>
+            <div class="col-2 onglet-icon app-enabled" (click)="openPopup(bvparams)">
+              <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/dbf.png" />
+            </div>
+          </div>
+        </div>
+
+        <ng-template #bvparams let-modal class="params-popup app-enabled">
+          <div class="modal-header">
+            <h4 class="modal-title" id="modal-basic-title">
+              Format DBF - BV Décanteurs
+            </h4>
+            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+
+              <span aria-hidden="true">
+                ×
+              </span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Champ</th>
+                  <th scope="col">Nom de la colonne</th>
+                  <th scope="col">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Nom</td>
+                  <td>NOM</td>
+                  <td>Texte</td>
+                </tr>
+                <tr>
+                  <th scope="row">2</th>
+                  <td>Surface</td>
+                  <td>SURFACE</td>
+                  <td>Décimal - m²</td>
+                </tr>
+                <tr>
+                  <th scope="row">3</th>
+                  <td>Dénivelé</td>
+                  <td>DENIVELE</td>
+                  <td>Texte - m</td>
+                </tr>
+                <tr>
+                  <th scope="row">4</th>
+                  <td>Longueur hydraulique</td>
+                  <td>LGR_HYDRO</td>
+                  <td>Texte - m</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-template>
+
+        <div class="center">
+          <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="bv_dropped($event)"
+            (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+            <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+              Déposez ici le fichier des BV décanteurs
+            </ng-template>
+          </ngx-file-drop>
+          <div class="container" *ngIf="!bvFilled">
+            <div class="row">
+              <span>Aucun fichier transmis</span>
+            </div>
+          </div>
+          <div class="container" *ngIf="bvFilled">
+            <div class="row">
+              <div class="col border-bottom" *ngIf="bvSent">
+                <strong>{{ bvfiles[0].relativePath }}</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col" *ngIf="bvResponse && bvResponse.error">
+                <span>{{bvResponse.errorMessage}} </span>
+              </div>
+              <div class="col" *ngIf="bvFilled && !bvSent">
+                <span>Chargement </span>
+                <div class="spinner-grow" role="status">
+                  <span class="sr-only"></span>
+                </div>
+              </div>
+              <div class="col" *ngIf="bvResponse && !bvResponse.error">
+                <span>{{bvResponse.nbBassins}} BV décanteurs</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background-color: #F58A07;width:2px;" 
+    [class.app-disabled]="freeze || !decTurn" [class.app-enabled]="!freeze && decTurn">
+    </div>
+    <div class="col" [class.app-disabled]="freeze || !decTurn" [class.app-enabled]="!freeze && decTurn">
+      <div class="card">
+
+        <div class="container">
+          <div class="row">
+            <h3 class="col-10">Décanteurs</h3>
+            <div class="col-2 onglet-icon app-enabled" (click)="openPopup(decparams)">
+              <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/dbf.png" />
+            </div>
+          </div>
+        </div>
+
+        <ng-template #decparams let-modal class="params-popup app-enabled">
+          <div class="modal-header">
+            <h4 class="modal-title" id="modal-basic-title">
+              Format DBF - Décanteurs
+            </h4>
+            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+
+              <span aria-hidden="true">
+                ×
+              </span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Champ</th>
+                  <th scope="col">Nom de la colonne</th>
+                  <th scope="col">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Nom</td>
+                  <td>NOM</td>
+                  <td>Texte</td>
+                </tr>
+                <tr>
+                  <th scope="row">2</th>
+                  <td>Surface</td>
+                  <td>SURFACE</td>
+                  <td>Décimal - m²</td>
+                </tr>
+                <tr>
+                  <th scope="row">3</th>
+                  <td>Profondeur</td>
+                  <td>PROFONDEUR</td>
+                  <td>Texte - m</td>
+                </tr>
+                <tr>
+                  <th scope="row">4</th>
+                  <td>Profondeur de déversoir</td>
+                  <td>PROF_DEVER</td>
+                  <td>Texte - m</td>
+                </tr>
+                <tr>
+                  <th scope="row">5</th>
+                  <td>Hauteur de la digue</td>
+                  <td>DIGUE</td>
+                  <td>Texte - m</td>
+                </tr>
+                <tr>
+                  <th scope="row">6</th>
+                  <td>Bassin versant</td>
+                  <td>BV</td>
+                  <td>Texte - Correspond au nom bassin versant tel que décrit dans le premier fichier</td>
+                </tr>
+                <tr>
+                  <th scope="row">7</th>
+                  <td>Zone</td>
+                  <td>ZONE</td>
+                  <td>Texte - Zone à laquelle appartient cet ouvrage</td>
+                </tr>
+                <tr>
+                  <th scope="row">8</th>
+                  <td>Type</td>
+                  <td>TYPE</td>
+                  <td>Texte - seuls les types 'FF' (fond de fosse) 'DECANTEUR' (décanteur) sont pris en compte</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-template>
+
+        <div class="center">
+          <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dec_dropped($event)"
+            (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+            <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+              Déposez ici le fichier des décanteurs
+            </ng-template>
+          </ngx-file-drop>
+          <div class="container" *ngIf="!decFilled">
+            <div class="row">
+              <span>Aucun fichier transmis</span>
+            </div>
+          </div>
+          <div class="container" *ngIf="decFilled">
+            <div class="row">
+              <div class="col border-bottom" *ngIf="decSent">
+                <strong>{{ decfiles[0].relativePath }}</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col" *ngIf="decResponse && decResponse.error">
+                <span>{{decResponse.errorMessage}} </span>
+              </div>
+              <div class="col" *ngIf="decFilled && !decSent">
+                <span>Chargement </span>
+                <div class="spinner-grow" role="status">
+                  <span class="sr-only"></span>
+                </div>
+              </div>
+              <div class="col" *ngIf="decResponse && !decResponse.error">
+                <span>{{decResponse.nbDecanteurs}} décanteurs (pour {{decResponse.nbBVs}} bassins dans
+                  {{decResponse.nbZones}} zones)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background-color: #F58A07;width:2px;" 
+    [class.app-disabled]="freeze || !exuTurn" [class.app-enabled]="!freeze && exuTurn">
+    </div>
+    <div class="col" [class.app-disabled]="freeze || !exuTurn" [class.app-enabled]="!freeze && exuTurn">
+      <div class="card">
+
+        <div class="container">
+          <div class="row">
+            <h3 class="col-10">BV exutoires</h3>
+            <div class="col-2 onglet-icon app-enabled" (click)="openPopup(exuparams)">
+              <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/dbf.png" />
+            </div>
+          </div>
+        </div>
+
+        <ng-template #exuparams let-modal class="params-popup app-enabled">
+          <div class="modal-header">
+            <h4 class="modal-title" id="modal-basic-title">
+              Format DBF - BV exutoires
+            </h4>
+            <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+
+              <span aria-hidden="true">
+                ×
+              </span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Champ</th>
+                  <th scope="col">Nom de la colonne</th>
+                  <th scope="col">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td>Nom</td>
+                  <td>NOM</td>
+                  <td>Texte</td>
+                </tr>
+                <tr>
+                  <th scope="row">2</th>
+                  <td>Surface</td>
+                  <td>SURFACE</td>
+                  <td>Décimal - m²</td>
+                </tr>
+                <tr>
+                  <th scope="row">3</th>
+                  <td>Dénivelé</td>
+                  <td>DENIVELE</td>
+                  <td>Texte - m</td>
+                </tr>
+                <tr>
+                  <th scope="row">4</th>
+                  <td>Longueur hydraulique</td>
+                  <td>LGR_HYDRO</td>
+                  <td>Texte - m</td>
+                </tr>
+                <tr>
+                  <th scope="row">5</th>
+                  <td>Creek</td>
+                  <td>CREEK</td>
+                  <td>Texte - Creek auquel appartient l'exutoire</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </ng-template>
+
+
+        <div class="center">
+          <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="exu_dropped($event)"
+            (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+            <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+              Déposez ici le fichier des BV exutoires
+            </ng-template>
+          </ngx-file-drop>
+          <div class="container" *ngIf="!exuFilled">
+            <div class="row">
+              <span>Aucun fichier transmis</span>
+            </div>
+          </div>
+          <div class="container" *ngIf="exuFilled">
+            <div class="row">
+              <div class="col border-bottom" *ngIf="exuSent">
+                <strong>{{ exufiles[0].relativePath }}</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col" *ngIf="exuResponse && exuResponse.error">
+                <span>{{exuResponse.errorMessage}} </span>
+              </div>
+              <div class="col" *ngIf="exuFilled && !exuSent">
+                <span>Chargement </span>
+                <div class="spinner-grow" role="status">
+                  <span class="sr-only"></span>
+                </div>
+              </div>
+              <div class="col" *ngIf="exuResponse && !exuResponse.error">
+                <span>{{exuResponse.nbExutoires}} BV exutoires (pour {{exuResponse.nbCreeks}} creeks)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
