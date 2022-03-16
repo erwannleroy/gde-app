@@ -60,10 +60,6 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
 		nbOuvragesTraites = 0;
 		nbOuvragesTotal = countOuvragesTotal(bassins());
 
-//		generateLotsBassins();
-
-		int column = 0;
-
 		generateBassins(bassins());
 
         sheet.setColumnWidth(0, 16 * 256);
@@ -72,10 +68,11 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
         sheet.setColumnWidth(3, 14 * 256);
         sheet.setColumnWidth(4, 8 * 256);
         sheet.setColumnWidth(5, 14 * 256);
-        sheet.setColumnWidth(6, 14 * 256);
-		sheet.setColumnWidth(7, 2 * 256);
-		sheet.setColumnWidth(8, 16 * 256);
-		sheet.setColumnWidth(9, 14 * 256);
+		sheet.setColumnWidth(6, 2 * 256);
+        sheet.setColumnWidth(7, 14 * 256);
+        sheet.setColumnWidth(8, 16 * 256);
+		sheet.setColumnWidth(9, 2 * 256);
+		sheet.setColumnWidth(10, 14 * 256);
 
 		XlsUtils.borderMergedSheet(sheet);
 
@@ -96,14 +93,17 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
 		short htitle = 40;
 		enteteGroup.setHeightInPoints(htitle);
 
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexDimensionnement, 0, 6);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexDimensionnement, 0, 5);
 		Cell title2ParamCell = enteteGroup.createCell(0);
 		title2(computeContext, title2ParamCell, "Paramètres hydrauliques des bassins versants associés aux ouvrages");
 
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexDimensionnement, 8, 9);
-		Cell title2DimCell = enteteGroup.createCell(8);
-		title2(computeContext, title2DimCell, "Dimensionnement");
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexDimensionnement, 7, 8);
+		Cell title2MetCell = enteteGroup.createCell(7);
+		title2(computeContext, title2MetCell, "Données météorologiques");
 
+		Cell title2DimCell = enteteGroup.createCell(10);
+		title2(computeContext, title2DimCell, "Dimensionnement");
+		
 		rowIndexDimensionnement++;
 
 		// entete tableau
@@ -128,21 +128,15 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
 		Cell titleRuissellement = enteteColonneRow.createCell(5);
 		title3(computeContext, titleRuissellement, "Coefficient de ruissellement du BV");
 
-		Cell titlePluie = enteteColonneRow.createCell(6);
+		Cell titlePluie = enteteColonneRow.createCell(7);
 		title3(computeContext, titlePluie, "Temps de retour et durée de la pluie de référence choisis");
 
 		Cell titlePrecipitations = enteteColonneRow.createCell(8);
 		title3(computeContext, titlePrecipitations,
 				"Quantité max de précipitations i(t;T) pour une durée de pluie t (min) et pour une période de retour T (années)");
 
-//		Cell titlePrecipitationsCol2 = precipitationsRow.createCell(indexColumn + 1);
-//		title3(computeContext, titlePrecipitationsCol2, "i(t;T) en mm =");
-
-		Cell titleVolume = enteteColonneRow.createCell(9);
+		Cell titleVolume = enteteColonneRow.createCell(10);
 		title3(computeContext, titleVolume, "Volume d'eau V à retenir dans le décanteur (m3)");
-
-//		Cell titleVolumeCol2 = volumeEauRow.createCell(indexColumn + 1);
-//		title3BottomBorder(computeContext, titleVolumeCol2, "V (m3) =");
 
 		for (BVDecanteur bv : bassinsLot) {
 
@@ -180,14 +174,14 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
 			standardCell(computeContext, ruissellementCell, "")
 					.setCellFormula(parametresGenerator.parametres.get(ParametresGenerator.CST_COEFF_RUISS_PARAM));
 
-			Cell pluieCell = bassinRow.createCell(6);
+			Cell pluieCell = bassinRow.createCell(7);
 			standardCell(computeContext, pluieCell, ParametresGenerator.DIM_TPS_RETOUR_DUREE_PLUIE_DEFAULT);
 
 			Cell precipitationsCell = bassinRow.createCell(8);
 			standardCell(computeContext, precipitationsCell, "").setCellFormula(
 					parametresGenerator.parametres.get(ParametresGenerator.METEO_QTE_MAX_PRECIPITATIONS_PARAM));
 
-			Cell volEauCell = bassinRow.createCell(9);
+			Cell volEauCell = bassinRow.createCell(10);
 			String volEauFormula = String.format("INT((%s%s/1000)*(%s%s*10000)*%s%s)",
 					CellReference.convertNumToColString(precipitationsCell.getColumnIndex()),
 					precipitationsCell.getRowIndex() + 1,
@@ -225,7 +219,7 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
 		// une colonne vide
 		int indexColumn = 0;
 
-		XlsUtils.mergeRow(computeContext, sheet, 0, indexColumn, 9);
+		XlsUtils.mergeRow(computeContext, sheet, 0, indexColumn, 10);
 
 		titleRow.setRowStyle(XlsUtils.blankRow(computeContext));
 		String title = "Objectif de rétention pour chaque sous-bassin versant de la mine ";

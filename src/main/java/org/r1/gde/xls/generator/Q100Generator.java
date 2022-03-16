@@ -75,10 +75,10 @@ public class Q100Generator extends SheetGenerator {
 		sheet.setColumnWidth(5, 8 * 256);
 		sheet.setColumnWidth(6, 12 * 256);
 		sheet.setColumnWidth(7, 10 * 256);
-		sheet.setColumnWidth(8, 1 * 256);
+		sheet.setColumnWidth(8, 12* 256);
 		sheet.setColumnWidth(9, 12 * 256);
 		sheet.setColumnWidth(10, 12 * 256);
-		sheet.setColumnWidth(11, 12 * 256);
+		sheet.setColumnWidth(11, 1 * 256);
 		sheet.setColumnWidth(12, 12 * 256);
 		sheet.setColumnWidth(13, 1 * 256);
 		sheet.setColumnWidth(14, 10 * 256);
@@ -103,24 +103,23 @@ public class Q100Generator extends SheetGenerator {
 
 		// enteteGroup
 		Row enteteRow = sheet.createRow(rowIndexExutoire);
-		short htitle = 30;
+		short htitle = 35;
 		enteteRow.setHeightInPoints(htitle);
 
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 0, 7);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 0, 10);
 		Cell caracExuTitleCell = enteteRow.createCell(0);
-		title2(computeContext, caracExuTitleCell, "Caractéristiques des exutoires");
+		title2(computeContext, caracExuTitleCell, "Caractéristiques des bassins versants associés aux exutoires");
 
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 9, 12);
-		Cell debitTitleCell = enteteRow.createCell(9);
-		title2(computeContext, debitTitleCell, "Débit (tps de retour 100 ans)");
+		Cell debitTitleCell = enteteRow.createCell(12);
+		title2(computeContext, debitTitleCell, "Q100");
 
 		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 14, 17);
 		Cell crueTitleCell = enteteRow.createCell(14);
-		title2(computeContext, crueTitleCell, "Crue");
+		title2(computeContext, crueTitleCell, "Dimensionnement des déversoirs");
 
 		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 19, 20);
 		Cell dimTitleCell = enteteRow.createCell(19);
-		title2(computeContext, dimTitleCell, "Dimensions");
+		title2(computeContext, dimTitleCell, "Section des déversoirs");
 
 		rowIndexExutoire++;
 
@@ -151,13 +150,13 @@ public class Q100Generator extends SheetGenerator {
 		Cell vitEcoulCellTitle = columnRow.createCell(7);
 		title3(computeContext, vitEcoulCellTitle, "Vitesse d'écoulement (m/s)");
 
-		Cell calcaulTpsConcCellTitle = columnRow.createCell(9);
+		Cell calcaulTpsConcCellTitle = columnRow.createCell(8);
 		title3(computeContext, calcaulTpsConcCellTitle, "Calcul du temps de concentration (mn)");
 
-		Cell tpsConcCellTitle = columnRow.createCell(10);
+		Cell tpsConcCellTitle = columnRow.createCell(9);
 		title3(computeContext, tpsConcCellTitle, "Temps de concentration retenu (mn)");
 
-		Cell intAvObjCellTitle = columnRow.createCell(11);
+		Cell intAvObjCellTitle = columnRow.createCell(10);
 		title3(computeContext, intAvObjCellTitle, "Calcul de l'intensité de l'averse (mm/h)");
 
 		Cell debitCellTitle = columnRow.createCell(12);
@@ -238,7 +237,7 @@ public class Q100Generator extends SheetGenerator {
 						CellReference.convertNumToColString(penteCell.getColumnIndex()), penteCell.getRowIndex() + 1);
 				standardCell(computeContext, ecoulementCell, "").setCellFormula(ecoulementFormula);
 
-				Cell calculTpsConcCell = exuRow.createCell(9);
+				Cell calculTpsConcCell = exuRow.createCell(8);
 				String calculTpsConcFormula = String.format("%s%s/%s%s/60",
 						CellReference.convertNumToColString(lgHydroCell.getColumnIndex()),
 						lgHydroCell.getRowIndex() + 1,
@@ -246,7 +245,7 @@ public class Q100Generator extends SheetGenerator {
 						ecoulementCell.getRowIndex() + 1);
 				standardCellDecimal2Comma(computeContext, calculTpsConcCell, "").setCellFormula(calculTpsConcFormula);
 
-				Cell tpsConcRetenuCell = exuRow.createCell(10);
+				Cell tpsConcRetenuCell = exuRow.createCell(9);
 				String tpsConcRetenuFormula = String.format("IF(%s%s>%s,%s%s, %s)",
 						CellReference.convertNumToColString(calculTpsConcCell.getColumnIndex()),
 						calculTpsConcCell.getRowIndex() + 1,
@@ -256,7 +255,7 @@ public class Q100Generator extends SheetGenerator {
 						parametresGenerator.parametres.get(ParametresGenerator.METEO_TPS_CONCENTRATION_PARAM));
 				standardCellDecimal2Comma(computeContext, tpsConcRetenuCell, "").setCellFormula(tpsConcRetenuFormula);
 
-				Cell calculAverseCell = exuRow.createCell(11);
+				Cell calculAverseCell = exuRow.createCell(10);
 				String calculAverseFormula = String.format("%s*(%s%s^-%s)",
 						parametresGenerator.parametres.get(ParametresGenerator.METEO_COEFF_MONTANA_A_PARAM),
 						CellReference.convertNumToColString(tpsConcRetenuCell.getColumnIndex()),
@@ -344,10 +343,9 @@ public class Q100Generator extends SheetGenerator {
 		XlsUtils.mergeRow(computeContext, sheet, 0, 0, 20);
 
 		titleRow.setRowStyle(XlsUtils.blankRow(computeContext));
-		String title = "Caractéristiques des bassins versants d'exutoires et débits associés à l'état initial ";
+		String title = "Débits centennaux aux exutoires et dimensionnement des déversoirs";
 		Cell headerCell = titleRow.createCell(0);
-		title1(computeContext, headerCell, title).setCellFormula("CONCATENATE(\"" + title + "\","
-				+ parametresGenerator.parametres.get(ParametresGenerator.GLO_NOM_MINE_PARAM) + ")");
+		title1(computeContext, headerCell, title);
 
 		rowIndexExutoire++;
 	}
