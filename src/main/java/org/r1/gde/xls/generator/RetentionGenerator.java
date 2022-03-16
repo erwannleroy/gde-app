@@ -139,7 +139,7 @@ public class RetentionGenerator extends SheetGenerator {
 
 		// enteteGroup
 		Row enteteRow = sheet.createRow(rowIndexRetention);
-		short htitle = 30;
+		short htitle = 35;
 		enteteRow.setHeightInPoints(htitle);
 
 		Cell titleZone = enteteRow.createCell(0);
@@ -151,11 +151,11 @@ public class RetentionGenerator extends SheetGenerator {
 
 		XlsUtils.mergeRow(computeContext, sheet, rowIndexRetention, 4, 9);
 		Cell titleDimCell = enteteRow.createCell(4);
-		title2(computeContext, titleDimCell, "Dimensionnement des bassins");
+		title2(computeContext, titleDimCell, "Caractéristiques des bassins");
 
 		XlsUtils.mergeRow(computeContext, sheet, rowIndexRetention, 11, 12);
 		Cell titleCumulCell = enteteRow.createCell(11);
-		title2(computeContext, titleCumulCell, "Cumul");
+		title2(computeContext, titleCumulCell, "Capacité de rétention");
 
 		rowIndexRetention++;
 
@@ -169,7 +169,7 @@ public class RetentionGenerator extends SheetGenerator {
 		title3(computeContext, bvCellTitle, "Bassin versant");
 
 		Cell objCapaCellTitle = columnRow.createCell(2);
-		title3(computeContext, objCapaCellTitle, "Objectif de capacité de rétention du BV (m3)");
+		title3(computeContext, objCapaCellTitle, "Objectif de rétention du BV (m3)");
 
 		Cell nomOuvrageCellTitle = columnRow.createCell(4);
 		title3(computeContext, nomOuvrageCellTitle, "Nom de l'ouvrage");
@@ -338,7 +338,7 @@ public class RetentionGenerator extends SheetGenerator {
 		XlsUtils.mergeRow(computeContext, sheet, 0, indexColumn, 12);
 
 		titleRow.setRowStyle(XlsUtils.blankRow(computeContext));
-		String title = "Capacité de rétention globale actuelle et comparaison à l'objectif 2H/2ANS";
+		String title = "Capacité de rétention globale et comparaison à l'objectif 2H/2ANS";
 		Cell headerCell = titleRow.createCell(indexColumn);
 		title1(computeContext, headerCell, title);
 		rowIndexRetention++;
