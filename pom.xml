@@ -24,11 +24,11 @@
 	</properties>
 
 	<dependencies>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springdoc</groupId> -->
-<!-- 			<artifactId>springdoc-openapi-ui</artifactId> -->
-<!-- 			<version>1.5.0</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.springdoc</groupId> -->
+		<!-- <artifactId>springdoc-openapi-ui</artifactId> -->
+		<!-- <version>1.5.0</version> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -63,6 +63,11 @@
 			<artifactId>jdbf</artifactId>
 			<version>2.1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.albfernandez</groupId>
+			<artifactId>javadbf</artifactId>
+			<version>1.13.1</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -70,11 +75,11 @@
 			<version>3.12.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-<!--		<dependency>-->
-<!--			<groupId>org.slf4j</groupId>-->
-<!--			<artifactId>slf4j-api</artifactId>-->
-<!--			<version>1.7.33</version>-->
-<!--		</dependency>-->
+		<!-- <dependency> -->
+		<!-- <groupId>org.slf4j</groupId> -->
+		<!-- <artifactId>slf4j-api</artifactId> -->
+		<!-- <version>1.7.33</version> -->
+		<!-- </dependency> -->
 		<!-- https://mvnrepository.com/artifact/log4j/log4j -->
 
 
@@ -217,7 +222,7 @@
 									<jre>
 										<minVersion>1.8.0</minVersion>
 									</jre>
-									
+
 									<versionInfo>
 										<fileVersion>1.0.0.0</fileVersion>
 										<txtFileVersion>1.0.0.0</txtFileVersion>

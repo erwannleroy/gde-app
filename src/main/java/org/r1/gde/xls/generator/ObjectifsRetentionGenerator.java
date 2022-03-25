@@ -36,8 +36,6 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
 
 		log.info("Génération de l'onglet Dimensionnement");
 
-		this.computeContext.getComputingResult().setObjectifsComputing(true);
-
 		sheet = workbook().getSheet(TITLE_SHEET);
 
 		if (null != sheet) {

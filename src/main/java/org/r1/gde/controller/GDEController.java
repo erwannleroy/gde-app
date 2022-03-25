@@ -1,10 +1,11 @@
 package org.r1.gde.controller;
 
-import java.time.LocalDateTime;
-
+import lombok.extern.slf4j.Slf4j;
+import org.r1.gde.model.DonneesMeteo;
 import org.r1.gde.service.ComputingResult;
 import org.r1.gde.service.GDEComputer;
 import org.r1.gde.service.GDEService;
+import org.r1.gde.service.MeteoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,15 +13,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
 
 @RestController
 @Slf4j
@@ -44,6 +40,13 @@ public class GDEController {
 		return ResponseEntity.status(HttpStatus.OK).body(bvResponse);
 	}
 
+	@PostMapping("/apply-meteo")
+	public ResponseEntity<MeteoResponse> applyMeteo(@RequestBody DonneesMeteo dataMeteo) {
+		MeteoResponse meteoResponse = this.gdeService.applyMeteo(dataMeteo);
+
+		return ResponseEntity.status(HttpStatus.OK).body(meteoResponse);
+	}
+
 	@PostMapping("/upload-decanteurs-file")
 	public ResponseEntity<DecanteurResponse> uploadDecanteurFile(@RequestParam("dec") MultipartFile file) {
 		DecanteurResponse decResponse = this.gdeService.giveDecanteurFile(file);
@@ -59,16 +62,14 @@ public class GDEController {
 		return ResponseEntity.status(HttpStatus.OK).body(exuResponse);
 	}
 
-	@PostMapping("/upload-bv-file-by-path")
-	public BVDecanteurResponse uploadFileByPath(@RequestParam("bv") String bvFilePath) {
+//	@PostMapping("/upload-bv-file-by-path")
+//	public BVDecanteurResponse uploadFileByPath(@RequestParam("bv") String bvFilePath) {
+//
+//		BVDecanteurResponse result = this.gdeService.giveBVFilePath(bvFilePath);
+//
+//		return result;
+//	}
 
-		BVDecanteurResponse result = this.gdeService.giveBVFilePath(bvFilePath);
-
-		return result;
-	}
-
-	
-	
 	@PostMapping("/ping")
 	public ResponseEntity ping() {
 		this.lastPing = LocalDateTime.now();
@@ -81,7 +82,7 @@ public class GDEController {
 		this.gdeComputer.reset();
 		return new ResponseEntity(HttpStatus.OK);
 	}
-	
+
 	@Scheduled(fixedDelay = 2000)
 	public void testAlive() {
 		if (this.lastPing != null) {
@@ -99,12 +100,22 @@ public class GDEController {
 		return ResponseEntity.status(HttpStatus.OK).body(gdeComputer.getComputeContext().getComputingResult());
 	}
 
-	@GetMapping("/get-result-bytes")
+	@GetMapping("/get-result-bytes-xls")
 	public ResponseEntity<byte[]> getComputeResultBytes() {
 		HttpHeaders header = new HttpHeaders();
 		header.setContentType(new MediaType("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
 		header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=gde.xlsx");
-		byte[] bytes = gdeComputer.getComputeContext().getComputingResult().getXls();
+		byte[] bytes = gdeComputer.getComputeContext().getBytesResult().getBytesXls();
+		header.setContentLength(bytes.length);
+		return ResponseEntity.status(HttpStatus.OK).headers(header).body(bytes);
+	}
+
+	@GetMapping("/get-result-bytes-dbf")
+	public ResponseEntity<byte[]> getComputeResultBytesDBF() {
+		HttpHeaders header = new HttpHeaders();
+		header.setContentType(new MediaType("application", "vnd.dbf"));
+		header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bv-decanteurs-perf.dbf");
+		byte[] bytes = gdeComputer.getComputeContext().getBytesResult().getBytesDbf();
 		header.setContentLength(bytes.length);
 		return ResponseEntity.status(HttpStatus.OK).headers(header).body(bytes);
 	}

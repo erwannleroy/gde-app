@@ -5,6 +5,9 @@ export abstract class Response {
     error: boolean;
 }
 
+export class MeteoResponse extends Response {
+    result: boolean;
+}
 
 export class BVResponse extends Response {
     nbBassins: number;

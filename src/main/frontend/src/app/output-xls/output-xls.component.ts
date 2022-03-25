@@ -18,13 +18,14 @@ export class OutputXlsComponent implements OnInit {
   public result: ComputingResult;
   public fileUrl: any;
   public bytes: Blob;
+  public bytesDBF: Blob;
 
   public bvResponse: BVResponse;
   public decResponse: DECResponse;
   public exuResponse: EXUResponse;
-  public bvSent: boolean = false;
+  public bvDecSent: boolean = false;
   public decSent: boolean = false;
-  public exuSent: boolean = false;
+  public bvExuSent: boolean = false;
   aliveSub: Subscription;
 
   constructor(private gdeService: GdeService) {
@@ -36,8 +37,8 @@ export class OutputXlsComponent implements OnInit {
     });
 
     this.gdeService.getBVSent().subscribe(data => {
-      console.log("output notified bv sent");
-      this.bvSent = true;
+      console.log("output notified bv dec sent");
+      this.bvDecSent = true;
     });
 
     this.gdeService.getDECSent().subscribe(data => {
@@ -46,15 +47,15 @@ export class OutputXlsComponent implements OnInit {
     });
 
     this.gdeService.getEXUSent().subscribe(data => {
-      console.log("output notified exu sent");
-      this.exuSent = true;
+      console.log("output notified bv exu sent");
+      this.bvExuSent = true;
     });
 
 
     this.gdeService.getBVResponse().subscribe(data => {
       console.log("Réception d'un résultat BV", data);
       this.bvResponse = data;
-      this.bvSent = true;
+      this.bvDecSent = true;
     });
 
     this.gdeService.getDECResponse().subscribe(data => {
@@ -66,7 +67,7 @@ export class OutputXlsComponent implements OnInit {
     this.gdeService.getEXUResponse().subscribe(data => {
       console.log("Réception d'un résultat EXU", data);
       this.exuResponse = data;
-      this.exuSent = true;
+      this.bvExuSent = true;
     });
 
     this.gdeService.getResult().subscribe(data => {
@@ -74,9 +75,14 @@ export class OutputXlsComponent implements OnInit {
       this.result = data;
     });
 
-    this.gdeService.getResultBytes().subscribe(data => {
-      console.log("Bytes recus");
+    this.gdeService.getResultBytesXLS().subscribe(data => {
+      console.log("Bytes XLS recus");
       this.bytes = data;
+    });
+
+    this.gdeService.getResultBytesBDF().subscribe(data => {
+      console.log("Bytes BDF recus");
+      this.bytesDBF = data;
     });
 
     const source = interval(1000);
@@ -89,14 +95,14 @@ export class OutputXlsComponent implements OnInit {
     this.decResponse = null;
     this.exuResponse = null;
     this.result = null;
-    this.bvSent = false;
+    this.bvDecSent = false;
     this.decSent = false;
-    this.exuSent = false;
+    this.bvExuSent = false;
   }
 
-  downloadFile(): string {
+  downloadXlsFile(): string {
     console.log("clic sur Télécharger");
-    console.log("bytes", this.bytes);
+    // console.log("bytes", this.bytes);
     const url = window.URL.createObjectURL(this.bytes); // <-- work with blob directly
 
     // create hidden dom element (so it works in all browsers)
@@ -107,6 +113,23 @@ export class OutputXlsComponent implements OnInit {
     // create file, attach to hidden element and open hidden element
     a.href = url;
     a.download = "gde-dimensionnement.xlsx";
+    a.click();
+    return url;
+  }
+
+  downloadDbfFile(): string {
+    console.log("clic sur Télécharger BDF");
+    // console.log("bytes", this.bytes);
+    const url = window.URL.createObjectURL(this.bytesDBF); // <-- work with blob directly
+
+    // create hidden dom element (so it works in all browsers)
+    const a = document.createElement('a');
+    a.setAttribute('style', 'display:none;');
+    document.body.appendChild(a);
+
+    // create file, attach to hidden element and open hidden element
+    a.href = url;
+    a.download = "bv-decanteurs-performance.dbf";
     a.click();
     return url;
   }

@@ -1,25 +1,24 @@
 export class ComputingResult {
-  inProgress: boolean;
-  computationOk: boolean;
 
-  q100InProgress: number;
-  cassisInProgress: number;
-  retentionInProgress: number;
-  objectifsInProgress: number;
+	error: boolean = false;
+	errorMsg: string = "";
 
-  bvDecSent: boolean;
-  decSent: boolean;
-  bvExuSent: boolean;
+	bytesXlsInProgress: boolean = false;
+	bytesDbfInProgress: boolean = false;
+	xlsComputationOk: boolean = false;
+	dbfComputationOk: boolean = false;
 
-  objectifsComputing: boolean;
-  objectifsGenere: boolean;
+	objRetComputeProgress: number = 0;
+	retComputeProgress: number = 0;
+	cassisComputeProgress: number = 0;
+	q100ComputeProgress: number = 0;
 
-  retentionComputing: boolean;
-  retentionGenere: boolean;
+	objRetComputeOk: boolean = false;
+	retComputeOk: boolean = false;
+	cassisComputeOk: boolean = false;
+	q100ComputeOk: boolean = false;
 
-  q100Computing: boolean;
-  cassisComputing: boolean;
-  q100Genere: boolean;
-  cassisGenere: boolean;
+	xlsComputeProgress: number = 0;
+	dbfComputeProgress: number = 0;
 
 }

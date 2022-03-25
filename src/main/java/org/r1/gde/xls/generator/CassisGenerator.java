@@ -41,8 +41,6 @@ public class CassisGenerator extends SheetGenerator {
 	public void run() {
 		log.info("Génération de l'onglet Cassis");
 
-		this.computeContext.getComputingResult().setCassisComputing(true);
-
 		sheet = workbook().getSheet(TITLE_SHEET);
 
 		if (null != sheet) {

@@ -1,24 +1,27 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
-import { HttpClient, HttpParams, HttpRequest } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ComputingResult } from './ComputingResult';
-import { timeout } from 'q';
-import { BVResponse, DECResponse, EXUResponse } from './Response';
+import { BVResponse, DECResponse, EXUResponse, MeteoResponse } from './Response';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GdeService {
 
+  bvDecSent: boolean = false;
+  decSent: boolean = false;
+  bvExuSent: boolean = false;
+
+  private subjectMeteo = new Subject<MeteoResponse>();
   private subjectBV = new Subject<BVResponse>();
   private subjectDEC = new Subject<DECResponse>();
   private subjectEXU = new Subject<EXUResponse>();
   private subjectResult = new Subject<ComputingResult>();
-  private subjectBytes = new Subject<Blob>();
+  private subjectBytesXLS = new Subject<Blob>();
+  private subjectBytesDBF = new Subject<Blob>();
   private nbTry: number = 0;
-  private computationProblem: boolean = false;
-  private bvParsingError = false;
   private subjectBVSent = new Subject<Object>();
   private subjectDECSent = new Subject<Object>();
   private subjectEXUSent = new Subject<Object>();
@@ -44,17 +47,34 @@ export class GdeService {
     this.subjectReset.next();
   }
 
+  applyMeteo(maxPrecipitations: number, coefA: number, coefB: number) {
+    console.log("applyMeteo");
+    const params = { 'maxPrecipitations': maxPrecipitations, 'coefA': coefA, 'coefB': coefB };
+    console.log("meteo params", params);
+    this.http.post<any>('gde/apply-meteo', params).subscribe(data => {
+      console.log("post meteo", params);
+      this.subjectMeteo.next(data);
+    },
+      error => {
+        let metR = new MeteoResponse();
+        metR.error = true;
+        metR.errorMessage = "Paramètres incorrects";
+        this.subjectMeteo.next(metR);
+      });
+  }
+
   getResetOrder(): Observable<Object> {
     return this.subjectReset.asObservable();
   }
 
-
   getBVSent(): Observable<Object> {
     return this.subjectBVSent.asObservable();
   }
+
   getDECSent(): Observable<Object> {
     return this.subjectDECSent.asObservable();
   }
+
   getEXUSent(): Observable<Object> {
     return this.subjectEXUSent.asObservable();
   }
@@ -62,22 +82,34 @@ export class GdeService {
   getBVResponse(): Observable<BVResponse> {
     return this.subjectBV.asObservable();
   }
+
   getDECResponse(): Observable<DECResponse> {
     return this.subjectDEC.asObservable();
   }
+
   getEXUResponse(): Observable<EXUResponse> {
     return this.subjectEXU.asObservable();
   }
+
+  getMeteoResponse(): Observable<MeteoResponse> {
+    return this.subjectMeteo.asObservable();
+  }
+
   getResult(): Observable<ComputingResult> {
     return this.subjectResult.asObservable();
   }
-  getResultBytes(): Observable<Blob> {
-    return this.subjectBytes.asObservable();
+
+  getResultBytesXLS(): Observable<Blob> {
+    return this.subjectBytesXLS.asObservable();
+  }
+
+  getResultBytesBDF(): Observable<Blob> {
+    return this.subjectBytesDBF.asObservable();
   }
 
   postBVFile(file: File) {
+    this.bvDecSent = true;
     this.subjectBV.next(null);
-    this.bvParsingError = false;
     console.log("postBVFile : " + file);
     const formData: FormData = new FormData();
     formData.append('bv', file);
@@ -97,6 +129,7 @@ export class GdeService {
   }
 
   postDECFile(file: File) {
+    this.decSent = true;
     console.log("postDECFile : " + file);
     const formData: FormData = new FormData();
     formData.append('dec', file);
@@ -115,6 +148,7 @@ export class GdeService {
   }
 
   postEXUFile(file: File) {
+    this.bvExuSent = true;
     console.log("postEXUFile : " + file);
     const formData: FormData = new FormData();
     formData.append('exu', file);
@@ -143,25 +177,32 @@ export class GdeService {
       console.log("retour du WS", data);
       console.log(data);
       this.subjectResult.next(data);
-      if (data && data.inProgress) {
+      const objRetWait = this.bvDecSent && !data.objRetComputeOk && !data.xlsComputationOk;
+      const retWait = this.decSent && !data.retComputeOk && !data.xlsComputationOk && !data.dbfComputationOk;
+      const cassisWait = this.bvExuSent && !data.cassisComputeOk && !data.xlsComputationOk;
+      const q100Wait = this.bvExuSent && !data.q100ComputeOk && !data.xlsComputationOk;
+
+
+      if (!data.error && (objRetWait || retWait || cassisWait || q100Wait)) {
         console.log("Résultat pas encore prêt, on attend");
         await this.delay(1000);
         this.refreshResult();
-        this.nbTry++;
-      } else if (data && !data.inProgress) {
-        this.http.get('gde/get-result-bytes', { responseType: 'blob' }).subscribe(async data => {
+      } else {
+        this.http.get('gde/get-result-bytes-xls', { responseType: 'blob' }).subscribe(async data => {
           console.log("Résultat prêt", data);
           console.log(data);
-          this.subjectBytes.next(data);
+          this.subjectBytesXLS.next(data);
         });
-      } else {
-        this.nbTry = 0;
-
-      }
+        if (this.decSent) {
+          this.http.get('gde/get-result-bytes-dbf', { responseType: 'blob' }).subscribe(async data => {
+            console.log("Résultat DBF prêt", data);
+            console.log(data);
+            this.subjectBytesDBF.next(data);
+          });  
+        }
+      } 
     });
 
-
   }
-
 
 }

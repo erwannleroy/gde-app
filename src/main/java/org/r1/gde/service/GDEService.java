@@ -2,6 +2,7 @@ package org.r1.gde.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -19,7 +20,10 @@ import org.r1.gde.model.BVDecanteur;
 import org.r1.gde.model.BVExutoire;
 import org.r1.gde.model.Creek;
 import org.r1.gde.model.Decanteur;
+import org.r1.gde.model.DonneesMeteo;
 import org.r1.gde.model.Zone;
+import org.r1.gde.xls.generator.GDEException;
+import org.r1.gde.xls.generator.ParametresGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -56,11 +60,21 @@ public class GDEService {
 				result.setFileFormatOk(true);
 				result.setNbBassins(bassins.size());
 				gdeComputer.updateBassins(bassins);
-			} catch (IOException | ParseException e) {
+			} catch (IOException e) {
 				log.error("Impossible de parser le fichier BV", e);
 				result.setFileFormatOk(false);
-				result.setErrorMessage(e.getCause().getMessage());
+				result.setErrorMessage(e.getMessage());
 				result.setError(true);
+				gdeComputer.getComputeContext().getComputingResult().setError(true);
+				gdeComputer.getComputeContext().getComputingResult()
+						.setErrorMsg("Le fichier des BV décanteurs est mal structuré (cause : " + e.getMessage() + ")");
+			} catch (GDEException e) {
+				log.error("Impossible de parser le fichier BV", e);
+				result.setFileFormatOk(false);
+				result.setErrorMessage(e.getMessage());
+				result.setError(true);
+				gdeComputer.getComputeContext().getComputingResult().setError(true);
+				gdeComputer.getComputeContext().getComputingResult().setErrorMsg(e.getMessage());
 			}
 		}
 		return result;
@@ -82,11 +96,21 @@ public class GDEService {
 				result.setFileFormatOk(true);
 				fillResult(result, zones);
 				gdeComputer.updateDecanteurs(zones);
-			} catch (IOException | ParseException e) {
+			} catch (IOException e) {
 				log.error("Impossible de parser le fichier DEC", e);
 				result.setFileFormatOk(false);
-				result.setErrorMessage(e.getCause().getMessage());
+				result.setErrorMessage(e.getMessage());
 				result.setError(true);
+				gdeComputer.getComputeContext().getComputingResult().setError(true);
+				gdeComputer.getComputeContext().getComputingResult()
+						.setErrorMsg("Le fichier des décanteurs est mal structuré (cause : " + e.getMessage() + ")");
+			} catch (GDEException e) {
+				log.error("Impossible de parser le fichier DEC", e);
+				result.setFileFormatOk(false);
+				result.setErrorMessage(e.getMessage());
+				result.setError(true);
+				gdeComputer.getComputeContext().getComputingResult().setError(true);
+				gdeComputer.getComputeContext().getComputingResult().setErrorMsg(e.getMessage());
 			}
 		}
 		return result;
@@ -124,11 +148,21 @@ public class GDEService {
 				result.setFileFormatOk(true);
 				fillResult(result, creeks);
 				gdeComputer.updateExutoires(creeks);
-			} catch (Exception e) {
+			} catch (IOException e) {
 				log.error("Impossible de parser le fichier EXU", e);
 				result.setFileFormatOk(false);
-				result.setErrorMessage(e.getCause().getMessage());
+				result.setErrorMessage(e.getMessage());
 				result.setError(true);
+				gdeComputer.getComputeContext().getComputingResult().setError(true);
+				gdeComputer.getComputeContext().getComputingResult()
+						.setErrorMsg("Le fichier des BV exutoires est mal structuré (cause : " + e.getMessage() + ")");
+			} catch (GDEException e) {
+				log.error("Impossible de parser le fichier EXU", e);
+				result.setFileFormatOk(false);
+				result.setErrorMessage(e.getMessage());
+				result.setError(true);
+				gdeComputer.getComputeContext().getComputingResult().setError(true);
+				gdeComputer.getComputeContext().getComputingResult().setErrorMsg(e.getMessage());
 			}
 		}
 		return result;
@@ -145,36 +179,18 @@ public class GDEService {
 		result.setNbExutoires(nbExutoires);
 	}
 
-	public BVDecanteurResponse giveBVFilePath(String bvFilePath) {
-		log.debug("giveBVFile {}", bvFilePath);
-		BVDecanteurResponse result = new BVDecanteurResponse();
-		File bvFile = new File(bvFilePath);
-
-		if (bvFile.exists()) {
-			result.setFileExists(true);
-			try {
-				List<BVDecanteur> bassins = parseBVDecanteur(bvFile);
-				result.setFileFormatOk(true);
-				result.setNbBassins(bassins.size());
-				gdeComputer.updateBassins(bassins);
-			} catch (IOException | ParseException e) {
-				log.error("Impossible de parser le fichier BV", e);
-				result.setFileFormatOk(false);
-				result.setErrorMessage(e.getCause().getMessage());
-				result.setError(true);
-			}
-		}
-		return result;
-	}
-
-	private List<Zone> parseDecanteur(File decfile) throws IOException, ParseException {
-		List<Zone> zones = new ArrayList<Zone>();
+	private List<Zone> parseDecanteur(File decfile) throws GDEException {
 		TempOuvragesParsing tempResult = new TempOuvragesParsing();
 
 		log.debug("Parsing du bv " + decfile.getAbsolutePath());
 		Charset stringCharset = Charset.forName("Cp866");
 
-		InputStream dbf = new FileInputStream(decfile);
+		InputStream dbf;
+		try {
+			dbf = new FileInputStream(decfile);
+		} catch (FileNotFoundException e) {
+			throw new GDEException("Le fichier des décanteurs est mal structuré", e);
+		}
 
 		DbfRecord rec;
 		try (DbfReader reader = new DbfReader(dbf)) {
@@ -189,20 +205,36 @@ public class GDEService {
 					tempResult.addOuvrage(decanteur);
 				}
 			}
+		} catch (IOException e) {
+			throw new GDEException("Le fichier des décanteurs est mal structuré", e);
+		} catch (ParseException e) {
+			throw new GDEException("Le fichier des décanteurs est mal structuré", e);
+		} finally {
+			try {
+				dbf.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		log.debug("Parcours de " + tempResult.zones.size() + " zones");
 //		log.debug("Ouvrage:" + ouvrages);
 		return tempResult.getZones();
 	}
 
-	private List<Creek> parseBVExutoire(File exufile) throws IOException, ParseException {
+	private List<Creek> parseBVExutoire(File exufile) throws GDEException {
 		List<Creek> creekszones = new ArrayList<Creek>();
 		TempExutoiresParsing tempResult = new TempExutoiresParsing();
 
 		log.debug("Parsing du exuFile " + exufile.getAbsolutePath());
 		Charset stringCharset = Charset.forName("ISO-8859-1");
 
-		InputStream dbf = new FileInputStream(exufile);
+		InputStream dbf;
+		try {
+			dbf = new FileInputStream(exufile);
+		} catch (FileNotFoundException e) {
+			throw new GDEException("Le fichier des BV exutoires est mal structuré", e);
+		}
 
 		DbfRecord rec;
 		try (DbfReader reader = new DbfReader(dbf)) {
@@ -217,18 +249,35 @@ public class GDEService {
 					tempResult.addExutoire(bvExu);
 				}
 			}
+		} catch (IOException e) {
+			throw new GDEException("Le fichier des BV exutoires est mal structuré", e);
+		} catch (ParseException e) {
+			throw new GDEException("Le fichier des BV exutoires est mal structuré", e);
+		} finally {
+			try {
+				dbf.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		log.debug("Parcours de " + tempResult.creeks.size() + " creeks");
 		return tempResult.getCreeks();
 	}
 
-	private List<BVDecanteur> parseBVDecanteur(File bvFile) throws IOException, ParseException {
+	private List<BVDecanteur> parseBVDecanteur(File bvFile) throws GDEException {
 		List<BVDecanteur> bassins = new ArrayList<BVDecanteur>();
 
 		log.debug("Parsing du bv " + bvFile.getAbsolutePath());
 		Charset stringCharset = Charset.forName("Cp866");
 
-		InputStream dbf = new FileInputStream(bvFile);
+		this.gdeComputer.getComputeContext().setBvFile(bvFile);
+		InputStream dbf;
+		try {
+			dbf = new FileInputStream(bvFile);
+		} catch (FileNotFoundException e) {
+			throw new GDEException("Le fichier des BV décanteurs est mal structuré", e);
+		}
 
 		DbfRecord rec;
 		try (DbfReader reader = new DbfReader(dbf)) {
@@ -243,15 +292,31 @@ public class GDEService {
 					bassins.add(bvDec);
 				}
 			}
+		} catch (IOException e) {
+			throw new GDEException("Le fichier des BV décanteurs est mal structuré", e);
+		} catch (ParseException e) {
+			throw new GDEException("Le fichier des BV décanteurs est mal structuré", e);
+		} finally {
+			try {
+				dbf.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		log.debug("Parcours de " + bassins.size() + " bassins versants");
 		log.debug("Bassins:" + bassins);
 		return bassins;
 	}
 
-	private BVDecanteur recordDBFToBVDecanteur(DbfRecord rec) throws ParseException {
+	private BVDecanteur recordDBFToBVDecanteur(DbfRecord rec) throws GDEException {
 		BVDecanteur bv = new BVDecanteur();
-		Map<String, Object> map = rec.toMap();
+		Map<String, Object> map;
+		try {
+			map = rec.toMap();
+		} catch (ParseException e) {
+			throw new GDEException("Le fichier des BV décanteurs est mal structuré", e);
+		}
 		Object nomField = map.get(BVDecanteur.NOM_OUVRAGE_FIELD);
 		if (nomField == null || StringUtils.isEmpty(nomField.toString())) {
 			return null;
@@ -266,9 +331,14 @@ public class GDEService {
 		return bv;
 	}
 
-	private Decanteur recordDBFToDecanteur(DbfRecord rec) throws ParseException {
+	private Decanteur recordDBFToDecanteur(DbfRecord rec) throws GDEException {
 		Decanteur dec = new Decanteur();
-		Map<String, Object> map = rec.toMap();
+		Map<String, Object> map;
+		try {
+			map = rec.toMap();
+		} catch (ParseException e) {
+			throw new GDEException("Le fichier des BV décanteurs est mal structuré", e);
+		}
 		Object nomField = map.get(Decanteur.NOM_FIELD);
 		if (nomField == null || StringUtils.isEmpty(nomField.toString())) {
 			return null;
@@ -300,9 +370,14 @@ public class GDEService {
 		return dec;
 	}
 
-	private BVExutoire recordDBFToBVExutoire(DbfRecord rec) throws ParseException {
+	private BVExutoire recordDBFToBVExutoire(DbfRecord rec) throws GDEException {
 		BVExutoire exu = new BVExutoire();
-		Map<String, Object> map = rec.toMap();
+		Map<String, Object> map;
+		try {
+			map = rec.toMap();
+		} catch (ParseException e) {
+			throw new GDEException("Le fichier des BV exutoires est mal structuré", e);
+		}
 		Object nomField = map.get(BVExutoire.NOM_FIELD);
 		if (nomField == null || StringUtils.isEmpty(nomField.toString())) {
 			return null;
@@ -320,6 +395,14 @@ public class GDEService {
 		exu.setCreek(creekField.toString());
 
 		return exu;
+	}
+
+	public MeteoResponse applyMeteo(DonneesMeteo data) {
+		this.gdeComputer.updateMeteo(data);
+		log.info("Définition des patres météo : " + data.toString());
+		MeteoResponse mr = new MeteoResponse();
+		mr.result = true;
+		return mr;
 	}
 
 }

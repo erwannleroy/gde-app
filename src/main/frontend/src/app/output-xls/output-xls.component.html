@@ -7,23 +7,23 @@
     <div class="container">
       <div class="row row-flex">
         <div class="col-sm onglet align-self-center"
-          [class.waiting]="bvSent && result.bvDecSent && (!result.objectifsGenere || result.objectifsComputing)">
+          [class.waiting]="bvDecSent && !result.objRetComputeOk && !result.error">
           <div class="container">
             <div class="row align-self-center">
               <div class="col-10">Objectifs de rétention</div>
             </div>
             <div class="row align-self-center">
-              <span class="badge bg-secondary" *ngIf="!bvSent">Pas de données</span>
+              <span class="badge bg-secondary" *ngIf="!bvDecSent">Pas de données</span>
               <span class="badge bg-primary"
-                *ngIf="bvSent && result.bvDecSent && (!result.objectifsGenere || result.objectifsComputing)">Calcul
-                {{result.objectifsInProgress}}%</span>
-              <span class="badge bg-success" *ngIf="result && result.objectifsGenere">Généré</span>
-              <span class="badge bg-danger" *ngIf="bvSent && result && !result.bvDecSent">Erreur</span>
+                *ngIf="bvDecSent && !result.objRetComputeOk && !result.error">Calcul
+                {{result.objRetComputeProgress}}%</span>
+              <span class="badge bg-success" *ngIf="result && result.objRetComputeOk">Généré</span>
+              <span class="badge bg-danger" *ngIf="bvDecSent && result.error">Erreur</span>
             </div>
           </div>
         </div>
         <div class="col-sm onglet align-self-center"
-          [class.waiting]="decSent && result.decSent && (!result.retentionGenere || result.retentionComputing)">
+          [class.waiting]="decSent && !result.retComputeOk">
           <div class="container">
             <div class="row align-self-center">
               <div class="col-10">Rétention des bassins</div>
@@ -31,37 +31,44 @@
             <div class="row align-self-center">
               <span class="badge bg-secondary" *ngIf="!decSent">Pas de données</span>
               <span class="badge bg-primary waiting"
-                *ngIf="decSent && result.decSent && (!result.retentionGenere || result.retentionComputing)">Calcul
-                {{result.retentionInProgress}}%</span>
-              <span class="badge bg-success" *ngIf="result && result.retentionGenere">Généré</span>
-              <span class="badge bg-danger" *ngIf="decSent && result && !result.decSent">Erreur</span>
+                *ngIf="decSent && !result.retComputeOk">Calcul
+                {{result.retComputeProgress}}%</span>
+              <span class="badge bg-success" *ngIf="result && result.retComputeOk">Généré</span>
+              <span class="badge bg-danger" *ngIf="decSent && result.error">Erreur</span>
             </div>
           </div>
         </div>
         <div class="col-sm onglet align-self-center content"
-          [class.waiting]="exuSent && result.bvExuSent && (result.q100Computing || result.cassisComputing)">
+          [class.waiting]="bvExuSent && !(result.q100ComputeOk|| result.cassisComputeOk)">
           <div class="container">
             <div class="row align-self-center">
               <div class="col-10">Q100 et déversoirs</div>
             </div>
             <div class="row align-self-center">
-              <span class="badge bg-secondary" *ngIf="!exuSent">Pas de données</span>
+              <span class="badge bg-secondary" *ngIf="!bvExuSent">Pas de données</span>
               <span class="badge bg-primary waiting"
-                *ngIf="exuSent && result.bvExuSent && (result.q100Computing || result.cassisComputing)">Calcul
+                *ngIf="bvExuSent && !(result.q100ComputeOk || result.cassisComputeOk)">Calcul
                 Q100({{result.q100InProgress}}%)
                 - Cassis({{result.cassisInProgress}}%)</span>
-              <span class="badge bg-success" *ngIf="result && result.q100Genere && result.cassisGenere">Généré</span>
-              <span class="badge bg-danger" *ngIf="exuSent && result && !result.bvExuSent">Erreur</span>
+              <span class="badge bg-success" *ngIf="result && result.q100ComputeOk && result.cassisComputeOk">Généré</span>
+              <span class="badge bg-danger" *ngIf="bvExuSent && result.error">Erreur</span>
             </div>
           </div>
         </div>
-        <div *ngIf="!result || !result.computationOk || result.inProgress" class="col-sm onglet onglet-icon">
-          <img style="height:auto;width:80px" src="../../assets/download-ko.png" />
+        <div *ngIf="!result || !result.dbfComputationOk" class="col-1 onglet onglet-icon">
+          <img style="height:auto;width:80px" src="../../assets/download-dbf-ko.png" />
         </div>
-        <div *ngIf="result && result.computationOk && !result.inProgress" class="col-sm onglet onglet-icon"
-          (click)="downloadFile()">
-              <img style="height:auto;width:80px;cursor: pointer;" src="../../assets/download.png" />
+        <div *ngIf="result && result.dbfComputationOk" class="col-1 onglet onglet-icon"
+             (click)="downloadDbfFile()">
+              <img style="height:auto;width:80px;cursor: pointer;" src="../../assets/download-dbf.png" />
           </div>
+        <div *ngIf="!result || !result.xlsComputationOk" class="col-1 onglet onglet-icon">
+          <img style="height:auto;width:80px" src="../../assets/download-xls-ko.png" />
+        </div>
+        <div *ngIf="result && result.xlsComputationOk" class="col-1 onglet onglet-icon"
+             (click)="downloadXlsFile()">
+          <img style="height:auto;width:80px;cursor: pointer;" src="../../assets/download-xls.png" />
+        </div>
       </div>
     </div>
   </div>

@@ -53,6 +53,7 @@ public abstract class SheetGenerator implements Runnable {
 	}
 
 	public void generateSheet(ComputeContext computeContext) {
+		computeContext.getComputingResult().setXlsComputationOk(false);
 		this.computeContext = computeContext;
 		try {
 			Thread t = new Thread(this);

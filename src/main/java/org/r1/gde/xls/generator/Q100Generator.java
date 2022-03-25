@@ -41,8 +41,6 @@ public class Q100Generator extends SheetGenerator {
 	public void run() {
 		log.info("Génération de l'onglet Exutoire");
 
-		this.computeContext.getComputingResult().setQ100Computing(true);
-
 		sheet = workbook().getSheet(TITLE_SHEET);
 
 		if (null != sheet) {

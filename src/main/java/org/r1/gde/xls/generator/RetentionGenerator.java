@@ -19,6 +19,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
@@ -54,8 +56,6 @@ public class RetentionGenerator extends SheetGenerator {
 	public void run() {
 
 		log.info("Génération de l'onglet Rétention");
-
-		this.computeContext.getComputingResult().setRetentionComputing(true);
 
 		sheet = workbook().getSheet(TITLE_SHEET);
 
@@ -95,12 +95,12 @@ public class RetentionGenerator extends SheetGenerator {
 		}
 
 		sheet.setColumnWidth(0, 14 * 256);
-        sheet.setColumnWidth(1, 14 * 256);
-        sheet.setColumnWidth(2, 12 * 256);
-        sheet.setColumnWidth(3, 1 * 256);
-        sheet.setColumnWidth(4, 14 * 256);
-        sheet.setColumnWidth(5, 12 * 256);
-        sheet.setColumnWidth(6, 12 * 256);
+		sheet.setColumnWidth(1, 14 * 256);
+		sheet.setColumnWidth(2, 12 * 256);
+		sheet.setColumnWidth(3, 1 * 256);
+		sheet.setColumnWidth(4, 14 * 256);
+		sheet.setColumnWidth(5, 12 * 256);
+		sheet.setColumnWidth(6, 12 * 256);
 		sheet.setColumnWidth(7, 12 * 256);
 		sheet.setColumnWidth(8, 12 * 256);
 		sheet.setColumnWidth(9, 10 * 256);
@@ -112,7 +112,7 @@ public class RetentionGenerator extends SheetGenerator {
 
 		sheet.createFreezePane(0, 8);
 		sheet.setRepeatingRows(new CellRangeAddress(6, 7, 0, 0));
-		
+
 		notifyListeners(SheetGeneratorEvent.RETENTION_SHEET_GENERATED, null);
 	}
 
@@ -214,7 +214,7 @@ public class RetentionGenerator extends SheetGenerator {
 			}
 			Cell zoneCell = bvRow.createCell(0);
 			redBoldVATop(computeContext, zoneCell, zone.nom);
-			
+
 			Cell bvCell = bvRow.createCell(1);
 			redBoldVATop(computeContext, bvCell, bv.nom);
 
@@ -322,6 +322,13 @@ public class RetentionGenerator extends SheetGenerator {
 
 			objectifRetentionCell(computeContext, percentObjCell, "").setCellFormula(percentObjFormula);
 
+			FormulaEvaluator evaluator = workbook().getCreationHelper().createFormulaEvaluator();
+
+			// existing Sheet, Row, and Cell setup
+			evaluator.evaluateFormulaCell(percentObjCell);
+			log.info("Performance bv " + bv.nom + " : " + percentObjCell.getNumericCellValue());
+			this.computeContext.getPerformanceBVDecanteur().put(bv.nom, percentObjCell.getNumericCellValue());
+
 			rowIndexRetention++;
 		}
 
@@ -373,7 +380,6 @@ public class RetentionGenerator extends SheetGenerator {
 		Cell legend3Color = legend3Row.createCell(4);
 		colorCell(computeContext, legend3Color, IndexedColors.LIGHT_ORANGE);
 		standardCellNoBorder(computeContext, legend3Text, "capacité de rétention < 80%  2h/2ans");
-
 
 	}
 

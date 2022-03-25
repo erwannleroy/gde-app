@@ -18,23 +18,13 @@ public class GDEApplication {
 	public static SplashScreen splashScreen;
 
 	public static void main(String[] args) {
-//		SpringApplication.run(GDEApplication.class, args);
 		log.info("Démarrage de l'application GDE");
 
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(GDEApplication.class);
 		builder.headless(false);
 		
-		
 		splashScreen = new SplashScreen();
 		splashScreen.setVisible(true);
-		
-//		builder.listeners((ApplicationStartingEvent) -> {
-//			log.debug("affichage du splashscreen");
-//			splashScreen.setVisible(true);
-//		},(ApplicationReadyEvent) -> {
-//			log.debug("masquage du splashscreen");
-//			splashScreen.setVisible(false);
-//		});
 		
 		ConfigurableApplicationContext context = builder.run(args);
 	}

@@ -8,6 +8,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FooterComponent } from './footer/footer.component';
 import { InputDbfComponent } from './input-dbf/input-dbf.component';
 import { OutputXlsComponent } from './output-xls/output-xls.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { OutputXlsComponent } from './output-xls/output-xls.component';
     BrowserModule,
     NgxFileDropModule,
     HttpClientModule,
-    NgbModule
+    NgbModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

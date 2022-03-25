@@ -61,11 +61,11 @@ public class ParametresGenerator extends SheetGenerator {
 	
 
 	public static final String METEO_COEFF_MONTANA_A_PARAM = "METEO_MONTANA_A";
-	public static final double METEO_COEFF_MONTANA_A_DEFAULT = 351.1;
+	public static double METEO_COEFF_MONTANA_A_DEFAULT = 0.0;
 	public static final String METEO_COEFF_MONTANA_B_PARAM = "METEO_MONTANA_B";
-	public static final double METEO_COEFF_MONTANA_B_DEFAULT = -0.248;
+	public static double METEO_COEFF_MONTANA_B_DEFAULT = 0.0;
 	public static final String METEO_QTE_MAX_PRECIPITATIONS_PARAM = "METEO_QTE_MAX_PRECIPITATIONS";
-	public static final double METEO_QTE_MAX_PRECIPITATIONS_DEFAULT = 59.8;
+	public static double METEO_QTE_MAX_PRECIPITATIONS_DEFAULT = 0.0;
 	public static final String METEO_TPS_CONCENTRATION_PARAM = "METEO_TPS_CONCENTRATION";
 	public static final double METEO_TPS_CONCENTRATION_DEFAULT = 6;
 	
@@ -163,9 +163,9 @@ public class ParametresGenerator extends SheetGenerator {
 
 		rowIndexParametres++;
 
-		createParamDecimalEmpty(METEO_QTE_MAX_PRECIPITATIONS_PARAM, "Quantité max de précipitations");
-		createParamDecimalEmpty(METEO_COEFF_MONTANA_A_PARAM, "Coefficient de Montana A");
-		createParamDecimalEmpty(METEO_COEFF_MONTANA_B_PARAM, "Coefficient de Montana B");
+		createParamDecimal(METEO_QTE_MAX_PRECIPITATIONS_PARAM, "Quantité max de précipitations", METEO_QTE_MAX_PRECIPITATIONS_DEFAULT);
+		createParamDecimal(METEO_COEFF_MONTANA_A_PARAM, "Coefficient de Montana A", METEO_COEFF_MONTANA_A_DEFAULT);
+		createParamDecimal(METEO_COEFF_MONTANA_B_PARAM, "Coefficient de Montana B", METEO_COEFF_MONTANA_B_DEFAULT);
 		createParamDecimal(METEO_TPS_CONCENTRATION_PARAM, "Temps de concentration minimal retenu (min)", METEO_TPS_CONCENTRATION_DEFAULT);
 
 	}
