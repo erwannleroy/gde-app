@@ -28,12 +28,17 @@ public class ComputeContext {
 	private ComputingResult computingResult;
 	private BytesResult bytesResult;
 	Map<String, Double> performanceBVDecanteur;
-	File bvFile;
+	Map<String, Double> debitBVExutoire;
+	
+	File bvDecFile;
+	File exuFile;
 
 	public ComputeContext() {
 		this.workbook = new XSSFWorkbook();
 		this.computingResult = new ComputingResult();
+		this.bytesResult = new BytesResult();
 		this.performanceBVDecanteur = new HashMap<String, Double>();
+		this.debitBVExutoire = new HashMap<String, Double>();
 	}
 
 

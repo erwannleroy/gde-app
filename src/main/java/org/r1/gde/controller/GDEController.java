@@ -34,7 +34,7 @@ public class GDEController {
 	private LocalDateTime lastPing;
 
 	@PostMapping("/upload-bv-decanteurs-file")
-	public ResponseEntity<BVDecanteurResponse> uploadBVDecanteurFile(@RequestParam("bv") MultipartFile file) {
+	public ResponseEntity<BVDecanteurResponse> uploadBVDecanteurFile(@RequestParam("bvdec") MultipartFile file) {
 		BVDecanteurResponse bvResponse = this.gdeService.giveBVDecanteurFile(file);
 
 		return ResponseEntity.status(HttpStatus.OK).body(bvResponse);
@@ -55,13 +55,20 @@ public class GDEController {
 	}
 
 	@PostMapping("/upload-bv-exutoires-file")
-	public ResponseEntity<BVExutoireResponse> uploadBVExutoireFile(@RequestParam("exu") MultipartFile file) {
+	public ResponseEntity<BVExutoireResponse> uploadBVExutoireFile(@RequestParam("bvexu") MultipartFile file) {
 		log.info("upload-bv-exutoires-file");
-		BVExutoireResponse exuResponse = this.gdeService.giveBVExutoireFile(file);
+		BVExutoireResponse bvExuResponse = this.gdeService.giveBVExutoireFile(file);
+
+		return ResponseEntity.status(HttpStatus.OK).body(bvExuResponse);
+	}
+
+	@PostMapping("/upload-exutoires-file")
+	public ResponseEntity<ExutoireResponse> uploadExutoireFile(@RequestParam("exu") MultipartFile file) {
+		log.info("upload-exutoires-file");
+		ExutoireResponse exuResponse = this.gdeService.giveExutoireFile(file);
 
 		return ResponseEntity.status(HttpStatus.OK).body(exuResponse);
 	}
-
 //	@PostMapping("/upload-bv-file-by-path")
 //	public BVDecanteurResponse uploadFileByPath(@RequestParam("bv") String bvFilePath) {
 //
@@ -105,19 +112,40 @@ public class GDEController {
 		HttpHeaders header = new HttpHeaders();
 		header.setContentType(new MediaType("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
 		header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=gde.xlsx");
-		byte[] bytes = gdeComputer.getComputeContext().getBytesResult().getBytesXls();
-		header.setContentLength(bytes.length);
-		return ResponseEntity.status(HttpStatus.OK).headers(header).body(bytes);
+		try {
+			byte[] bytes = gdeComputer.getComputeContext().getBytesResult().getBytesXls();
+			header.setContentLength(bytes.length);
+			return ResponseEntity.status(HttpStatus.OK).headers(header).body(bytes);
+		} catch (Exception e) {
+			return ResponseEntity.noContent().build();
+		}
 	}
 
-	@GetMapping("/get-result-bytes-dbf")
-	public ResponseEntity<byte[]> getComputeResultBytesDBF() {
+	@GetMapping("/get-result-bytes-perf-dbf")
+	public ResponseEntity<byte[]> getComputeResultBytesPerfDBF() {
 		HttpHeaders header = new HttpHeaders();
 		header.setContentType(new MediaType("application", "vnd.dbf"));
 		header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bv-decanteurs-perf.dbf");
-		byte[] bytes = gdeComputer.getComputeContext().getBytesResult().getBytesDbf();
-		header.setContentLength(bytes.length);
-		return ResponseEntity.status(HttpStatus.OK).headers(header).body(bytes);
+		try {
+			byte[] bytes = gdeComputer.getComputeContext().getBytesResult().getBytesPerfDbf();
+			header.setContentLength(bytes.length);
+			return ResponseEntity.status(HttpStatus.OK).headers(header).body(bytes);
+		} catch (Exception e) {
+			return ResponseEntity.noContent().build();
+		}
 	}
 
+	@GetMapping("/get-result-bytes-debit-dbf")
+	public ResponseEntity<byte[]> getComputeResultBytesDebitDBF() {
+		HttpHeaders header = new HttpHeaders();
+		header.setContentType(new MediaType("application", "vnd.dbf"));
+		header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=exutoires-classe.dbf");
+		try {
+			byte[] bytes = gdeComputer.getComputeContext().getBytesResult().getBytesDebitDbf();
+			header.setContentLength(bytes.length);
+			return ResponseEntity.status(HttpStatus.OK).headers(header).body(bytes);
+		} catch (Exception e) {
+			return ResponseEntity.noContent().build();
+		}
+	}
 }

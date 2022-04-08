@@ -1,20 +1,23 @@
-<ng-template #errorparams let-modal class="params-popup app-enabled" >
+<ng-template #errormeteo let-modal class="params-popup app-enabled">
   <div class="modal-header">
     <h4 class="modal-title" id="modal-basic-title">
       Erreur dans le traitement
     </h4>
-    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click'); closePopup();">
-
-      <span aria-hidden="true">
-        ×
-      </span>
-    </button>
+  </div>
+  <div class="modal-body">
+    {{meteoResponse.errorMessage}}
+  </div>
+</ng-template>
+<ng-template #errordbf let-modal class="params-popup app-enabled">
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">
+      Erreur dans le traitement
+    </h4>
   </div>
   <div class="modal-body">
     {{result.errorMsg}}
   </div>
 </ng-template>
-<!--<div *ngIf="result && result.error; then openPopup(errorparams)"></div>-->
 <div class="col" [class.app-disabled]="freeze || !meteoTurn" [class.app-enabled]="!freeze && meteoTurn">
   <div class="card">
     <div class="container">
@@ -62,13 +65,8 @@
           <h4 class="modal-title" id="modal-basic-title">
             Format DBF - BV Décanteurs
           </h4>
-          <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click'); closePopup();">
-
-            <span aria-hidden="true">
-              ×
-            </span>
-          </button>
         </div>
+        <h6 style="padding:10px;text-align: center;">Les champs à renseigner à minima sont les suivants :</h6>
         <div class="modal-body">
           <table class="table">
             <thead>
@@ -104,14 +102,20 @@
                 <td>LGR_HYDRO</td>
                 <td>Texte - m</td>
               </tr>
+              <tr>
+                <th scope="row">5</th>
+                <td>Performance</td>
+                <td>PERF</td>
+                <td>Texte - vide à l'import</td>
+              </tr>
             </tbody>
           </table>
         </div>
       </ng-template>
 
       <div class="center">
-        <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="bv_dropped($event)" (onFileOver)="fileOver($event)"
-          (onFileLeave)="fileLeave($event)">
+        <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="bvdec_dropped($event)"
+          (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
           <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
             Déposez ici !
           </ng-template>
@@ -124,21 +128,21 @@
         <div class="container" *ngIf="bvDecFilled">
           <div class="row">
             <div class="col border-bottom" *ngIf="bvDecSent">
-              <strong>{{ bvfiles[0].relativePath }}</strong>
+              <strong>{{ bvDecFiles[0].relativePath }}</strong>
             </div>
           </div>
           <div class="row">
-            <div class="col" *ngIf="bvDecFilled && result.error">
+            <div class="col" *ngIf="bvDecFilled && (bvDecResponse && bvDecResponse.error)">
               <span>Erreur</span>
             </div>
-            <div class="col" *ngIf="bvDecFilled && !result.error">
+            <div class="col" *ngIf="bvDecFilled && !bvDecResponse">
               <span>Chargement </span>
               <div class="spinner-grow" role="status">
                 <span class="sr-only"></span>
               </div>
             </div>
-            <div class="col" *ngIf="bvResponse && !result.error">
-              <span>{{bvResponse.nbBassins}} BV décanteurs</span>
+            <div class="col" *ngIf="bvDecResponse && !bvDecResponse.error">
+              <span>{{bvDecResponse.nbBassins}} BV décanteurs</span>
             </div>
           </div>
         </div>
@@ -166,13 +170,8 @@
           <h4 class="modal-title" id="modal-basic-title">
             Format DBF - Décanteurs
           </h4>
-          <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click'); closePopup();">
-
-            <span aria-hidden="true">
-              ×
-            </span>
-          </button>
         </div>
+        <h6 style="padding:10px;text-align: center;">Les champs à renseigner à minima sont les suivants :</h6>
         <div class="modal-body">
           <table class="table">
             <thead>
@@ -252,14 +251,14 @@
         <div class="container" *ngIf="decFilled">
           <div class="row">
             <div class="col border-bottom" *ngIf="decSent">
-              <strong>{{ decfiles[0].relativePath }}</strong>
+              <strong>{{ decFiles[0].relativePath }}</strong>
             </div>
           </div>
           <div class="row">
-            <div class="col" *ngIf="decResponse && decResponse.error">
-              <span>{{decResponse.errorMessage}} </span>
+            <div class="col" *ngIf="decFilled && (decResponse && decResponse.error)">
+              <span>Erreur</span>
             </div>
-            <div class="col" *ngIf="decFilled && !decSent">
+            <div class="col" *ngIf="decFilled && !decResponse">
               <span>Chargement </span>
               <div class="spinner-grow" role="status">
                 <span class="sr-only"></span>
@@ -284,24 +283,19 @@
       <div class="container">
         <div class="row">
           <h3 class="col-10">BV exutoires</h3>
-          <div class="col-2 onglet-icon app-enabled" (click)="openPopup(exuparams)">
+          <div class="col-2 onglet-icon app-enabled" (click)="openPopup(bvexuparams)">
             <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/dbf.png" />
           </div>
         </div>
       </div>
 
-      <ng-template #exuparams let-modal class="params-popup app-enabled">
+      <ng-template #bvexuparams let-modal class="params-popup app-enabled">
         <div class="modal-header">
           <h4 class="modal-title" id="modal-basic-title">
             Format DBF - BV exutoires
           </h4>
-          <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click'); closePopup();">
-
-            <span aria-hidden="true">
-              ×
-            </span>
-          </button>
         </div>
+        <h6 style="padding:10px;text-align: center;">Les champs à renseigner à minima sont les suivants :</h6>
         <div class="modal-body">
           <table class="table">
             <thead>
@@ -350,7 +344,7 @@
 
 
       <div class="center">
-        <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="exu_dropped($event)"
+        <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="bvexu_dropped($event)"
           (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
           <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
             Déposez ici !
@@ -363,22 +357,109 @@
         </div>
         <div class="container" *ngIf="bvExuFilled">
           <div class="row">
-            <div class="col border-bottom" *ngIf="exuSent">
-              <strong>{{ exufiles[0].relativePath }}</strong>
+            <div class="col border-bottom" *ngIf="bvExuSent">
+              <strong>{{ bvExuFiles[0].relativePath }}</strong>
             </div>
           </div>
           <div class="row">
-            <div class="col" *ngIf="exuResponse && exuResponse.error">
-              <span>{{exuResponse.errorMessage}} </span>
+            <div class="col" *ngIf="bvExuFilled && (bvExuResponse && bvExuResponse.error)">
+              <span>Erreur</span>
             </div>
-            <div class="col" *ngIf="bvExuFilled && !exuSent">
+            <div class="col" *ngIf="bvExuFilled && !bvExuResponse">
+              <span>Chargement </span>
+              <div class="spinner-grow" role="status">
+                <span class="sr-only"></span>
+              </div>
+            </div>
+            <div class="col" *ngIf="bvExuResponse && !bvExuResponse.error">
+              <span>{{bvExuResponse.nbExutoires}} BV exutoires (pour {{bvExuResponse.nbCreeks}} creeks)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background-color: #F58A07;width:2px;" [class.app-disabled]="freeze || !exuTurn"
+    [class.app-enabled]="!freeze && exuTurn">
+  </div>
+  <div class="col" [class.app-disabled]="freeze || !exuTurn" [class.app-enabled]="!freeze && exuTurn">
+    <div class="card">
+      <div class="container">
+        <div class="row">
+          <h3 class="col-10">Exutoires</h3>
+          <div class="col-2 onglet-icon app-enabled" (click)="openPopup(exuparams)">
+            <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/dbf.png" />
+          </div>
+        </div>
+      </div>
+
+      <ng-template #exuparams let-modal class="params-popup app-enabled">
+        <div class="modal-header">
+          <h4 class="modal-title" id="modal-basic-title">
+            Format DBF - Exutoires
+          </h4>
+        </div>
+        <h6 style="padding:10px;text-align: center;">Les champs à renseigner à minima sont les suivants :</h6>
+        <div class="modal-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Champ</th>
+                <th scope="col">Nom de la colonne</th>
+                <th scope="col">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">1</th>
+                <td>Nom</td>
+                <td>NOM</td>
+                <td>Texte</td>
+              </tr>
+              <tr>
+                <th scope="row">2</th>
+                <td>Q100</td>
+                <td>Q100</td>
+                <td>Test - vide à l'import</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-template>
+
+
+      <div class="center">
+        <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="exu_dropped($event)"
+          (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
+          <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+            Déposez ici !
+          </ng-template>
+        </ngx-file-drop>
+        <div class="container" *ngIf="!exuFilled">
+          <div class="row">
+            <span>Aucun fichier transmis</span>
+          </div>
+        </div>
+        <div class="container" *ngIf="exuFilled">
+          <div class="row">
+            <div class="col border-bottom" *ngIf="exuSent">
+              <strong>{{ exuFiles[0].relativePath }}</strong>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col" *ngIf="exuFilled && (exuResponse && exuResponse.error)">
+              <span>Erreur</span>
+            </div>
+            <div class="col" *ngIf="exuFilled && !exuResponse">
               <span>Chargement </span>
               <div class="spinner-grow" role="status">
                 <span class="sr-only"></span>
               </div>
             </div>
             <div class="col" *ngIf="exuResponse && !exuResponse.error">
-              <span>{{exuResponse.nbExutoires}} BV exutoires (pour {{exuResponse.nbCreeks}} creeks)</span>
+              <span>{{exuResponse.nbExutoires}} exutoires</span>
             </div>
           </div>
         </div>

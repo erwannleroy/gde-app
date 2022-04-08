@@ -6,6 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.r1.gde.model.BVDecanteur;
 import org.r1.gde.model.Creek;
 import org.r1.gde.model.DonneesMeteo;
+import org.r1.gde.model.Exutoire;
 import org.r1.gde.model.Zone;
 import org.r1.gde.xls.generator.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,9 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
     @Autowired
     private CassisGenerator cassisGenerator;
     @Autowired
-    private DBFGenerator perfDBFGenerator;
+    private BVDecanteurDBFGenerator bvDecanteurDBFGenerator;
+    @Autowired
+    private ExutoireDBFGenerator exutoireDBFGenerator;
 
     private List<BVDecanteur> bassins;
     private List<Zone> zones;
@@ -60,7 +63,8 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
         retentionGenerator.addListener(this);
         cassisGenerator.addListener(this);
         q100Generator.addListener(this);
-        perfDBFGenerator.addListener(this);
+        bvDecanteurDBFGenerator.addListener(this);
+        exutoireDBFGenerator.addListener(this);
         reset();
     }
 
@@ -95,7 +99,7 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
 
     private ByteArrayOutputStream writeBytes() throws IOException {
         log.info("Ecriture du fichier Excel");
-        Path temp = Files.createTempFile("", "temp.xlsx");
+//        Path temp = Files.createTempFile("", "temp.xlsx");
 
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
@@ -119,12 +123,19 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
         parametresGenerator.generateSheet(computeContext);
     }
 
-    public void updateExutoires(List<Creek> creeks) {
+    public void updateBVExutoires(List<Creek> creeks) {
         this.computeContext.getComputingResult().setBvExuSent(true);
-        log.info("gdeComputer updateExutoire");
+        log.info("gdeComputer updateBVExutoire");
         this.creeks = creeks;
         this.computeContext.setCreeks(creeks);
         q100Generator.generateSheet(computeContext);
+    }
+    
+
+    public void updateExutoires(List<Exutoire> creeks) {
+        this.computeContext.getComputingResult().setExuSent(true);
+        log.info("gdeComputer updateExutoire");
+        exutoireDBFGenerator.generateDBF(computeContext);
     }
 
     @Override
@@ -156,7 +167,7 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
                 break;
             case RETENTION_SHEET_GENERATED:
                 this.computeContext.getComputingResult().setRetComputeOk(true);
-                perfDBFGenerator.generateDBF(computeContext);
+                bvDecanteurDBFGenerator.generateDBF(computeContext);
                 fillBytes();
                 break;
         }
@@ -165,11 +176,17 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
     @Override
     public void notifyEvent(DBFGeneratorEvent e, Object value) {
         switch(e) {
-            case BV_DEC_PROGRESS:
-                this.computeContext.getComputingResult().setDbfComputeProgress((int) value);
+            case DBF_PERF_PROGRESS:
+                this.computeContext.getComputingResult().setPerfDbfComputeProgress((int) value);
                 break;
-            case BV_DEC_GENERATED:
-                this.computeContext.getComputingResult().setDbfComputationOk(true);
+            case DBF_PERF_GENERATED:
+                this.computeContext.getComputingResult().setPerfDbfComputationOk(true);
+                break;
+            case DBF_DEBIT_PROGRESS:
+                this.computeContext.getComputingResult().setDebitDbfComputeProgress((int) value);
+                break;
+            case DBF_DEBIT_GENERATED:
+                this.computeContext.getComputingResult().setDebitDbfComputationOk(true);
                 break;
         }
     }

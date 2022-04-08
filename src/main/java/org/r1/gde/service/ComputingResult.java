@@ -11,12 +11,14 @@ public class ComputingResult {
 	boolean bytesXlsInProgress = false;
 	boolean bytesDbfInProgress = false;
 	boolean xlsComputationOk = false;
-	boolean dbfComputationOk = false;
+	boolean perfDbfComputationOk = false;
+	boolean debitDbfComputationOk = false;
 
 	boolean decSent = false;
 	boolean bvDecSent = false;
 	boolean bvExuSent = false;
-
+	boolean exuSent = false;
+	
 	int objRetComputeProgress = 0;
 	int retComputeProgress = 0;
 	int cassisComputeProgress = 0;
@@ -28,5 +30,6 @@ public class ComputingResult {
 	boolean q100ComputeOk = false;
 
 	int xlsComputeProgress = 0;
-	int dbfComputeProgress = 0;
+	int perfDbfComputeProgress = 0;
+	int debitDbfComputeProgress = 0;
 }

@@ -3,7 +3,7 @@ import { NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry } from 
 import { GdeService } from '../gde.service';
 import { Subscription } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { BVResponse, DECResponse, EXUResponse, MeteoResponse } from '../Response';
+import { DECResponse, BVEXUResponse, MeteoResponse, BVDECResponse, EXUResponse } from '../Response';
 import { ComputingResult } from '../ComputingResult';
 
 @Component({
@@ -21,22 +21,26 @@ export class InputDbfComponent implements OnInit {
 
   public result: ComputingResult;
 
-  public bvfiles: NgxFileDropEntry[] = [];
-  public decfiles: NgxFileDropEntry[] = [];
-  public exufiles: NgxFileDropEntry[] = [];
+  public bvDecFiles: NgxFileDropEntry[] = [];
+  public decFiles: NgxFileDropEntry[] = [];
+  public bvExuFiles: NgxFileDropEntry[] = [];
+  public exuFiles: NgxFileDropEntry[] = [];
 
-  public bvResponse: BVResponse;
+  public bvDecResponse: BVDECResponse;
   public decResponse: DECResponse;
-  public exuResponse: EXUResponse;
+  public bvExuResponse: BVEXUResponse;
   public meteoResponse: MeteoResponse;
-
+  public exuResponse: EXUResponse;
+  
   public bvDecFilled: boolean = false;
   public decFilled: boolean = false;
   public bvExuFilled: boolean = false;
+  public exuFilled: boolean = false;
 
   public bvDecSent: boolean = false;
   public decSent: boolean = false;
   public bvExuSent: boolean = false;
+  public exuSent: boolean = false;
 
   public freeze: boolean = false;
   public fileUrl: any;
@@ -48,38 +52,49 @@ export class InputDbfComponent implements OnInit {
   public bvDecTurn: boolean = false;
   public decTurn: boolean = false;
   public bvExuTurn: boolean = false;
+  public exuTurn: boolean = false;
 
-  @ViewChild('errorparams') errorparams: ElementRef;
+  @ViewChild('errormeteo') errormeteo: ElementRef;
+  @ViewChild('errordbf') errordbf: ElementRef;
 
   constructor(private gdeService: GdeService, private modalService: NgbModal) {
   }
 
   ngOnInit() {
-    this.gdeService.getBVResponse().subscribe(data => {
-      console.log("Réception d'une BVResponse", data);
+    this.gdeService.getBVDECResponse().subscribe(data => {
+      console.log("Réception d'une BVDECResponse", data);
       if (data) {
         // console.log("bvFilled 1 ", this.bvFilled);
-        this.bvResponse = data;
+        this.bvDecResponse = data;
         this.gdeService.refreshResult();
         //console.log("bvFilled 2 ", this.bvFilled);
-        this.bvDecTurn = this.bvResponse.error;
-        this.decTurn = !this.bvResponse.error;
-        //console.log("bvFilled", this.bvFilled);
+        this.bvDecTurn = this.bvDecResponse.error;
+        this.decTurn = !this.bvDecResponse.error;
+        //console.log("bvFilled"  , this.bvFilled);
       }
     });
 
     this.gdeService.getDECResponse().subscribe(data => {
-      console.log("Réception d'une DECResponse");
+      console.log("Réception d'une DECResponse", data);
       this.decResponse = data;
       this.gdeService.refreshResult();
       this.decTurn = this.decResponse.error;
     });
 
+    this.gdeService.getBVEXUResponse().subscribe(data => {
+      console.log("Réception d'une BVEXUResponse", data);
+      this.bvExuResponse = data;
+      this.gdeService.refreshResult();
+      this.bvExuTurn = this.bvExuResponse.error;
+      this.exuTurn = !this.bvExuResponse.error;
+    });
+
+    
     this.gdeService.getEXUResponse().subscribe(data => {
-      console.log("Réception d'une EXUResponse");
+      console.log("Réception d'une EXUResponse", data);
       this.exuResponse = data;
       this.gdeService.refreshResult();
-      this.bvExuTurn = this.exuResponse.error;
+      this.exuTurn = this.exuResponse.error;
     });
 
     this.gdeService.getMeteoResponse().subscribe(data => {
@@ -88,17 +103,25 @@ export class InputDbfComponent implements OnInit {
       this.freeze = false;
       if (this.meteoResponse.result) {
         this.bvDecTurn = true;
+        this.decTurn = false;
         this.bvExuTurn = true;
+        this.exuTurn = false;
         this.meteoTurn = false;
       } else {
         this.bvDecTurn = false;
+        this.decTurn = false;
+        this.exuTurn = false;
         this.bvExuTurn = false;
         this.meteoTurn = true;
+        this.openPopup(this.errormeteo);
       }
     }, error => {
       this.bvDecTurn = false;
+      this.decTurn = false;
       this.bvExuTurn = false;
+      this.exuTurn = false;
       this.meteoTurn = true;
+      this.openPopup(this.errormeteo);
     }
     );
 
@@ -110,17 +133,46 @@ export class InputDbfComponent implements OnInit {
       console.log("Réception d'un résultat", data);
       this.result = data;
 
-      const objRetWait = this.bvDecSent && !data.objRetComputeOk && !data.xlsComputationOk;
-      const retWait = this.decSent && !data.retComputeOk && !data.xlsComputationOk && !data.dbfComputationOk;
-      const cassisWait = this.bvExuSent && !data.cassisComputeOk && !data.xlsComputationOk;
-      const q100Wait = this.bvExuSent && !data.q100ComputeOk && !data.xlsComputationOk;
+      const objRetWait = this.bvDecSent && !data.objRetComputeOk;
+      const retWait = this.decSent && !data.retComputeOk && !data.perfDbfComputationOk;
+      const cassisWait = this.bvExuSent && !data.cassisComputeOk;
+      const q100Wait = this.bvExuSent && !data.q100ComputeOk;
+      const exuWait = this.exuSent && !data.debitDbfComputationOk;
 
       if (this.result.error) {
-        //this.openPopup("errorparams");
-        //this.openPopup(exuparams);
-         this.openPopup(this.errorparams);
+        console.log('on ouvre la popup error');
+        this.openPopup(this.errordbf);
+        if (objRetWait) {
+          console.log("objRetWait");
+          this.meteoTurn = false;
+          this.bvDecTurn = true;
+          this.decTurn = false;
+          this.bvExuTurn = true;
+          this.exuTurn = false;
+        } else if (retWait) {
+          console.log("retWait");
+          this.meteoTurn = false;
+          this.bvDecTurn = false;
+          this.decTurn = true;
+          this.bvExuTurn = true;
+          this.exuTurn = false;
+        } else if (q100Wait) {
+          console.log("q100Wait");
+          this.meteoTurn = false;
+          this.bvDecTurn = false;
+          this.decTurn = false;
+          this.bvExuTurn = true;
+          this.exuTurn = false;
+        } else {
+          this.meteoTurn = false;
+          this.bvDecTurn = false;
+          this.decTurn = false;
+          this.bvExuTurn = false;
+          this.exuTurn = true;
+        }
+        this.freeze = false;
       }
-      else if (objRetWait || retWait || cassisWait || q100Wait) {
+      else if (objRetWait || retWait || cassisWait || q100Wait || exuWait) {
         this.freeze = true;
         console.log("freeze");
       } else {
@@ -131,16 +183,24 @@ export class InputDbfComponent implements OnInit {
   }
 
   reset() {
+    this.bvDecResponse = null;
+    this.bvExuResponse = null;
+    this.exuResponse = null;
+    this.decResponse = null;
+    this.result = null;
     this.bvDecFilled = false;
     this.decFilled = false;
     this.bvExuFilled = false;
+    this.exuFilled = false;
     this.bvDecSent = false;
     this.decSent = false;
     this.bvExuSent = false;
+    this.exuSent = false;
     this.bvDecTurn = false;
     this.decTurn = false;
     this.bvExuTurn = false;
     this.meteoTurn = true;
+    this.exuTurn = false;
   }
 
   applyMeteo() {
@@ -152,23 +212,25 @@ export class InputDbfComponent implements OnInit {
     console.log('openPopup content', content);
     console.log('openPopup result', this.result);
     console.log('openPopup opened', this.opened);
-        if (!this.opened) {
+    if (!this.opened) {
       this.modalService.open(content,
-        { ariaLabelledBy: 'modal-basic-title' }).result.then(() => { }, () => { });
-        this.opened = true;
+        { ariaLabelledBy: 'modal-basic-title' }).result.then(() => {
+          console.log("modal result");
+          this.opened = false;
+        }, () => {
+          console.log("modal error");
+          this.opened = false;
+        });
+      this.opened = true;
     }
   }
 
-  closePopup() {
-    this.opened = false;
-  }
-
-  public bv_dropped(files: NgxFileDropEntry[]) {
-    console.log("bv_dropped");
+  public bvdec_dropped(files: NgxFileDropEntry[]) {
+    console.log("bvdec_dropped");
     this.freeze = true;
     this.bvDecFilled = true;
-    this.bvResponse = null;
-    this.bvfiles = files;
+    this.bvDecResponse = null;
+    this.bvDecFiles = files;
     for (const droppedFile of files) {
 
       // Is it a file?
@@ -179,7 +241,7 @@ export class InputDbfComponent implements OnInit {
           // Here you can access the real file
           console.log(droppedFile.relativePath, file);
 
-          this.gdeService.postBVFile(file);
+          this.gdeService.postBVDECFile(file);
           this.bvDecSent = true;
           this.bvDecTurn = false;
         });
@@ -189,14 +251,13 @@ export class InputDbfComponent implements OnInit {
         console.log(droppedFile.relativePath, fileEntry);
       }
     }
-    this.gdeService.refreshResult();
   }
 
 
   public dec_dropped(files: NgxFileDropEntry[]) {
     this.decFilled = true;
     this.decResponse = null;
-    this.decfiles = files;
+    this.decFiles = files;
     this.freeze = true;
     for (const droppedFile of files) {
 
@@ -219,14 +280,41 @@ export class InputDbfComponent implements OnInit {
       }
     }
 
-    this.gdeService.refreshResult();
   }
+
+  public bvexu_dropped(files: NgxFileDropEntry[]) {
+    this.freeze = true;
+    this.bvExuFilled = true;
+    this.bvExuResponse = null;
+    this.bvExuFiles = files;
+    for (const droppedFile of files) {
+
+      // Is it a file?
+      if (droppedFile.fileEntry.isFile) {
+        const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
+        fileEntry.file((file: File) => {
+
+          // Here you can access the real file
+          console.log(droppedFile.relativePath, file);
+
+          this.gdeService.postBVEXUFile(file);
+          this.bvExuSent = true;
+          this.bvExuTurn = false;
+        });
+      } else {
+        // It was a directory (empty directories are added, otherwise only files)
+        const fileEntry = droppedFile.fileEntry as FileSystemDirectoryEntry;
+        console.log(droppedFile.relativePath, fileEntry);
+      }
+    }
+  }
+
 
   public exu_dropped(files: NgxFileDropEntry[]) {
     this.freeze = true;
-    this.bvExuFilled = true;
+    this.exuFilled = true;
     this.exuResponse = null;
-    this.exufiles = files;
+    this.exuFiles = files;
     for (const droppedFile of files) {
 
       // Is it a file?
@@ -238,8 +326,8 @@ export class InputDbfComponent implements OnInit {
           console.log(droppedFile.relativePath, file);
 
           this.gdeService.postEXUFile(file);
-          this.bvExuSent = true;
-          this.bvExuTurn = false;
+          this.exuSent = true;
+          this.exuTurn = false;
         });
       } else {
         // It was a directory (empty directories are added, otherwise only files)
@@ -247,7 +335,6 @@ export class InputDbfComponent implements OnInit {
         console.log(droppedFile.relativePath, fileEntry);
       }
     }
-    this.gdeService.refreshResult();
   }
 
   public fileOver(event) {

@@ -6,7 +6,8 @@ export class ComputingResult {
 	bytesXlsInProgress: boolean = false;
 	bytesDbfInProgress: boolean = false;
 	xlsComputationOk: boolean = false;
-	dbfComputationOk: boolean = false;
+	perfDbfComputationOk: boolean = false;
+	debitDbfComputationOk: boolean = false;
 
 	objRetComputeProgress: number = 0;
 	retComputeProgress: number = 0;
@@ -19,6 +20,7 @@ export class ComputingResult {
 	q100ComputeOk: boolean = false;
 
 	xlsComputeProgress: number = 0;
-	dbfComputeProgress: number = 0;
+	perfDbfComputeProgress: number = 0;
+	debitDbfComputeProgress: number = 0;
 
 }

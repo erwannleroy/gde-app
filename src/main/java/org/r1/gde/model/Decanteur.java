@@ -1,5 +1,7 @@
 package org.r1.gde.model;
 
+import java.util.Arrays;
+import java.util.List;
 
 import lombok.Data;
 import lombok.ToString;
@@ -20,8 +22,7 @@ public class Decanteur {
 	public static final int PROFONDEUR_DEVERSOIR_DEFAULT = 0;
 	public static final int HAUTEUR_DIGUE_DEFAULT = 0;
 	public static final double SURFACE_DEFAULT = -1;
-	
-	
+
 	String nom;
 	Double surface;
 	Double profondeur;
@@ -29,4 +30,10 @@ public class Decanteur {
 	Double hauteurDigue;
 	String bv;
 	String zone;
+
+	public static List<String> fields() {
+		return Arrays.asList(NOM_FIELD, SURFACE_FIELD, PROFONDEUR_FIELD, PROFONDEUR_DEVERSOIR_FIELD,
+				HAUTEUR_DIGUE_FIELD, BV_FIELD, ZONE_FIELD, TYPE_FIELD);
+	}
+
 }

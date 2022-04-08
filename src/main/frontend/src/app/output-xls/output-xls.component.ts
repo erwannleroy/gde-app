@@ -4,7 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Subscription, interval } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ComputingResult } from '../ComputingResult';
-import { BVResponse, DECResponse, EXUResponse } from '../Response';
+import { BVDECResponse, DECResponse, EXUResponse, BVEXUResponse } from '../Response';
 
 @Component({
   selector: 'app-output-xls',
@@ -18,14 +18,18 @@ export class OutputXlsComponent implements OnInit {
   public result: ComputingResult;
   public fileUrl: any;
   public bytes: Blob;
-  public bytesDBF: Blob;
+  public bytesPerfDBF: Blob;
+  public bytesDebitDBF: Blob;
 
-  public bvResponse: BVResponse;
+  public bvDecResponse: BVDECResponse;
   public decResponse: DECResponse;
+  public bvExuResponse: BVEXUResponse;
   public exuResponse: EXUResponse;
   public bvDecSent: boolean = false;
   public decSent: boolean = false;
   public bvExuSent: boolean = false;
+  public exuSent: boolean = false;
+  
   aliveSub: Subscription;
 
   constructor(private gdeService: GdeService) {
@@ -46,15 +50,20 @@ export class OutputXlsComponent implements OnInit {
       this.decSent = true;
     });
 
-    this.gdeService.getEXUSent().subscribe(data => {
+    this.gdeService.getBVEXUSent().subscribe(data => {
       console.log("output notified bv exu sent");
       this.bvExuSent = true;
     });
 
 
-    this.gdeService.getBVResponse().subscribe(data => {
-      console.log("Réception d'un résultat BV", data);
-      this.bvResponse = data;
+    this.gdeService.getEXUSent().subscribe(data => {
+      console.log("output notified exu sent");
+      this.exuSent = true;
+    });
+
+    this.gdeService.getBVDECResponse().subscribe(data => {
+      console.log("Réception d'un résultat BV DEC", data);
+      this.bvDecResponse = data;
       this.bvDecSent = true;
     });
 
@@ -64,10 +73,16 @@ export class OutputXlsComponent implements OnInit {
       this.decSent = true;
     });
 
+    this.gdeService.getBVEXUResponse().subscribe(data => {
+      console.log("Réception d'un résultat BV EXU", data);
+      this.bvExuResponse = data;
+      this.bvExuSent = true;
+    });
+
     this.gdeService.getEXUResponse().subscribe(data => {
       console.log("Réception d'un résultat EXU", data);
       this.exuResponse = data;
-      this.bvExuSent = true;
+      this.exuSent = true;
     });
 
     this.gdeService.getResult().subscribe(data => {
@@ -80,9 +95,14 @@ export class OutputXlsComponent implements OnInit {
       this.bytes = data;
     });
 
-    this.gdeService.getResultBytesBDF().subscribe(data => {
-      console.log("Bytes BDF recus");
-      this.bytesDBF = data;
+    this.gdeService.getResultBytesPerfBDF().subscribe(data => {
+      console.log("Bytes perf BDF recus");
+      this.bytesPerfDBF = data;
+    });
+
+    this.gdeService.getResultBytesDebitBDF().subscribe(data => {
+      console.log("Bytes debit BDF recus");
+      this.bytesDebitDBF = data;
     });
 
     const source = interval(1000);
@@ -91,8 +111,9 @@ export class OutputXlsComponent implements OnInit {
 
   reset() {
     console.log("reset ouput-xls");
-    this.bvResponse = null;
+    this.bvDecResponse = null;
     this.decResponse = null;
+    this.bvExuResponse = null;
     this.exuResponse = null;
     this.result = null;
     this.bvDecSent = false;
@@ -117,10 +138,10 @@ export class OutputXlsComponent implements OnInit {
     return url;
   }
 
-  downloadDbfFile(): string {
-    console.log("clic sur Télécharger BDF");
+  downloadPerfDbfFile(): string {
+    console.log("clic sur Télécharger Perf BDF");
     // console.log("bytes", this.bytes);
-    const url = window.URL.createObjectURL(this.bytesDBF); // <-- work with blob directly
+    const url = window.URL.createObjectURL(this.bytesPerfDBF); // <-- work with blob directly
 
     // create hidden dom element (so it works in all browsers)
     const a = document.createElement('a');
@@ -129,7 +150,24 @@ export class OutputXlsComponent implements OnInit {
 
     // create file, attach to hidden element and open hidden element
     a.href = url;
-    a.download = "bv-decanteurs-performance.dbf";
+    a.download = this.gdeService.bvDecFileName;
+    a.click();
+    return url;
+  }
+
+  downloadDebitDbfFile(): string {
+    console.log("clic sur Télécharger Debit BDF");
+    // console.log("bytes", this.bytes);
+    const url = window.URL.createObjectURL(this.bytesDebitDBF); // <-- work with blob directly
+
+    // create hidden dom element (so it works in all browsers)
+    const a = document.createElement('a');
+    a.setAttribute('style', 'display:none;');
+    document.body.appendChild(a);
+
+    // create file, attach to hidden element and open hidden element
+    a.href = url;
+    a.download = this.gdeService.exuFileName;
     a.click();
     return url;
   }

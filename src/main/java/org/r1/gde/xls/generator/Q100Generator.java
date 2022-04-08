@@ -13,6 +13,7 @@ import static org.r1.gde.XlsUtils.title3;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -271,6 +272,13 @@ public class Q100Generator extends SheetGenerator {
 						exuSurfCell.getRowIndex() + 1);
 				standardCellDecimal1Comma(computeContext, calculDebitCell, "").setCellFormula(calculDebitFormula);
 
+				FormulaEvaluator evaluator = workbook().getCreationHelper().createFormulaEvaluator();
+
+				// existing Sheet, Row, and Cell setup
+				evaluator.evaluateFormulaCell(calculDebitCell);
+				log.info("Debit bv " + e.getNom()+ " : " + calculDebitCell.getNumericCellValue());
+				this.computeContext.getDebitBVExutoire().put(e.getNom(), calculDebitCell.getNumericCellValue());
+				
 				Cell calculHauteurLameEauCell = exuRow.createCell(14);
 				String calculHauteurLameEauFormula = String.format("%s",
 						parametresGenerator.parametres.get(ParametresGenerator.OUVRAGE_H_LAME_EAU_PARAM));

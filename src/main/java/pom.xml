@@ -59,11 +59,6 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>net.iryndin</groupId>
-			<artifactId>jdbf</artifactId>
-			<version>2.1.0</version>
-		</dependency>
-		<dependency>
 			<groupId>com.github.albfernandez</groupId>
 			<artifactId>javadbf</artifactId>
 			<version>1.13.1</version>
@@ -74,13 +69,7 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.12.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.slf4j</groupId> -->
-		<!-- <artifactId>slf4j-api</artifactId> -->
-		<!-- <version>1.7.33</version> -->
-		<!-- </dependency> -->
-		<!-- https://mvnrepository.com/artifact/log4j/log4j -->
+
 
 
 		<dependency>
@@ -90,13 +79,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-			<version>5.2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>5.2.0</version>
+			<version>5.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

@@ -6,4 +6,8 @@ public class GDEException extends Exception {
 		super(message + " (cause : " + e.getMessage() + ")");
 	}
 
+	public GDEException(String message) {
+		super(message);
+	}
+
 }

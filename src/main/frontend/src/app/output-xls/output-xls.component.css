@@ -19,8 +19,14 @@
 
 
 
-.onglet-icon {
-    border: 0px;
+.download-enable {
+    opacity: 1.0;
+    pointer-events: all;
+}
+
+.download-disable {
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 .mention {
