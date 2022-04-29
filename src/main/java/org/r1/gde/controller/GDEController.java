@@ -107,6 +107,11 @@ public class GDEController {
 		return ResponseEntity.status(HttpStatus.OK).body(gdeComputer.getComputeContext().getComputingResult());
 	}
 
+	@GetMapping("/get-meteo")
+	public ResponseEntity<DonneesMeteo> getMeteo() {
+		return ResponseEntity.status(HttpStatus.OK).body(gdeService.getDonneesMeteo());
+	}
+
 	@GetMapping("/get-result-bytes-xls")
 	public ResponseEntity<byte[]> getComputeResultBytes() {
 		HttpHeaders header = new HttpHeaders();

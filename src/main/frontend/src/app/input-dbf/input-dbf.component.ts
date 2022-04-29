@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { DECResponse, BVEXUResponse, MeteoResponse, BVDECResponse, EXUResponse } from '../Response';
 import { ComputingResult } from '../ComputingResult';
+import { DonneesMeteo } from '../DonneesMeteo';
 
 @Component({
   selector: 'app-input-dbf',
@@ -20,6 +21,7 @@ export class InputDbfComponent implements OnInit {
   coefB: number;
 
   public result: ComputingResult;
+  public donneesMeteo: DonneesMeteo = new DonneesMeteo();
 
   public bvDecFiles: NgxFileDropEntry[] = [];
   public decFiles: NgxFileDropEntry[] = [];
@@ -128,6 +130,15 @@ export class InputDbfComponent implements OnInit {
     this.gdeService.getResetOrder().subscribe(data => {
       this.reset();
     });
+
+    
+    this.gdeService.getDonneesMeteoParam().subscribe(data => {
+      this.coefA = data.coefA;
+      this.coefB = data.coefB;
+      this.maxPrecipitations = data.maxPrecipitations;
+    });
+
+    this.gdeService.refreshDonneesMeteo();
 
     this.gdeService.getResult().subscribe(data => {
       console.log("Réception d'un résultat", data);

@@ -96,6 +96,7 @@ public class BVDecanteurDBFGenerator extends DBFGenerator {
 		boolean perfAlreadyExist = false;
 		Collection<DbfField> fieldsOrigin = meta.getFields();
 		DBFField fTarget;
+		int nbFields = fieldsOrigin.size();
 		for (DbfField f : fieldsOrigin) {
 			fTarget = new DBFField();
 			fTarget.setName(f.getName());
@@ -115,8 +116,9 @@ public class BVDecanteurDBFGenerator extends DBFGenerator {
 			perfField.setType(DBFDataType.CHARACTER);
 			perfField.setLength(10);
 			fields.add(perfField);
+			nbFields++;
 		}
-		return fields.toArray(new DBFField[fieldsOrigin.size() + 1]);
+		return fields.toArray(new DBFField[nbFields]);
 	}
 
 	private String computePerfValue(Object nomBV) throws GDEException {

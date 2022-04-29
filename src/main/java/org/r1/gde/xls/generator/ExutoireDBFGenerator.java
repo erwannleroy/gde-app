@@ -101,6 +101,7 @@ public class ExutoireDBFGenerator extends DBFGenerator {
 		boolean debitAlreadyExist = false;
 		Collection<DbfField> fieldsOrigin = meta.getFields();
 		DBFField fTarget;
+		int nbFields = fieldsOrigin.size();
 		for (DbfField f : fieldsOrigin) {
 			fTarget = new DBFField();
 			fTarget.setName(f.getName());
@@ -120,8 +121,9 @@ public class ExutoireDBFGenerator extends DBFGenerator {
 			perfField.setType(DBFDataType.CHARACTER);
 			perfField.setLength(30);
 			fields.add(perfField);
+			nbFields++;
 		}
-		return fields.toArray(new DBFField[fieldsOrigin.size() + 1]);
+		return fields.toArray(new DBFField[nbFields]);
 	}
 
 	private String computeDebitValue(Double debit) {

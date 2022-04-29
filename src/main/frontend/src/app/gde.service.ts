@@ -4,11 +4,13 @@ import { Observable, Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ComputingResult } from './ComputingResult';
 import { DECResponse, MeteoResponse, BVDECResponse, BVEXUResponse, EXUResponse } from './Response';
+import { DonneesMeteo } from './DonneesMeteo';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GdeService {
+
 
   bvDecSent: boolean = false;
   decSent: boolean = false;
@@ -23,6 +25,7 @@ export class GdeService {
   private subjectBVEXU = new Subject<BVEXUResponse>();
   private subjectEXU = new Subject<EXUResponse>();
   private subjectResult = new Subject<ComputingResult>();
+  private subjectMeteoParam = new Subject<DonneesMeteo>();
   private subjectBytesXLS = new Subject<Blob>();
   private subjectBytesPerfDBF = new Subject<Blob>();
   private subjectBytesDebitDBF = new Subject<Blob>();
@@ -53,6 +56,14 @@ export class GdeService {
     this.subjectReset.next();
   }
 
+  refreshDonneesMeteo() {
+     this.http.get<DonneesMeteo>('gde/get-meteo').subscribe(async data => {
+      console.log("retour du WS", data);
+      console.log(data);
+      this.subjectMeteoParam.next(data);
+    });
+  }
+
   applyMeteo(maxPrecipitations: number, coefA: number, coefB: number) {
     console.log("applyMeteo");
     const params = { 'maxPrecipitations': maxPrecipitations, 'coefA': coefA, 'coefB': coefB };
@@ -67,6 +78,10 @@ export class GdeService {
         metR.errorMessage = "Paramètres incorrects";
         this.subjectMeteo.next(metR);
       });
+  }
+
+  getDonneesMeteoParam(): Observable<DonneesMeteo> {
+    return this.subjectMeteoParam.asObservable();
   }
 
   getResetOrder(): Observable<Object> {
@@ -224,7 +239,7 @@ export class GdeService {
       console.log("retour du WS", data);
       console.log(data);
       this.subjectResult.next(data);
-      
+
       const objRetWait = this.bvDecSent && !data.objRetComputeOk;
       const retWait = this.decSent && !data.retComputeOk && !data.perfDbfComputationOk;
       const cassisWait = this.bvExuSent && !data.cassisComputeOk;

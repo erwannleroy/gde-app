@@ -532,4 +532,12 @@ public class GDEService {
 		return mr;
 	}
 
+	public DonneesMeteo getDonneesMeteo() {
+		DonneesMeteo result = new DonneesMeteo();
+		result.setCoefA(ParametresGenerator.METEO_COEFF_MONTANA_A_DEFAULT);
+		result.setCoefB(ParametresGenerator.METEO_COEFF_MONTANA_B_DEFAULT);
+		result.setMaxPrecipitations(ParametresGenerator.METEO_QTE_MAX_PRECIPITATIONS_DEFAULT);
+		return result;
+	}
+
 }
