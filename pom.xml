@@ -12,7 +12,7 @@
 
 	<groupId>org.r1</groupId>
 	<artifactId>gde</artifactId>
-	<version>1.3-SNAPSHOT</version>
+	<version>1.3.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>gde</name>

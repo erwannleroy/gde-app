@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -138,7 +139,7 @@ public class ExutoireDBFGenerator extends DBFGenerator {
 		} else if (debit > 2 && debit <= 5) {
 			return "2 < Q100 <= 5 m3/s";
 		} else {
-			return debit.toString();
+			return new DecimalFormat("0.00").format(debit);
 		}
 	}
 
