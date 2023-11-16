@@ -21,6 +21,7 @@ import org.apache.poi.ss.util.CellReference;
 import org.r1.gde.XlsUtils;
 import org.r1.gde.model.BVExutoire;
 import org.r1.gde.model.Creek;
+import org.r1.gde.service.ComputingResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +39,7 @@ public class CassisGenerator extends SheetGenerator {
 	@Autowired
 	ParametresGenerator parametresGenerator;
 
-	public void run() {
+	public void doRun() {
 		log.info("Génération de l'onglet Cassis");
 
 		sheet = workbook().getSheet(TITLE_SHEET);
@@ -407,6 +408,17 @@ public class CassisGenerator extends SheetGenerator {
 	@Override
 	public String getTitleSheet() {
 		return TITLE_SHEET;
+	}
+
+	@Override
+	protected void detailError() {
+		computeContext.getComputingResult().setCassisComputeProgress(0);
+		computeContext.getComputingResult().setCassisComputeOk(false);
+	}
+
+	@Override
+	protected List<String> getListErrors(ComputingResult cr) {
+		return cr.getCassisWarns();
 	}
 
 }

@@ -6,7 +6,86 @@
     <div class="container">
       <div class="row row-flex ">
         <div class="col-sm">
+
+          <ng-template #objretwarns let-modal class="params-popup app-enabled">
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">
+                Alertes
+              </h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <tr *ngFor="let msg of result.objRetWarns">
+                  <td>{{msg}}</td>
+                </tr>
+              </table>
+            </div>
+          </ng-template>
+
+          <ng-template #objretwarns let-modal class="params-popup app-enabled">
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">
+                Alertes sur l'onglet [Objectifs rétention]
+              </h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <tr *ngFor="let msg of result.objRetWarns">
+                  <td>{{msg}}</td>
+                </tr>
+              </table>
+            </div>
+          </ng-template>
+
+          <ng-template #retbassinswarns let-modal class="params-popup app-enabled">
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">
+                Alertes sur l'onglet [Rétention des bassins]
+              </h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <tr *ngFor="let msg of result.retBassinsWarns">
+                  <td>{{msg}}</td>
+                </tr>
+              </table>
+            </div>
+          </ng-template>
+
+
+          <ng-template #q100warns let-modal class="params-popup app-enabled">
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">
+                Alertes sur l'onglet [Q100]
+              </h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <tr *ngFor="let msg of result.q100Warns">
+                  <td>{{msg}}</td>
+                </tr>
+              </table>
+            </div>
+          </ng-template>
+
+
+          <ng-template #cassiswarns let-modal class="params-popup app-enabled">
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">
+                Alertes sur l'onglet [Dimensionnement cassis fossés]
+              </h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <tr *ngFor="let msg of result.cassisWarns">
+                  <td>{{msg}}</td>
+                </tr>
+              </table>
+            </div>
+          </ng-template>
+
           <h5>Excel</h5>
+
           <div class="onglet align-self-center" [class.waiting]="bvDecSent && 
           (!result || (result && !result.objRetComputeOk && !result.error) )">
             <div class="container row-flex">
@@ -18,6 +97,9 @@
                   {{result.objRetComputeProgress}}%</span>
                 <span class="badge bg-success" *ngIf="result && result.objRetComputeOk">Généré</span>
                 <span class="badge bg-danger" *ngIf="bvDecSent && bvDecResponse && bvDecResponse.error">Erreur</span>
+              </div>
+              <div *ngIf="result.objRetWarns && result.objRetWarns.length !== 0" (click)="openPopup(objretwarns)">
+                <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/alert.png" />
               </div>
             </div>
           </div>
@@ -33,6 +115,10 @@
                 <span class="badge bg-success" *ngIf="result && result.retComputeOk">Généré</span>
                 <span class="badge bg-danger" *ngIf="decSent && decResponse && decResponse.error">Erreur</span>
               </div>
+              <div *ngIf="result.retBassinsWarns && result.retBassinsWarns.length !== 0"
+                (click)="openPopup(retbassinswarns)">
+                <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/alert.png" />
+              </div>
             </div>
           </div>
           <div class="onglet align-self-center" [class.waiting]="bvExuSent &&
@@ -47,6 +133,12 @@
                 <span class="badge bg-success"
                   *ngIf="result && result.q100ComputeOk && result.cassisComputeOk">Généré</span>
                 <span class="badge bg-danger" *ngIf="bvExuSent && bvExuResponse && bvExuResponse.error">Erreur</span>
+              </div>
+              <div *ngIf="result.q100Warns && result.q100Warns.length !== 0" (click)="openPopup(q100warns)">
+                <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/alert.png" />
+              </div>
+              <div *ngIf="result.cassisWarns && result.cassisWarns.length !== 0" (click)="openPopup(cassiswarns)">
+                <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/alert.png" />
               </div>
             </div>
           </div>
@@ -65,21 +157,56 @@
         </div>
 
         <div class="col-sm">
+
+
+          <ng-template #perfwarns let-modal class="params-popup app-enabled">
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">
+                Alertes sur le DBF [BV décanteurs conformité 2H/2ans]
+              </h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <tr *ngFor="let msg of result.bvDecDBFWarns">
+                  <td>{{msg}}</td>
+                </tr>
+              </table>
+            </div>
+          </ng-template>
+
+
+          <ng-template #debitwarns let-modal class="params-popup app-enabled">
+            <div class="modal-header">
+              <h4 class="modal-title" id="modal-basic-title">
+                Alertes sur le DBF [Classes de débits aux exutoires]
+              </h4>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <tr *ngFor="let msg of result.exuDBFWarns">
+                  <td>{{msg}}</td>
+                </tr>
+              </table>
+            </div>
+          </ng-template>
+
           <h5>DBF</h5>
-          <div class="row align-self-center">
+          <div class="container row-flex">
             <div *ngIf="!result || !result.perfDbfComputationOk" class=" download-disable">
               <img style="height:auto;width:20px" src="../../assets/download-dbf-ko.png" />
               <label style="padding-left:2px; cursor: none;">BV décanteurs conformité 2H/2ans</label>
             </div>
-            <div *ngIf="result && result.perfDbfComputationOk" class="download-enable" 
-              (click)="downloadPerfDbfFile()">
+            <div *ngIf="result && result.perfDbfComputationOk" class="download-enable" (click)="downloadPerfDbfFile()">
               <div>
                 <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/download-dbf.png" />
                 <label style="padding-left:2px; cursor: pointer;">BV décanteurs conformité 2H/2ans</label>
               </div>
             </div>
+            <div *ngIf="result.bvDecDBFWarns && result.bvDecDBFWarns.length !== 0" (click)="openPopup(perfwarns)">
+              <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/alert.png" />
+            </div>
           </div>
-          <div class="row align-self-center">
+          <div class="container row-flex">
             <div *ngIf="!result || !result.debitDbfComputationOk" class="download-disable">
               <img style="height:auto;width:20px" src="../../assets/download-dbf-ko.png" />
               <label style="padding-left:2px; cursor: none;">Classes de débits aux exutoires</label>
@@ -90,8 +217,10 @@
                 <label style="padding-left:2px; cursor: pointer;">Classes de débits aux exutoires</label>
               </div>
             </div>
+            <div *ngIf="result.exuDBFWarns && result.exuDBFWarns.length !== 0" (click)="openPopup(debitwarns)">
+              <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/alert.png" />
+            </div>
           </div>
-
         </div>
       </div>
     </div>

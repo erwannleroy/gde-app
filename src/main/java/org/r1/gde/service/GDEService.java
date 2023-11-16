@@ -25,6 +25,7 @@ import org.r1.gde.model.DonneesMeteo;
 import org.r1.gde.model.Exutoire;
 import org.r1.gde.model.Zone;
 import org.r1.gde.xls.generator.GDEException;
+import org.r1.gde.xls.generator.GenerateSheetException;
 import org.r1.gde.xls.generator.ParametresGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -263,8 +264,9 @@ public class GDEService {
 			try {
 				dbf.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getMessage());
+				gdeComputer.getComputeContext().getComputingResult().setError(true);
+				gdeComputer.getComputeContext().getComputingResult().setErrorMsg(e.getMessage());
 			}
 		}
 		log.debug("Parcours de " + tempResult.zones.size() + " zones");
@@ -308,13 +310,14 @@ public class GDEService {
 			try {
 				dbf.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getMessage());
+				gdeComputer.getComputeContext().getComputingResult().setError(true);
+				gdeComputer.getComputeContext().getComputingResult().setErrorMsg(e.getMessage());
 			}
 		}
 		log.debug("Parcours de " + tempResult.creeks.size() + " creeks");
 		return tempResult.getCreeks();
-		
+
 	}
 
 	private void checkColumns(DbfMetadata meta, List<String> fields) throws GDEException {
@@ -361,8 +364,9 @@ public class GDEService {
 			try {
 				dbf.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getMessage());
+				gdeComputer.getComputeContext().getComputingResult().setError(true);
+				gdeComputer.getComputeContext().getComputingResult().setErrorMsg(e.getMessage());
 			}
 		}
 		log.debug("Parcours de " + tempResult.exutoires.size() + " exutoires");
@@ -405,8 +409,9 @@ public class GDEService {
 			try {
 				dbf.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getMessage());
+				gdeComputer.getComputeContext().getComputingResult().setError(true);
+				gdeComputer.getComputeContext().getComputingResult().setErrorMsg(e.getMessage());
 			}
 		}
 		log.debug("Parcours de " + bassins.size() + " bassins versants");
@@ -424,15 +429,40 @@ public class GDEService {
 		}
 		Object nomField = map.get(BVDecanteur.NOM_OUVRAGE_FIELD);
 		if (nomField == null || StringUtils.isEmpty(nomField.toString())) {
+			String warnMsg = "Enregistrement " + rec.getRecordNumber() + " sans nom";
+			log.warn(warnMsg);
+			this.gdeComputer.getComputeContext().getComputingResult().getInDbfBVDecWarns().add(warnMsg);
 			return null;
 		}
 		bv.setNomOuvrage(nomField != null ? nomField.toString() : "");
+
 		Object deniveleField = map.get(BVDecanteur.DENIVELE_FIELD);
-		bv.setDenivele(deniveleField != null ? Integer.parseInt(deniveleField.toString()) : null);
+		Integer denivele = deniveleField != null ? Integer.parseInt(deniveleField.toString()) : null;
+		if (denivele == null) {
+			String warnMsg = "Enregistrement " + rec.getRecordNumber() + " sans dénivelé";
+			log.warn(warnMsg);
+			this.gdeComputer.getComputeContext().getComputingResult().getInDbfBVDecWarns().add(warnMsg);
+		}
+		bv.setDenivele(denivele);
+
 		Object longueurField = map.get(BVDecanteur.LONGUEUR_FIELD);
-		bv.setLongueur(longueurField != null ? Integer.parseInt(longueurField.toString()) : null);
+		Integer longueur = longueurField != null ? Integer.parseInt(longueurField.toString()) : null;
+		if (longueur == null) {
+			String warnMsg = "Enregistrement " + rec.getRecordNumber() + " sans longueur";
+			log.warn(warnMsg);
+			this.gdeComputer.getComputeContext().getComputingResult().getInDbfBVDecWarns().add(warnMsg);
+		}
+		bv.setLongueur(longueur);
+		
 		Object surfaceField = map.get(BVDecanteur.SURFACE_FIELD);
-		bv.setSurface(surfaceField != null ? Double.parseDouble(surfaceField.toString()) : null);
+		Double surface = surfaceField != null ? Double.parseDouble(surfaceField.toString()) : null;
+		if (surface == null) {
+			String warnMsg = "Enregistrement " + rec.getRecordNumber() + " sans surface";
+			log.warn(warnMsg);
+			this.gdeComputer.getComputeContext().getComputingResult().getInDbfBVDecWarns().add(warnMsg);
+		}
+		bv.setSurface(surface);
+		
 		return bv;
 	}
 
@@ -442,10 +472,23 @@ public class GDEService {
 		try {
 			map = rec.toMap();
 		} catch (ParseException e) {
-			throw new GDEException("Le fichier des BV décanteurs est mal structuré", e);
+			throw new GDEException("Le fichier des décanteurs est mal structuré", e);
 		}
-		Object nomField = map.get(Decanteur.NOM_FIELD);
+		
+		Object typeField = map.get(Decanteur.TYPE_FIELD);
+		if (typeField != null && !StringUtils.equalsIgnoreCase("FF", typeField.toString())
+				&& !StringUtils.equalsIgnoreCase("fond de fosse", typeField.toString())
+				&& !StringUtils.equalsIgnoreCase("dщcanteur", typeField.toString())
+				&& !StringUtils.equalsIgnoreCase("decanteur", typeField.toString())
+				&& !StringUtils.equalsIgnoreCase("décanteur", typeField.toString())) {
+			return null;
+		}
+		
+		Object nomField = map.get(Decanteur.NOM_FIELD); 
 		if (nomField == null || StringUtils.isEmpty(nomField.toString())) {
+			String warnMsg = "Enregistrement " + rec.getRecordNumber() + " sans nom";
+			log.warn(warnMsg);
+			this.gdeComputer.getComputeContext().getComputingResult().getInDbfDecWarns().add(warnMsg);
 			return null;
 		}
 		dec.setNom(nomField != null ? nomField.toString() : "");
@@ -458,20 +501,21 @@ public class GDEService {
 				profondeurDeversoirField != null ? Double.parseDouble(profondeurDeversoirField.toString()) : null);
 		Object hauteurDigueField = map.get(Decanteur.HAUTEUR_DIGUE_FIELD);
 		dec.setHauteurDigue(hauteurDigueField != null ? Double.parseDouble(hauteurDigueField.toString()) : null);
-		Object typeField = map.get(Decanteur.TYPE_FIELD);
-		if (typeField != null && !StringUtils.equalsIgnoreCase("FF", typeField.toString())
-				&& !StringUtils.equalsIgnoreCase("fond de fosse", typeField.toString())
-				&& !StringUtils.equalsIgnoreCase("dщcanteur", typeField.toString())
-				&& !StringUtils.equalsIgnoreCase("decanteur", typeField.toString())
-				&& !StringUtils.equalsIgnoreCase("décanteur", typeField.toString())) {
-			return null;
-
-		}
+		
 		Object bvField = map.get(Decanteur.BV_FIELD);
-		dec.setBv(bvField.toString());
-
+		if (bvField != null || !StringUtils.isBlank(bvField.toString())) {
+			dec.setBv(bvField.toString());
+		} else {
+			this.gdeComputer.getComputeContext().getComputingResult().getInDbfDecWarns()
+					.add("L'enregistrement " + rec.getRecordNumber() + " ne mentionne pas de bv");
+		}
 		Object zoneField = map.get(Decanteur.ZONE_FIELD);
-		dec.setZone(zoneField.toString());
+		if (zoneField != null || !StringUtils.isBlank(zoneField.toString())) {
+			dec.setZone(zoneField.toString());
+		} else {
+			this.gdeComputer.getComputeContext().getComputingResult().getInDbfDecWarns()
+					.add("L'enregistrement " + rec.getRecordNumber() + " ne mentionne pas de zone");
+		}
 		return dec;
 	}
 
@@ -491,6 +535,9 @@ public class GDEService {
 		Object creekField = map.get(BVExutoire.CREEK_FIELD);
 
 		if (nomField == null || StringUtils.isEmpty(nomField.toString())) {
+			String warnMsg = "Enregistrement " + rec.getRecordNumber() + " sans nom";
+			log.warn(warnMsg);
+			this.gdeComputer.getComputeContext().getComputingResult().getInDbfBVExuWarns().add(warnMsg);
 			return null;
 		}
 		exu.setNom(nomField != null ? nomField.toString() : "");
@@ -517,6 +564,9 @@ public class GDEService {
 		}
 		Object nomField = map.get(Exutoire.NOM_FIELD);
 		if (nomField == null || StringUtils.isEmpty(nomField.toString())) {
+			String warnMsg = "Enregistrement " + rec.getRecordNumber() + " sans nom";
+			log.warn(warnMsg);
+			this.gdeComputer.getComputeContext().getComputingResult().getInDbfExuWarns().add(warnMsg);
 			return null;
 		}
 		exu.setNom(nomField != null ? nomField.toString() : "");
@@ -524,7 +574,7 @@ public class GDEService {
 		return exu;
 	}
 
-	public MeteoResponse applyMeteo(DonneesMeteo data) {
+	public MeteoResponse applyMeteo(DonneesMeteo data) throws GenerateSheetException {
 		this.gdeComputer.updateMeteo(data);
 		log.info("Définition des parametres météo : " + data.toString());
 		MeteoResponse mr = new MeteoResponse();

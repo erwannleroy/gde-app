@@ -20,6 +20,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FormulaError;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.PrintSetup;
@@ -31,6 +32,7 @@ import org.r1.gde.XlsUtils;
 import org.r1.gde.model.BassinVersant;
 import org.r1.gde.model.Decanteur;
 import org.r1.gde.model.Zone;
+import org.r1.gde.service.ComputingResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +55,7 @@ public class RetentionGenerator extends SheetGenerator {
 	@Autowired
 	ObjectifsRetentionGenerator dimensionnementGenerator;
 
-	public void run() {
+	public void doRun() throws GDEException {
 
 		log.info("Génération de l'onglet Rétention");
 
@@ -85,12 +87,7 @@ public class RetentionGenerator extends SheetGenerator {
 
 		if (zones() != null) {
 			for (Zone z : zones()) {
-				try {
-					generateZone(z);
-				} catch (GDEException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				generateZone(z);
 			}
 		}
 
@@ -326,11 +323,19 @@ public class RetentionGenerator extends SheetGenerator {
 
 			// existing Sheet, Row, and Cell setup
 			evaluator.evaluateFormulaCell(percentObjCell);
-			log.info("Performance bv " + bv.nom + " : " + percentObjCell.getNumericCellValue());
-			this.computeContext.getPerformanceBVDecanteur().put(bv.nom, percentObjCell.getNumericCellValue());
-
-			rowIndexRetention++;
+			String msgPercentRet = "Adresse % retention : " + percentObjCell.getAddress().formatAsString()
+					+ "\n Formule : " + percentObjCell.getCellFormula();
+			log.info(msgPercentRet);
+			try {
+				double poc = percentObjCell.getNumericCellValue();
+				log.info("Performance bv " + bv.nom + " : " + poc);
+				this.computeContext.getPerformanceBVDecanteur().put(bv.nom, poc);
+			} catch (Exception e) {
+				super.processFormulaError(percentObjCell);
+				break;
+			}
 		}
+		rowIndexRetention++;
 
 	}
 
@@ -386,5 +391,16 @@ public class RetentionGenerator extends SheetGenerator {
 	@Override
 	public String getTitleSheet() {
 		return TITLE_SHEET;
+	}
+	
+	@Override
+	protected List<String> getListErrors(ComputingResult cr) {
+		return cr.getRetBassinsWarns();
+	}
+	
+	@Override
+	protected void detailError() {
+		computeContext.getComputingResult().setRetComputeProgress(0);
+		computeContext.getComputingResult().setRetComputeOk(false);
 	}
 }

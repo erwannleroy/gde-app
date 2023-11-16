@@ -58,7 +58,7 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
     }
 
     @PostConstruct
-    public void init() {
+    public void init() throws GenerateSheetException {
         dimensionnementGenerator.addListener(this);
         retentionGenerator.addListener(this);
         cassisGenerator.addListener(this);
@@ -68,12 +68,12 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
         reset();
     }
 
-    public void reset() {
+    public void reset() throws GenerateSheetException {
         this.computeContext = new ComputeContext();
         parametresGenerator.generateSheet(computeContext);
     }
 
-    public void updateBassins(List<BVDecanteur> bassins) {
+    public void updateBassins(List<BVDecanteur> bassins) throws GenerateSheetException {
         this.computeContext.getComputingResult().setBvDecSent(true);
         this.bassins = bassins;
         this.computeContext.setBassins(bassins);
@@ -109,21 +109,21 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
         return bytes;
     }
 
-    public void updateDecanteurs(List<Zone> zones) {
+    public void updateDecanteurs(List<Zone> zones) throws GenerateSheetException {
         this.computeContext.getComputingResult().setDecSent(true);
         this.zones = zones;
         this.computeContext.setZones(zones);
         retentionGenerator.generateSheet(computeContext);
     }
 
-    public void updateMeteo(DonneesMeteo data) {
+    public void updateMeteo(DonneesMeteo data) throws GenerateSheetException {
         ParametresGenerator.METEO_QTE_MAX_PRECIPITATIONS_DEFAULT = data.getMaxPrecipitations();
         ParametresGenerator.METEO_COEFF_MONTANA_A_DEFAULT = data.getCoefA();
         ParametresGenerator.METEO_COEFF_MONTANA_B_DEFAULT = data.getCoefB();
         parametresGenerator.generateSheet(computeContext);
     }
 
-    public void updateBVExutoires(List<Creek> creeks) {
+    public void updateBVExutoires(List<Creek> creeks) throws GenerateSheetException {
         this.computeContext.getComputingResult().setBvExuSent(true);
         log.info("gdeComputer updateBVExutoire");
         this.creeks = creeks;
@@ -139,7 +139,7 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
     }
 
     @Override
-    public void notifyEvent(SheetGeneratorEvent e, Object value) {
+    public void notifyEvent(SheetGeneratorEvent e, Object value) throws GenerateSheetException {
         switch(e) {
             case Q100_SHEET_PROGRESS:
                 this.computeContext.getComputingResult().setQ100ComputeProgress((int) value);

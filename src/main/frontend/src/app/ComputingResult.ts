@@ -23,4 +23,16 @@ export class ComputingResult {
 	perfDbfComputeProgress: number = 0;
 	debitDbfComputeProgress: number = 0;
 
+	inDbfBVDecWarns: string[];
+	inDbfDecWarns: string[];
+	inDbfBVExuWarns: string[];
+	inDbfExuWarns: string[];
+	paramWarns: string[];
+	objRetWarns: string[];
+	retBassinsWarns: string[];
+	q100Warns: string[];
+	cassisWarns: string[];
+	bvDecDBFWarns: string[];
+	exuDBFWarns: string[];
+	
 }

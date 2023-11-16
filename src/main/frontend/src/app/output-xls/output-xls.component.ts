@@ -32,7 +32,10 @@ export class OutputXlsComponent implements OnInit {
   
   aliveSub: Subscription;
 
-  constructor(private gdeService: GdeService) {
+  public opened: boolean = false;
+
+  
+  constructor(private gdeService: GdeService, private modalService: NgbModal) {
   }
 
   ngOnInit() {
@@ -119,6 +122,23 @@ export class OutputXlsComponent implements OnInit {
     this.bvDecSent = false;
     this.decSent = false;
     this.bvExuSent = false;
+  }
+
+  openPopup(content) {
+    console.log('openPopup content', content);
+    console.log('openPopup result', this.result);
+    console.log('openPopup opened', this.opened);
+    if (!this.opened) {
+      this.modalService.open(content,
+        { ariaLabelledBy: 'modal-basic-title' }).result.then(() => {
+          console.log("modal result");
+          this.opened = false;
+        }, () => {
+          console.log("modal error");
+          this.opened = false;
+        });
+      this.opened = true;
+    }
   }
 
   downloadXlsFile(): string {

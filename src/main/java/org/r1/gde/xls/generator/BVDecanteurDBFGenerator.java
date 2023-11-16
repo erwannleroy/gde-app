@@ -124,8 +124,10 @@ public class BVDecanteurDBFGenerator extends DBFGenerator {
 	private String computePerfValue(Object nomBV) throws GDEException {
 		Double perf = this.computeContext.getPerformanceBVDecanteur().get(nomBV);
 		if (perf == null) {
-			log.warn("Aucun BV décanteur '" + nomBV + "' n'existe");
-			return "";
+			String errorMsg = "Performance non évaluable car le % de l'objectif de rétention du BV décanteur '" + nomBV + "' est indéfini";
+			log.warn(errorMsg);
+			this.computeContext.getComputingResult().getBvDecDBFWarns().add(errorMsg);
+			return "indefini";
 		}
 
 		if (perf > 100) {

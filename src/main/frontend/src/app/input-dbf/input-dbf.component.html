@@ -113,6 +113,21 @@
         </div>
       </ng-template>
 
+      <ng-template #bvdecwarns let-modal class="params-popup app-enabled">
+        <div class="modal-header">
+          <h4 class="modal-title" id="modal-basic-title">
+            Alertes
+          </h4>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+                <tr *ngFor="let msg of result.inDbfBVDecWarns">
+                    <td>{{msg}}</td>
+                </tr>
+            </table>
+        </div>
+      </ng-template>
+
       <div class="center">
         <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="bvdec_dropped($event)"
           (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
@@ -143,6 +158,9 @@
             </div>
             <div class="col" *ngIf="bvDecResponse && !bvDecResponse.error">
               <span>{{bvDecResponse.nbBassins}} BV décanteurs</span>
+            </div>
+            <div class="col onglet-icon app-enabled" *ngIf="result.inDbfBVDecWarns && result.inDbfBVDecWarns.length !== 0" (click)="openPopup(bvdecwarns)">
+              <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/alert.png" />
             </div>
           </div>
         </div>
@@ -236,6 +254,21 @@
         </div>
       </ng-template>
 
+      <ng-template #decwarns let-modal class="params-popup app-enabled">
+        <div class="modal-header">
+          <h4 class="modal-title" id="modal-basic-title">
+            Alertes
+          </h4>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+                <tr *ngFor="let msg of result.inDbfDecWarns">
+                    <td>{{msg}}</td>
+                </tr>
+            </table>
+        </div>
+      </ng-template>
+
       <div class="center">
         <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dec_dropped($event)"
           (onFileOver)="fileOver($event)" (onFileLeave)="fileLeave($event)">
@@ -267,6 +300,9 @@
             <div class="col" *ngIf="decResponse && !decResponse.error">
               <span>{{decResponse.nbDecanteurs}} décanteurs (pour {{decResponse.nbBVs}} bassins dans
                 {{decResponse.nbZones}} zones)</span>
+            </div>
+            <div class="col onglet-icon app-enabled" *ngIf="result.inDbfDecWarns && result.inDbfDecWarns.length !== 0" (click)="openPopup(decwarns)">
+              <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/alert.png" />
             </div>
           </div>
         </div>
@@ -342,6 +378,20 @@
         </div>
       </ng-template>
 
+      <ng-template #bvexuwarns let-modal class="params-popup app-enabled">
+        <div class="modal-header">
+          <h4 class="modal-title" id="modal-basic-title">
+            Alertes
+          </h4>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+                <tr *ngFor="let msg of result.inDbfBVExuWarns">
+                    <td>{{msg}}</td>
+                </tr>
+            </table>
+        </div>
+      </ng-template>
 
       <div class="center">
         <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="bvexu_dropped($event)"
@@ -373,6 +423,9 @@
             </div>
             <div class="col" *ngIf="bvExuResponse && !bvExuResponse.error">
               <span>{{bvExuResponse.nbExutoires}} BV exutoires (pour {{bvExuResponse.nbCreeks}} creeks)</span>
+            </div>
+            <div class="col onglet-icon app-enabled" *ngIf="result.inDbfBVExuWarns && result.inDbfBVExuWarns.length !== 0" (click)="openPopup(bvexuwarns)">
+              <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/alert.png" />
             </div>
           </div>
         </div>
@@ -429,6 +482,20 @@
         </div>
       </ng-template>
 
+      <ng-template #exuwarns let-modal class="params-popup app-enabled">
+        <div class="modal-header">
+          <h4 class="modal-title" id="modal-basic-title">
+            Alertes
+          </h4>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+                <tr *ngFor="let msg of result.inDbfExuWarns">
+                    <td>{{msg}}</td>
+                </tr>
+            </table>
+        </div>
+      </ng-template>
 
       <div class="center">
         <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="exu_dropped($event)"
@@ -460,6 +527,9 @@
             </div>
             <div class="col" *ngIf="exuResponse && !exuResponse.error">
               <span>{{exuResponse.nbExutoires}} exutoires</span>
+            </div>
+            <div class="col onglet-icon app-enabled" *ngIf="result.inDbfExuWarns && result.inDbfExuWarns.length !== 0" (click)="openPopup(exuwarns)">
+              <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/alert.png" />
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@ import org.r1.gde.service.ComputingResult;
 import org.r1.gde.service.GDEComputer;
 import org.r1.gde.service.GDEService;
 import org.r1.gde.service.MeteoResponse;
+import org.r1.gde.xls.generator.GenerateSheetException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,7 @@ public class GDEController {
 	}
 
 	@PostMapping("/apply-meteo")
-	public ResponseEntity<MeteoResponse> applyMeteo(@RequestBody DonneesMeteo dataMeteo) {
+	public ResponseEntity<MeteoResponse> applyMeteo(@RequestBody DonneesMeteo dataMeteo) throws GenerateSheetException {
 		MeteoResponse meteoResponse = this.gdeService.applyMeteo(dataMeteo);
 
 		return ResponseEntity.status(HttpStatus.OK).body(meteoResponse);
@@ -86,7 +87,12 @@ public class GDEController {
 	@PostMapping("/reset")
 	public ResponseEntity reset() {
 		log.debug("appel de reset");
-		this.gdeComputer.reset();
+		try {
+			this.gdeComputer.reset();
+		} catch (GenerateSheetException e) {log.error("Impossible de générer", e);
+		gdeComputer.getComputeContext().getComputingResult().setError(true);
+		gdeComputer.getComputeContext().getComputingResult().setErrorMsg("");
+		}
 		return new ResponseEntity(HttpStatus.OK);
 	}
 
