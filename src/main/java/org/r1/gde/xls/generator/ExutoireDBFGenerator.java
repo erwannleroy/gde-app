@@ -86,9 +86,9 @@ public class ExutoireDBFGenerator extends DBFGenerator {
 			} else {
 				Double debitBv = this.computeContext.getDebitBVExutoire().get(record[0]);
 				if (debitBv == null) {
-					String errorMsg = "Référence à un BV exutoire inexistant '" + record[0] + "'";
+					String errorMsg = "Q100 non évaluable car le débit du BV exutoire '" + record[0] + "' est indéfini";
 					log.warn(errorMsg);
-					this.computeContext.getComputingResult().getBvDecDBFWarns().add(errorMsg);
+					this.computeContext.getComputingResult().getExuDBFWarns().add(errorMsg);
 				} else {
 					record[i] = computeDebitValue(debitBv);
 				}
