@@ -78,17 +78,38 @@ public class BVDecanteurDBFGenerator extends DBFGenerator {
 		recOrigin.setStringCharset(stringCharset);
 		Map<String, Object> map = recOrigin.toMap();
 		int i = 0;
-
+		
+		Object bvNom = searchNom(map);
+		if (bvNom == null) {
+			GDEException e = new GDEException("La colonne 'NOM' doit être définie");
+			throw e;
+		}
+		
 		for (DBFField f : fields) {
 			if (!f.getName().equalsIgnoreCase("PERF")) {
 				record[i] = map.get(f.getName());
 			} else {
-				record[i] = computePerfValue(record[0]);
+				record[i] = computePerfValue(bvNom);
 			}
 			i++;
 		}
 
 		return record;
+	}
+	
+	private Object searchNom(Map<String, Object> map) {
+		Object nom = map.get("NOM");
+		if (nom == null) {
+			nom = map.get("Nom");
+			if (nom != null) {
+				nom = map.get("nom");
+			} else {
+				return nom;
+			}
+		}else {
+			return nom;
+		}
+		return nom;
 	}
 
 	private DBFField[] createFields(DbfMetadata meta) {

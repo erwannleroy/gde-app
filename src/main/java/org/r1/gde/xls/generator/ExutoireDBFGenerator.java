@@ -10,6 +10,7 @@ import net.iryndin.jdbf.core.DbfFieldTypeEnum;
 import net.iryndin.jdbf.core.DbfMetadata;
 import net.iryndin.jdbf.core.DbfRecord;
 import net.iryndin.jdbf.reader.DbfReader;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
@@ -80,11 +81,19 @@ public class ExutoireDBFGenerator extends DBFGenerator {
 		Map<String, Object> map = recOrigin.toMap();
 		int i = 0;
 
+		
+		Object bvNom = searchNom(map);
+		if (bvNom == null) {
+			GDEException e = new GDEException("La colonne 'NOM' doit être définie");
+			throw e;
+		}
+		
 		for (DBFField f : fields) {
+			
 			if (!f.getName().equalsIgnoreCase("Q100")) {
 				record[i] = map.get(f.getName());
 			} else {
-				Double debitBv = this.computeContext.getDebitBVExutoire().get(record[0]);
+				Double debitBv = this.computeContext.getDebitBVExutoire().get(bvNom);
 				if (debitBv == null) {
 					String errorMsg = "Q100 non évaluable car le débit du BV exutoire '" + record[0] + "' est indéfini";
 					log.warn(errorMsg);
@@ -99,6 +108,22 @@ public class ExutoireDBFGenerator extends DBFGenerator {
 		return record;
 	}
 
+
+	private Object searchNom(Map<String, Object> map) {
+		Object nom = map.get("NOM");
+		if (nom == null) {
+			nom = map.get("Nom");
+			if (nom != null) {
+				nom = map.get("nom");
+			} else {
+				return nom;
+			}
+		}else {
+			return nom;
+		}
+		return nom;
+	}
+	
 	private DBFField[] createFields(DbfMetadata meta) {
 		List<DBFField> fields = new ArrayList<>();
 		boolean debitAlreadyExist = false;
