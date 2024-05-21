@@ -13,6 +13,8 @@ import static org.r1.gde.XlsUtils.title3;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FormulaError;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -21,6 +23,7 @@ import org.apache.poi.ss.util.CellReference;
 import org.r1.gde.XlsUtils;
 import org.r1.gde.model.BVExutoire;
 import org.r1.gde.model.Creek;
+import org.r1.gde.service.ComputingResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,10 +41,8 @@ public class Q100Generator extends SheetGenerator {
 	@Autowired
 	ParametresGenerator parametresGenerator;
 
-	public void run() {
+	public void doRun() {
 		log.info("Génération de l'onglet Exutoire");
-
-		this.computeContext.getComputingResult().setQ100Computing(true);
 
 		sheet = workbook().getSheet(TITLE_SHEET);
 
@@ -273,6 +274,22 @@ public class Q100Generator extends SheetGenerator {
 						exuSurfCell.getRowIndex() + 1);
 				standardCellDecimal1Comma(computeContext, calculDebitCell, "").setCellFormula(calculDebitFormula);
 
+				FormulaEvaluator evaluator = workbook().getCreationHelper().createFormulaEvaluator();
+
+				// existing Sheet, Row, and Cell setup
+				evaluator.evaluateFormulaCell(calculDebitCell);
+				
+				double calculDebitCellValue = 0;
+				try {
+					calculDebitCellValue = calculDebitCell.getNumericCellValue();
+				} catch (Exception fe) {
+					super.processFormulaError(calculDebitCell);
+					break;
+				}
+				
+				log.info("Debit bv " + e.getNom()+ " : " + calculDebitCellValue);
+				this.computeContext.getDebitBVExutoire().put(e.getNom(), calculDebitCellValue);
+				
 				Cell calculHauteurLameEauCell = exuRow.createCell(14);
 				String calculHauteurLameEauFormula = String.format("%s",
 						parametresGenerator.parametres.get(ParametresGenerator.OUVRAGE_H_LAME_EAU_PARAM));
@@ -333,6 +350,11 @@ public class Q100Generator extends SheetGenerator {
 		}
 
 	}
+	
+	@Override
+	protected List<String> getListErrors(ComputingResult cr) {
+		return cr.getQ100Warns();
+	}
 
 	private void generateTitleBlock() {
 		Row titleRow = sheet.createRow(rowIndexExutoire);
@@ -353,5 +375,11 @@ public class Q100Generator extends SheetGenerator {
 	@Override
 	public String getTitleSheet() {
 		return TITLE_SHEET;
+	}
+	
+	@Override
+	protected void detailError() {
+		computeContext.getComputingResult().setQ100ComputeProgress(0);
+		computeContext.getComputingResult().setQ100ComputeOk(false);
 	}
 }

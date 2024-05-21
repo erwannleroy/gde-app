@@ -2,20 +2,15 @@ server:
   port: 0
 
 
-#logging:
-#  pattern:
-#    console: "%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1} [%X{user}] - %m%n"
-#  level:
-#    ROOT: INFO
-
-
-
 spring:
   web:
     resources:
       static-locations:
       - classpath:/dist/
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+        
       
       
-#spring.banner.image:
-#  location: classpath:splash.png

@@ -1,6 +1,9 @@
 package org.r1.gde.model;
 
 
+import java.util.Arrays;
+import java.util.List;
+
 import lombok.Data;
 import lombok.ToString;
 
@@ -32,5 +35,9 @@ public class BVExutoire {
 		bv.setDenivele(this.denivele);
 		bv.setCreek(this.creek);
 		return bv;
+	}
+
+	public static List<String> fields() {
+		return Arrays.asList(NOM_FIELD, SURFACE_FIELD, DENIVELE_FIELD, LONGUEUR_FIELD, CREEK_FIELD);
 	}
 }

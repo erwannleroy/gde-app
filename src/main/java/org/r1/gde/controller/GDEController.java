@@ -1,10 +1,12 @@
 package org.r1.gde.controller;
 
-import java.time.LocalDateTime;
-
+import lombok.extern.slf4j.Slf4j;
+import org.r1.gde.model.DonneesMeteo;
 import org.r1.gde.service.ComputingResult;
 import org.r1.gde.service.GDEComputer;
 import org.r1.gde.service.GDEService;
+import org.r1.gde.service.MeteoResponse;
+import org.r1.gde.xls.generator.GenerateSheetException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,15 +14,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
 
 @RestController
 @Slf4j
@@ -38,10 +35,17 @@ public class GDEController {
 	private LocalDateTime lastPing;
 
 	@PostMapping("/upload-bv-decanteurs-file")
-	public ResponseEntity<BVDecanteurResponse> uploadBVDecanteurFile(@RequestParam("bv") MultipartFile file) {
+	public ResponseEntity<BVDecanteurResponse> uploadBVDecanteurFile(@RequestParam("bvdec") MultipartFile file) {
 		BVDecanteurResponse bvResponse = this.gdeService.giveBVDecanteurFile(file);
 
 		return ResponseEntity.status(HttpStatus.OK).body(bvResponse);
+	}
+
+	@PostMapping("/apply-meteo")
+	public ResponseEntity<MeteoResponse> applyMeteo(@RequestBody DonneesMeteo dataMeteo) throws GenerateSheetException {
+		MeteoResponse meteoResponse = this.gdeService.applyMeteo(dataMeteo);
+
+		return ResponseEntity.status(HttpStatus.OK).body(meteoResponse);
 	}
 
 	@PostMapping("/upload-decanteurs-file")
@@ -52,23 +56,28 @@ public class GDEController {
 	}
 
 	@PostMapping("/upload-bv-exutoires-file")
-	public ResponseEntity<BVExutoireResponse> uploadBVExutoireFile(@RequestParam("exu") MultipartFile file) {
+	public ResponseEntity<BVExutoireResponse> uploadBVExutoireFile(@RequestParam("bvexu") MultipartFile file) {
 		log.info("upload-bv-exutoires-file");
-		BVExutoireResponse exuResponse = this.gdeService.giveBVExutoireFile(file);
+		BVExutoireResponse bvExuResponse = this.gdeService.giveBVExutoireFile(file);
+
+		return ResponseEntity.status(HttpStatus.OK).body(bvExuResponse);
+	}
+
+	@PostMapping("/upload-exutoires-file")
+	public ResponseEntity<ExutoireResponse> uploadExutoireFile(@RequestParam("exu") MultipartFile file) {
+		log.info("upload-exutoires-file");
+		ExutoireResponse exuResponse = this.gdeService.giveExutoireFile(file);
 
 		return ResponseEntity.status(HttpStatus.OK).body(exuResponse);
 	}
+//	@PostMapping("/upload-bv-file-by-path")
+//	public BVDecanteurResponse uploadFileByPath(@RequestParam("bv") String bvFilePath) {
+//
+//		BVDecanteurResponse result = this.gdeService.giveBVFilePath(bvFilePath);
+//
+//		return result;
+//	}
 
-	@PostMapping("/upload-bv-file-by-path")
-	public BVDecanteurResponse uploadFileByPath(@RequestParam("bv") String bvFilePath) {
-
-		BVDecanteurResponse result = this.gdeService.giveBVFilePath(bvFilePath);
-
-		return result;
-	}
-
-	
-	
 	@PostMapping("/ping")
 	public ResponseEntity ping() {
 		this.lastPing = LocalDateTime.now();
@@ -78,10 +87,15 @@ public class GDEController {
 	@PostMapping("/reset")
 	public ResponseEntity reset() {
 		log.debug("appel de reset");
-		this.gdeComputer.reset();
+		try {
+			this.gdeComputer.reset();
+		} catch (GenerateSheetException e) {log.error("Impossible de générer", e);
+		gdeComputer.getComputeContext().getComputingResult().setError(true);
+		gdeComputer.getComputeContext().getComputingResult().setErrorMsg("");
+		}
 		return new ResponseEntity(HttpStatus.OK);
 	}
-	
+
 	@Scheduled(fixedDelay = 2000)
 	public void testAlive() {
 		if (this.lastPing != null) {
@@ -99,14 +113,50 @@ public class GDEController {
 		return ResponseEntity.status(HttpStatus.OK).body(gdeComputer.getComputeContext().getComputingResult());
 	}
 
-	@GetMapping("/get-result-bytes")
+	@GetMapping("/get-meteo")
+	public ResponseEntity<DonneesMeteo> getMeteo() {
+		return ResponseEntity.status(HttpStatus.OK).body(gdeService.getDonneesMeteo());
+	}
+
+	@GetMapping("/get-result-bytes-xls")
 	public ResponseEntity<byte[]> getComputeResultBytes() {
 		HttpHeaders header = new HttpHeaders();
 		header.setContentType(new MediaType("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
 		header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=gde.xlsx");
-		byte[] bytes = gdeComputer.getComputeContext().getComputingResult().getXls();
-		header.setContentLength(bytes.length);
-		return ResponseEntity.status(HttpStatus.OK).headers(header).body(bytes);
+		try {
+			byte[] bytes = gdeComputer.getComputeContext().getBytesResult().getBytesXls();
+			header.setContentLength(bytes.length);
+			return ResponseEntity.status(HttpStatus.OK).headers(header).body(bytes);
+		} catch (Exception e) {
+			return ResponseEntity.noContent().build();
+		}
 	}
 
+	@GetMapping("/get-result-bytes-perf-dbf")
+	public ResponseEntity<byte[]> getComputeResultBytesPerfDBF() {
+		HttpHeaders header = new HttpHeaders();
+		header.setContentType(new MediaType("application", "vnd.dbf"));
+		header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=bv-decanteurs-perf.dbf");
+		try {
+			byte[] bytes = gdeComputer.getComputeContext().getBytesResult().getBytesPerfDbf();
+			header.setContentLength(bytes.length);
+			return ResponseEntity.status(HttpStatus.OK).headers(header).body(bytes);
+		} catch (Exception e) {
+			return ResponseEntity.noContent().build();
+		}
+	}
+
+	@GetMapping("/get-result-bytes-debit-dbf")
+	public ResponseEntity<byte[]> getComputeResultBytesDebitDBF() {
+		HttpHeaders header = new HttpHeaders();
+		header.setContentType(new MediaType("application", "vnd.dbf"));
+		header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=exutoires-classe.dbf");
+		try {
+			byte[] bytes = gdeComputer.getComputeContext().getBytesResult().getBytesDebitDbf();
+			header.setContentLength(bytes.length);
+			return ResponseEntity.status(HttpStatus.OK).headers(header).body(bytes);
+		} catch (Exception e) {
+			return ResponseEntity.noContent().build();
+		}
+	}
 }

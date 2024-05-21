@@ -7,12 +7,14 @@ import static org.r1.gde.XlsUtils.title2;
 import static org.r1.gde.XlsUtils.title3;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
 import org.r1.gde.XlsUtils;
+import org.r1.gde.service.ComputingResult;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -46,41 +48,37 @@ public class ParametresGenerator extends SheetGenerator {
 	public static final double CST_COEF_STRICKLER_DEFAULT = 20.0;
 	public static final String CST_PENTE_PARAM = "CASSIS_PENTE";
 	public static final Double CST_PENTE_DEFAULT = 0.02;
-	
-	
+
 	public static final String PARAM_DEC_PROFONDEUR_DEVERSOIR_PARAM = "PROF_DEV";
 	public static final Integer PARAM_DEC_PROFONDEUR_DEVERSOIR_DEFAULT = 0;
 	public static final String PARAM_DEC_HAUTEUR_DIGUE_PARAM = "HAUT_DIG";
 	public static final Integer PARAM_DEC_HAUTEUR_DIGUE_DEFAULT = 0;
-	
-	
+
 	public static final String OUVRAGE_H_LAME_EAU_PARAM = "EXU_H_LAME_EAU";
 	public static final double OUVRAGE_H_LAME_EAU_DEFAULT = 0.4;
 	public static final String OUVRAGE_REVANCHE_PARAM = "EXU_REVANCHE";
 	public static final double OUVRAGE_REVANCHE_DEFAULT = 0.1;
-	
 
 	public static final String METEO_COEFF_MONTANA_A_PARAM = "METEO_MONTANA_A";
-	public static final double METEO_COEFF_MONTANA_A_DEFAULT = 351.1;
+	public static double METEO_COEFF_MONTANA_A_DEFAULT = 0.0;
 	public static final String METEO_COEFF_MONTANA_B_PARAM = "METEO_MONTANA_B";
-	public static final double METEO_COEFF_MONTANA_B_DEFAULT = -0.248;
+	public static double METEO_COEFF_MONTANA_B_DEFAULT = 0.0;
 	public static final String METEO_QTE_MAX_PRECIPITATIONS_PARAM = "METEO_QTE_MAX_PRECIPITATIONS";
-	public static final double METEO_QTE_MAX_PRECIPITATIONS_DEFAULT = 59.8;
+	public static double METEO_QTE_MAX_PRECIPITATIONS_DEFAULT = 0.0;
 	public static final String METEO_TPS_CONCENTRATION_PARAM = "METEO_TPS_CONCENTRATION";
 	public static final double METEO_TPS_CONCENTRATION_DEFAULT = 6;
-	
 
 	int indexColumn = 0;
 
-	public void run() {
+	public void doRun() {
 
 		log.info("Génération de l'onglet Paramètres");
 
 		sheet = workbook().getSheet(TITLE_SHEET);
-		
+
 		if (null != sheet) {
 			workbook().removeSheetAt(0);
-		} 
+		}
 
 		sheet = workbook().createSheet(TITLE_SHEET);
 		sheet.getPrintSetup().setLandscape(true);
@@ -106,7 +104,6 @@ public class ParametresGenerator extends SheetGenerator {
 			sheet.autoSizeColumn(column);
 			column++;
 		}
-		
 
 		sheet.setColumnWidth(1, 20 * 256);
 	}
@@ -132,7 +129,7 @@ public class ParametresGenerator extends SheetGenerator {
 		standardCell(computeContext, paramValueCell, defaultValue);
 		rowIndexParametres++;
 	}
-	
+
 	private void createParamDecimalEmpty(String keyParam, String titleParam) {
 		Row row = sheet.createRow(rowIndexParametres);
 		Cell titleParamCell = row.createCell(indexColumn);
@@ -142,7 +139,7 @@ public class ParametresGenerator extends SheetGenerator {
 		decimalCellEmpty(computeContext, paramValueCell);
 		rowIndexParametres++;
 	}
-	
+
 	private void createParamDecimal(String keyParam, String titleParam, double defaultValue) {
 		Row row = sheet.createRow(rowIndexParametres);
 		Cell titleParamCell = row.createCell(indexColumn);
@@ -163,10 +160,12 @@ public class ParametresGenerator extends SheetGenerator {
 
 		rowIndexParametres++;
 
-		createParamDecimalEmpty(METEO_QTE_MAX_PRECIPITATIONS_PARAM, "Quantité max de précipitations");
-		createParamDecimalEmpty(METEO_COEFF_MONTANA_A_PARAM, "Coefficient de Montana A");
-		createParamDecimalEmpty(METEO_COEFF_MONTANA_B_PARAM, "Coefficient de Montana B");
-		createParamDecimal(METEO_TPS_CONCENTRATION_PARAM, "Temps de concentration minimal retenu (min)", METEO_TPS_CONCENTRATION_DEFAULT);
+		createParamDecimal(METEO_QTE_MAX_PRECIPITATIONS_PARAM, "Quantité max de précipitations",
+				METEO_QTE_MAX_PRECIPITATIONS_DEFAULT);
+		createParamDecimal(METEO_COEFF_MONTANA_A_PARAM, "Coefficient de Montana A", METEO_COEFF_MONTANA_A_DEFAULT);
+		createParamDecimal(METEO_COEFF_MONTANA_B_PARAM, "Coefficient de Montana B", METEO_COEFF_MONTANA_B_DEFAULT);
+		createParamDecimal(METEO_TPS_CONCENTRATION_PARAM, "Temps de concentration minimal retenu (min)",
+				METEO_TPS_CONCENTRATION_DEFAULT);
 
 	}
 
@@ -184,9 +183,9 @@ public class ParametresGenerator extends SheetGenerator {
 		createParamDecimal(PARAM_DEC_PROFONDEUR_DEVERSOIR_PARAM, "Profondeur de déversoir",
 				PARAM_DEC_PROFONDEUR_DEVERSOIR_DEFAULT);
 		createParamDecimal(PARAM_DEC_HAUTEUR_DIGUE_PARAM, "Hauteur de digue", PARAM_DEC_HAUTEUR_DIGUE_DEFAULT);
-		
+
 	}
-	
+
 	private void generateParametresOuvragesTransit() {
 
 		rowIndexParametres++;
@@ -199,7 +198,7 @@ public class ParametresGenerator extends SheetGenerator {
 
 		createParamDecimal(OUVRAGE_H_LAME_EAU_PARAM, "Hauteur de lame d'eau", OUVRAGE_H_LAME_EAU_DEFAULT);
 		createParamDecimal(OUVRAGE_REVANCHE_PARAM, "Revanche", OUVRAGE_REVANCHE_DEFAULT);
-		
+
 	}
 
 	private void generateConstantesDimensionnementDéfaut() {
@@ -228,6 +227,17 @@ public class ParametresGenerator extends SheetGenerator {
 	@Override
 	public String getTitleSheet() {
 		return TITLE_SHEET;
+	}
+
+	@Override
+	protected void detailError() {
+		computeContext.getComputingResult().setError(true);
+		computeContext.getComputingResult().setErrorMsg("Impossible de générer les paramètres météo");
+	}
+	
+	@Override
+	protected List<String> getListErrors(ComputingResult cr) {
+		return cr.getParamWarns();
 	}
 
 }

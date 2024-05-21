@@ -1,25 +1,38 @@
 export class ComputingResult {
-  inProgress: boolean;
-  computationOk: boolean;
 
-  q100InProgress: number;
-  cassisInProgress: number;
-  retentionInProgress: number;
-  objectifsInProgress: number;
+	error: boolean = false;
+	errorMsg: string = "";
 
-  bvDecSent: boolean;
-  decSent: boolean;
-  bvExuSent: boolean;
+	bytesXlsInProgress: boolean = false;
+	bytesDbfInProgress: boolean = false;
+	xlsComputationOk: boolean = false;
+	perfDbfComputationOk: boolean = false;
+	debitDbfComputationOk: boolean = false;
 
-  objectifsComputing: boolean;
-  objectifsGenere: boolean;
+	objRetComputeProgress: number = 0;
+	retComputeProgress: number = 0;
+	cassisComputeProgress: number = 0;
+	q100ComputeProgress: number = 0;
 
-  retentionComputing: boolean;
-  retentionGenere: boolean;
+	objRetComputeOk: boolean = false;
+	retComputeOk: boolean = false;
+	cassisComputeOk: boolean = false;
+	q100ComputeOk: boolean = false;
 
-  q100Computing: boolean;
-  cassisComputing: boolean;
-  q100Genere: boolean;
-  cassisGenere: boolean;
+	xlsComputeProgress: number = 0;
+	perfDbfComputeProgress: number = 0;
+	debitDbfComputeProgress: number = 0;
 
+	inDbfBVDecWarns: string[];
+	inDbfDecWarns: string[];
+	inDbfBVExuWarns: string[];
+	inDbfExuWarns: string[];
+	paramWarns: string[];
+	objRetWarns: string[];
+	retBassinsWarns: string[];
+	q100Warns: string[];
+	cassisWarns: string[];
+	bvDecDBFWarns: string[];
+	exuDBFWarns: string[];
+	
 }

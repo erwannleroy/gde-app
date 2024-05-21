@@ -12,7 +12,7 @@
 
 	<groupId>org.r1</groupId>
 	<artifactId>gde</artifactId>
-	<version>1.2-SNAPSHOT</version>
+	<version>1.4.1</version>
 	<packaging>jar</packaging>
 
 	<name>gde</name>
@@ -24,11 +24,6 @@
 	</properties>
 
 	<dependencies>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springdoc</groupId> -->
-<!-- 			<artifactId>springdoc-openapi-ui</artifactId> -->
-<!-- 			<version>1.5.0</version> -->
-<!-- 		</dependency> -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -58,30 +53,29 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.github.spyhunter99/jdbf -->
 		<dependency>
-			<groupId>net.iryndin</groupId>
+			<groupId>com.github.spyhunter99</groupId>
 			<artifactId>jdbf</artifactId>
-			<version>2.1.0</version>
+			<version>2.2.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+
+		<dependency>
+			<groupId>com.github.albfernandez</groupId>
+			<artifactId>javadbf</artifactId>
+			<version>1.13.1</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.12.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-<!--		<dependency>-->
-<!--			<groupId>org.slf4j</groupId>-->
-<!--			<artifactId>slf4j-api</artifactId>-->
-<!--			<version>1.7.33</version>-->
-<!--		</dependency>-->
-		<!-- https://mvnrepository.com/artifact/log4j/log4j -->
-
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.16</version>
+			<version>1.18.30</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -208,7 +202,8 @@
 								</goals>
 								<configuration>
 									<headerType>gui</headerType>
-									<jar>${project.build.directory}/${artifactId}-${version}.jar</jar>
+									<jar>
+										${project.build.directory}/${artifactId}-${version}.jar</jar>
 									<outfile>${project.build.directory}/gde.exe</outfile>
 									<classPath>
 										<mainClass>org.r1.gde.GDEApplication</mainClass>
@@ -217,14 +212,14 @@
 									<jre>
 										<minVersion>1.8.0</minVersion>
 									</jre>
-									
+
 									<versionInfo>
-										<fileVersion>1.0.0.0</fileVersion>
-										<txtFileVersion>1.0.0.0</txtFileVersion>
+										<fileVersion>1.4.0.0</fileVersion>
+										<txtFileVersion>1.4.0.0</txtFileVersion>
 										<fileDescription>Gestion des eaux</fileDescription>
 										<copyright>2021 Kenskoaz</copyright>
-										<productVersion>1.0.0.0</productVersion>
-										<txtProductVersion>1.0.0.0</txtProductVersion>
+										<productVersion>1.4.0.0</productVersion>
+										<txtProductVersion>1.4.0.0</txtProductVersion>
 										<productName>GDE</productName>
 										<companyName>Kenskoaz</companyName>
 										<internalName>gde</internalName>

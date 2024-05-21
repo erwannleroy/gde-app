@@ -9,6 +9,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 import org.r1.gde.XlsUtils;
 import org.r1.gde.model.BVDecanteur;
+import org.r1.gde.service.ComputingResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,11 +33,9 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
 	@Autowired
 	private ParametresGenerator parametresGenerator;
 
-	public void run() {
+	public void doRun() {
 
 		log.info("Génération de l'onglet Dimensionnement");
-
-		this.computeContext.getComputingResult().setObjectifsComputing(true);
 
 		sheet = workbook().getSheet(TITLE_SHEET);
 
@@ -62,15 +61,15 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
 
 		generateBassins(bassins());
 
-        sheet.setColumnWidth(0, 16 * 256);
-        sheet.setColumnWidth(1, 14 * 256);
-        sheet.setColumnWidth(2, 14 * 256);
-        sheet.setColumnWidth(3, 14 * 256);
-        sheet.setColumnWidth(4, 8 * 256);
-        sheet.setColumnWidth(5, 14 * 256);
+		sheet.setColumnWidth(0, 16 * 256);
+		sheet.setColumnWidth(1, 14 * 256);
+		sheet.setColumnWidth(2, 14 * 256);
+		sheet.setColumnWidth(3, 14 * 256);
+		sheet.setColumnWidth(4, 8 * 256);
+		sheet.setColumnWidth(5, 14 * 256);
 		sheet.setColumnWidth(6, 2 * 256);
-        sheet.setColumnWidth(7, 14 * 256);
-        sheet.setColumnWidth(8, 16 * 256);
+		sheet.setColumnWidth(7, 14 * 256);
+		sheet.setColumnWidth(8, 16 * 256);
 		sheet.setColumnWidth(9, 2 * 256);
 		sheet.setColumnWidth(10, 14 * 256);
 
@@ -79,13 +78,13 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
 		sheet.createFreezePane(0, 4);
 		sheet.setRepeatingRows(new CellRangeAddress(2, 3, 0, 0));
 		notifyListeners(SheetGeneratorEvent.OBJECTIFS_SHEET_GENERATED, null);
+
 	}
 
 	private int countOuvragesTotal(List<BVDecanteur> bvds) {
 		return bvds.size();
 	}
 
-	
 	private void generateBassins(List<BVDecanteur> bassinsLot) {
 
 		// enteteGroup
@@ -103,7 +102,7 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
 
 		Cell title2DimCell = enteteGroup.createCell(10);
 		title2(computeContext, title2DimCell, "Dimensionnement");
-		
+
 		rowIndexDimensionnement++;
 
 		// entete tableau
@@ -234,6 +233,17 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
 	@Override
 	public String getTitleSheet() {
 		return TITLE_SHEET;
+	}
+	
+	@Override
+	protected void detailError() {
+		computeContext.getComputingResult().setObjRetComputeProgress(0);
+		computeContext.getComputingResult().setObjRetComputeOk(false);
+	}
+	
+	@Override
+	protected List<String> getListErrors(ComputingResult cr) {
+		return cr.getObjRetWarns();
 	}
 
 }

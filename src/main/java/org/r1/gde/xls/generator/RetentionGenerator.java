@@ -19,6 +19,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.FormulaError;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.PrintSetup;
 import org.apache.poi.ss.usermodel.Row;
@@ -29,6 +32,7 @@ import org.r1.gde.XlsUtils;
 import org.r1.gde.model.BassinVersant;
 import org.r1.gde.model.Decanteur;
 import org.r1.gde.model.Zone;
+import org.r1.gde.service.ComputingResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -51,11 +55,9 @@ public class RetentionGenerator extends SheetGenerator {
 	@Autowired
 	ObjectifsRetentionGenerator dimensionnementGenerator;
 
-	public void run() {
+	public void doRun() throws GDEException {
 
 		log.info("Génération de l'onglet Rétention");
-
-		this.computeContext.getComputingResult().setRetentionComputing(true);
 
 		sheet = workbook().getSheet(TITLE_SHEET);
 
@@ -85,22 +87,17 @@ public class RetentionGenerator extends SheetGenerator {
 
 		if (zones() != null) {
 			for (Zone z : zones()) {
-				try {
-					generateZone(z);
-				} catch (GDEException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				generateZone(z);
 			}
 		}
 
 		sheet.setColumnWidth(0, 14 * 256);
-        sheet.setColumnWidth(1, 14 * 256);
-        sheet.setColumnWidth(2, 12 * 256);
-        sheet.setColumnWidth(3, 1 * 256);
-        sheet.setColumnWidth(4, 14 * 256);
-        sheet.setColumnWidth(5, 12 * 256);
-        sheet.setColumnWidth(6, 12 * 256);
+		sheet.setColumnWidth(1, 14 * 256);
+		sheet.setColumnWidth(2, 12 * 256);
+		sheet.setColumnWidth(3, 1 * 256);
+		sheet.setColumnWidth(4, 14 * 256);
+		sheet.setColumnWidth(5, 12 * 256);
+		sheet.setColumnWidth(6, 12 * 256);
 		sheet.setColumnWidth(7, 12 * 256);
 		sheet.setColumnWidth(8, 12 * 256);
 		sheet.setColumnWidth(9, 10 * 256);
@@ -112,7 +109,7 @@ public class RetentionGenerator extends SheetGenerator {
 
 		sheet.createFreezePane(0, 8);
 		sheet.setRepeatingRows(new CellRangeAddress(6, 7, 0, 0));
-		
+
 		notifyListeners(SheetGeneratorEvent.RETENTION_SHEET_GENERATED, null);
 	}
 
@@ -214,7 +211,7 @@ public class RetentionGenerator extends SheetGenerator {
 			}
 			Cell zoneCell = bvRow.createCell(0);
 			redBoldVATop(computeContext, zoneCell, zone.nom);
-			
+
 			Cell bvCell = bvRow.createCell(1);
 			redBoldVATop(computeContext, bvCell, bv.nom);
 
@@ -322,8 +319,23 @@ public class RetentionGenerator extends SheetGenerator {
 
 			objectifRetentionCell(computeContext, percentObjCell, "").setCellFormula(percentObjFormula);
 
-			rowIndexRetention++;
+			FormulaEvaluator evaluator = workbook().getCreationHelper().createFormulaEvaluator();
+
+			// existing Sheet, Row, and Cell setup
+			evaluator.evaluateFormulaCell(percentObjCell);
+			String msgPercentRet = "Adresse % retention : " + percentObjCell.getAddress().formatAsString()
+					+ "\n Formule : " + percentObjCell.getCellFormula();
+			log.info(msgPercentRet);
+			try {
+				double poc = percentObjCell.getNumericCellValue();
+				log.info("Performance bv " + bv.nom + " : " + poc);
+				this.computeContext.getPerformanceBVDecanteur().put(bv.nom, poc);
+			} catch (Exception e) {
+				super.processFormulaError(percentObjCell);
+				break;
+			}
 		}
+		rowIndexRetention++;
 
 	}
 
@@ -374,11 +386,21 @@ public class RetentionGenerator extends SheetGenerator {
 		colorCell(computeContext, legend3Color, IndexedColors.LIGHT_ORANGE);
 		standardCellNoBorder(computeContext, legend3Text, "capacité de rétention < 80%  2h/2ans");
 
-
 	}
 
 	@Override
 	public String getTitleSheet() {
 		return TITLE_SHEET;
+	}
+	
+	@Override
+	protected List<String> getListErrors(ComputingResult cr) {
+		return cr.getRetBassinsWarns();
+	}
+	
+	@Override
+	protected void detailError() {
+		computeContext.getComputingResult().setRetComputeProgress(0);
+		computeContext.getComputingResult().setRetComputeOk(false);
 	}
 }

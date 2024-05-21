@@ -8,44 +8,20 @@ import org.r1.gde.model.BVExutoire;
 import org.r1.gde.model.BassinVersant;
 import org.r1.gde.model.Creek;
 import org.r1.gde.model.Decanteur;
+import org.r1.gde.model.Exutoire;
 import org.r1.gde.model.Zone;
 
 public class TempExutoiresParsing {
 
-	List<Creek> creeks = new ArrayList<Creek>();
+	List<Exutoire> exutoires = new ArrayList<>();
 
-	public List<Creek> getCreeks() {
-		return creeks;
+	public List<Exutoire> getExutoires() {
+		return exutoires;
 	}
 
-	public void addExutoire(BVExutoire exutoire) {
-		Creek c = getCreek(exutoire.getCreek());
-		c.exutoires.add(exutoire);
+	public void addExutoire(Exutoire exutoire) {
+		exutoires.add(exutoire);
 	}
 
-	private Creek getCreek(String nomCreek) {
-		Creek creek = getOrCreateCreek(nomCreek);
-		return creek;
-	}
-
-	private Creek getOrCreateCreek(String nomCreek) {
-		boolean trouve = false;
-		Creek creek = null;
-		Iterator<Creek> it = creeks.iterator();
-		while (!trouve && it.hasNext()) {
-			Creek currentCreek = it.next();
-			if (currentCreek.getNom().equalsIgnoreCase(nomCreek)) {
-				trouve = true;
-				creek = currentCreek;
-			}
-		}
-
-		if (!trouve) {
-			creek = new Creek();
-			creek.setNom(nomCreek);
-			creeks.add(creek);
-		}
-		return creek;
-	}
 	
 }
