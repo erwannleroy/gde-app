@@ -12,7 +12,7 @@
 
 	<groupId>org.r1</groupId>
 	<artifactId>gde</artifactId>
-	<version>1.4.2-SNAPSHOT</version>
+	<version>1.5.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>gde</name>
@@ -213,12 +213,12 @@
 									</jre>
 
 									<versionInfo>
-										<fileVersion>1.4.0.0</fileVersion>
-										<txtFileVersion>1.4.0.0</txtFileVersion>
+										<fileVersion>1.5.0.0</fileVersion>
+										<txtFileVersion>1.5.0.0</txtFileVersion>
 										<fileDescription>Gestion des eaux</fileDescription>
 										<copyright>2021 Kenskoaz</copyright>
-										<productVersion>1.4.0.0</productVersion>
-										<txtProductVersion>1.4.0.0</txtProductVersion>
+										<productVersion>1.5.0.0</productVersion>
+										<txtProductVersion>1.5.0.0</txtProductVersion>
 										<productName>GDE</productName>
 										<companyName>Kenskoaz</companyName>
 										<internalName>gde</internalName>

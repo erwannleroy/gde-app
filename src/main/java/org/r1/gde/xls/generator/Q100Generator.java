@@ -41,7 +41,10 @@ public class Q100Generator extends SheetGenerator {
 	@Autowired
 	ParametresGenerator parametresGenerator;
 
-	public void doRun() {
+	@Autowired
+	TCGenerator tcGenerator;
+
+	public void doRun() throws GDEException {
 		log.info("Génération de l'onglet Exutoire");
 
 		sheet = workbook().getSheet(TITLE_SHEET);
@@ -75,20 +78,19 @@ public class Q100Generator extends SheetGenerator {
 		sheet.setColumnWidth(4, 10 * 256);
 		sheet.setColumnWidth(5, 8 * 256);
 		sheet.setColumnWidth(6, 12 * 256);
-		sheet.setColumnWidth(7, 10 * 256);
+		sheet.setColumnWidth(7, 12 * 256);
 		sheet.setColumnWidth(8, 12* 256);
 		sheet.setColumnWidth(9, 12 * 256);
-		sheet.setColumnWidth(10, 12 * 256);
-		sheet.setColumnWidth(11, 1 * 256);
-		sheet.setColumnWidth(12, 12 * 256);
-		sheet.setColumnWidth(13, 1 * 256);
+		sheet.setColumnWidth(10, 1 * 256);
+		sheet.setColumnWidth(11, 12 * 256);
+		sheet.setColumnWidth(12, 1 * 256);
+		sheet.setColumnWidth(13, 12 * 256);
 		sheet.setColumnWidth(14, 10 * 256);
 		sheet.setColumnWidth(15, 10 * 256);
 		sheet.setColumnWidth(16, 12 * 256);
-		sheet.setColumnWidth(17, 12 * 256);
-		sheet.setColumnWidth(18, 1 * 256);
+		sheet.setColumnWidth(17, 1 * 256);
+		sheet.setColumnWidth(18, 12 * 256);
 		sheet.setColumnWidth(19, 9 * 256);
-		sheet.setColumnWidth(20, 9 * 256);
 
 		XlsUtils.borderMergedSheet(sheet);
 		
@@ -107,19 +109,19 @@ public class Q100Generator extends SheetGenerator {
 		short htitle = 35;
 		enteteRow.setHeightInPoints(htitle);
 
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 0, 10);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 0, 9);
 		Cell caracExuTitleCell = enteteRow.createCell(0);
 		title2(computeContext, caracExuTitleCell, "Caractéristiques des bassins versants associés aux exutoires");
 
-		Cell debitTitleCell = enteteRow.createCell(12);
+		Cell debitTitleCell = enteteRow.createCell(11);
 		title2(computeContext, debitTitleCell, "Q100");
 
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 14, 17);
-		Cell crueTitleCell = enteteRow.createCell(14);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 13, 16);
+		Cell crueTitleCell = enteteRow.createCell(13);
 		title2(computeContext, crueTitleCell, "Dimensionnement des déversoirs");
 
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 19, 20);
-		Cell dimTitleCell = enteteRow.createCell(19);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 18, 19);
+		Cell dimTitleCell = enteteRow.createCell(18);
 		title2(computeContext, dimTitleCell, "Section des déversoirs");
 
 		rowIndexExutoire++;
@@ -127,65 +129,72 @@ public class Q100Generator extends SheetGenerator {
 		// entete tableau
 		Row columnRow = sheet.createRow(rowIndexExutoire);
 
-		Cell creekCellTitle = columnRow.createCell(0);
+		int idxEntete=0;
+		Cell creekCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, creekCellTitle, "Creek");
 
-		Cell exuCellTitle = columnRow.createCell(1);
+		Cell exuCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, exuCellTitle, "Exutoire");
 
-		Cell supCellTitle = columnRow.createCell(2);
+		Cell supCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, supCellTitle, "Superficie BV (ha)");
 
-		Cell longueurCellTitle = columnRow.createCell(3);
+		Cell longueurCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, longueurCellTitle, "Longueur hydraulique BV (m)");
 
-		Cell denivCellTitle = columnRow.createCell(4);
+		Cell denivCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, denivCellTitle, "Dénivelé BV (m)");
 
-		Cell penteCellTitle = columnRow.createCell(5);
+		Cell penteCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, penteCellTitle, "Pente BV (%)");
 
-		Cell coefRuisCellTitle = columnRow.createCell(6);
+		Cell coefRuisCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, coefRuisCellTitle, "Coefficient de ruissellement");
 
-		Cell vitEcoulCellTitle = columnRow.createCell(7);
+		Cell vitEcoulCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, vitEcoulCellTitle, "Vitesse d'écoulement (m/s)");
 
-		Cell calcaulTpsConcCellTitle = columnRow.createCell(8);
-		title3(computeContext, calcaulTpsConcCellTitle, "Calcul du temps de concentration (mn)");
-
-		Cell tpsConcCellTitle = columnRow.createCell(9);
+		Cell tpsConcCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, tpsConcCellTitle, "Temps de concentration retenu (mn)");
 
-		Cell intAvObjCellTitle = columnRow.createCell(10);
+		Cell intAvObjCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, intAvObjCellTitle, "Calcul de l'intensité de l'averse (mm/h)");
 
-		Cell debitCellTitle = columnRow.createCell(12);
+		// une séparation
+		idxEntete++;
+
+		Cell debitCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, debitCellTitle, "Calcul du débit par la méthode rationnelle (m3/s)");
 
-		Cell hauteurLameCellTitle = columnRow.createCell(14);
+		// une séparation
+		idxEntete++;
+
+		Cell hauteurLameCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, hauteurLameCellTitle, "Hauteur de lame d'eau (m)");
 
-		Cell revancheCellTitle = columnRow.createCell(15);
+		Cell revancheCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, revancheCellTitle, "Revanche (m)");
 
-		Cell largEvacCellTitle = columnRow.createCell(16);
+		Cell largEvacCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, largEvacCellTitle, "Largeur de l'évacuateur (m)");
 
-		Cell hauteurChargeCellTitle = columnRow.createCell(17);
+		Cell hauteurChargeCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, hauteurChargeCellTitle, "Hauteur de la charge sur le seuil (lame d'eau (m))");
 
-		Cell largeurCellTitle = columnRow.createCell(19);
+		// une séparation
+		idxEntete++;
+
+		Cell largeurCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, largeurCellTitle, "Largeur (m)");
 
-		Cell hauteurCellTitle = columnRow.createCell(20);
+		Cell hauteurCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, hauteurCellTitle, "Hauteur (m)");
 
 		rowIndexExutoire++;
 
 	}
 
-	private void generateCreeks(List<Creek> creeks) {
+	private void generateCreeks(List<Creek> creeks) throws GDEException {
 
 		for (Creek c : creeks) {
 			nbOuvragesTotal += c.exutoires.size();
@@ -207,20 +216,22 @@ public class Q100Generator extends SheetGenerator {
 
 			for (BVExutoire e : c.getExutoires()) {
 
-				Cell exuNomCell = exuRow.createCell(1);
+				int idxRow = 1;
+
+				Cell exuNomCell = exuRow.createCell(idxRow++);
 				redBold(computeContext, exuNomCell, e.getNom());
 
-				Cell exuSurfCell = exuRow.createCell(2);
+				Cell exuSurfCell = exuRow.createCell(idxRow++);
 				standardCellDecimal2Comma(computeContext, exuSurfCell, "").setCellValue(e.getSurface() / 10000);
 
-				Cell lgHydroCell = exuRow.createCell(3);
+				Cell lgHydroCell = exuRow.createCell(idxRow++);
 				standardCellDecimalNoComma(computeContext, lgHydroCell, "")
 						.setCellValue(e.getLongueurHydro().intValue());
 
-				Cell deniveleCell = exuRow.createCell(4);
+				Cell deniveleCell = exuRow.createCell(idxRow++);
 				standardCellDecimalNoComma(computeContext, deniveleCell, "").setCellValue(e.getDenivele().intValue());
 
-				Cell penteCell = exuRow.createCell(5);
+				Cell penteCell = exuRow.createCell(idxRow++);
 				String penteFormula = String.format("(%s%s/%s%s)*100",
 						CellReference.convertNumToColString(deniveleCell.getColumnIndex()),
 						deniveleCell.getRowIndex() + 1,
@@ -228,35 +239,20 @@ public class Q100Generator extends SheetGenerator {
 						lgHydroCell.getRowIndex() + 1);
 				standardCellDecimalNoComma(computeContext, penteCell, "").setCellFormula(penteFormula);
 
-				Cell ruissellementCell = exuRow.createCell(6);
+				Cell ruissellementCell = exuRow.createCell(idxRow++);
 				standardCell(computeContext, ruissellementCell, "")
 						.setCellFormula(parametresGenerator.parametres.get(ParametresGenerator.CST_COEFF_RUISS_PARAM));
 
-				Cell ecoulementCell = exuRow.createCell(7);
+				Cell ecoulementCell = exuRow.createCell(idxRow++);
 				String ecoulementFormula = String.format("IF(%s%s<5,\"1\", IF(%s%s>15, \"4\", \"2\"))",
 						CellReference.convertNumToColString(penteCell.getColumnIndex()), penteCell.getRowIndex() + 1,
 						CellReference.convertNumToColString(penteCell.getColumnIndex()), penteCell.getRowIndex() + 1);
 				standardCell(computeContext, ecoulementCell, "").setCellFormula(ecoulementFormula);
 
-				Cell calculTpsConcCell = exuRow.createCell(8);
-				String calculTpsConcFormula = String.format("%s%s/%s%s/60",
-						CellReference.convertNumToColString(lgHydroCell.getColumnIndex()),
-						lgHydroCell.getRowIndex() + 1,
-						CellReference.convertNumToColString(ecoulementCell.getColumnIndex()),
-						ecoulementCell.getRowIndex() + 1);
-				standardCellDecimal2Comma(computeContext, calculTpsConcCell, "").setCellFormula(calculTpsConcFormula);
+				Cell tpsConcRetenuCell = exuRow.createCell(idxRow++);
+				standardCellDecimal2Comma(computeContext, tpsConcRetenuCell, "").setCellFormula(tcGenerator.getReferenceTC(e.getNom()));
 
-				Cell tpsConcRetenuCell = exuRow.createCell(9);
-				String tpsConcRetenuFormula = String.format("IF(%s%s>%s,%s%s, %s)",
-						CellReference.convertNumToColString(calculTpsConcCell.getColumnIndex()),
-						calculTpsConcCell.getRowIndex() + 1,
-						parametresGenerator.parametres.get(ParametresGenerator.METEO_TPS_CONCENTRATION_PARAM),
-						CellReference.convertNumToColString(calculTpsConcCell.getColumnIndex()),
-						calculTpsConcCell.getRowIndex() + 1,
-						parametresGenerator.parametres.get(ParametresGenerator.METEO_TPS_CONCENTRATION_PARAM));
-				standardCellDecimal2Comma(computeContext, tpsConcRetenuCell, "").setCellFormula(tpsConcRetenuFormula);
-
-				Cell calculAverseCell = exuRow.createCell(10);
+				Cell calculAverseCell = exuRow.createCell(idxRow++);
 				String calculAverseFormula = String.format("%s*(%s%s^-%s)",
 						parametresGenerator.parametres.get(ParametresGenerator.METEO_COEFF_MONTANA_A_PARAM),
 						CellReference.convertNumToColString(tpsConcRetenuCell.getColumnIndex()),
@@ -264,7 +260,10 @@ public class Q100Generator extends SheetGenerator {
 						parametresGenerator.parametres.get(ParametresGenerator.METEO_COEFF_MONTANA_B_PARAM));
 				standardCellDecimal2Comma(computeContext, calculAverseCell, "").setCellFormula(calculAverseFormula);
 
-				Cell calculDebitCell = exuRow.createCell(12);
+				// une séparation
+				idxRow++;
+
+				Cell calculDebitCell = exuRow.createCell(idxRow++);
 				String calculDebitFormula = String.format("(%s%s*%s%S*%s%s*0.01)/3.6",
 						CellReference.convertNumToColString(ruissellementCell.getColumnIndex()),
 						ruissellementCell.getRowIndex() + 1,
@@ -283,24 +282,28 @@ public class Q100Generator extends SheetGenerator {
 				try {
 					calculDebitCellValue = calculDebitCell.getNumericCellValue();
 				} catch (Exception fe) {
-					super.processFormulaError(calculDebitCell);
-					break;
+					//super.processFormulaError(calculDebitCell);
+					//break;
 				}
-				
+
+
 				log.info("Debit bv " + e.getNom()+ " : " + calculDebitCellValue);
 				this.computeContext.getDebitBVExutoire().put(e.getNom(), calculDebitCellValue);
-				
-				Cell calculHauteurLameEauCell = exuRow.createCell(14);
+
+				// une séparation
+				idxRow++;
+
+				Cell calculHauteurLameEauCell = exuRow.createCell(idxRow++);
 				String calculHauteurLameEauFormula = String.format("%s",
 						parametresGenerator.parametres.get(ParametresGenerator.OUVRAGE_H_LAME_EAU_PARAM));
 				standardCell(computeContext, calculHauteurLameEauCell, "").setCellFormula(calculHauteurLameEauFormula);
 
-				Cell calculRevancheCell = exuRow.createCell(15);
+				Cell calculRevancheCell = exuRow.createCell(idxRow++);
 				String calculRevancheFormula = String.format("%s",
 						parametresGenerator.parametres.get(ParametresGenerator.OUVRAGE_REVANCHE_PARAM));
 				standardCellDecimal2Comma(computeContext, calculRevancheCell, "").setCellFormula(calculRevancheFormula);
 
-				Cell calculLargeurEvacuateurCell = exuRow.createCell(16);
+				Cell calculLargeurEvacuateurCell = exuRow.createCell(idxRow++);
 				String calculLargeurEvacuateurFormula = String.format("%s%s/(%s*POWER(2*%s,0.5)*POWER(%s%s,3/2))",
 						CellReference.convertNumToColString(calculDebitCell.getColumnIndex()),
 						calculDebitCell.getRowIndex() + 1,
@@ -311,7 +314,7 @@ public class Q100Generator extends SheetGenerator {
 				standardCellDecimal2Comma(computeContext, calculLargeurEvacuateurCell, "")
 						.setCellFormula(calculLargeurEvacuateurFormula);
 
-				Cell calculHChargeSeuilCell = exuRow.createCell(17);
+				Cell calculHChargeSeuilCell = exuRow.createCell(idxRow++);
 				String calculHChargeSeuilFormula = String.format("%s%s+%s%s",
 						CellReference.convertNumToColString(calculHauteurLameEauCell.getColumnIndex()),
 						calculHauteurLameEauCell.getRowIndex() + 1,
@@ -320,14 +323,17 @@ public class Q100Generator extends SheetGenerator {
 				standardCellDecimal2Comma(computeContext, calculHChargeSeuilCell, "")
 						.setCellFormula(calculHChargeSeuilFormula);
 
-				Cell calculDimResumeLCell = exuRow.createCell(19);
+				// une séparation
+				idxRow++;
+
+				Cell calculDimResumeLCell = exuRow.createCell(idxRow++);
 				String calculDimResumeLFormula = String.format("MROUND(%s%s+0.25,0.5)",
 						CellReference.convertNumToColString(calculLargeurEvacuateurCell.getColumnIndex()),
 						calculLargeurEvacuateurCell.getRowIndex() + 1);
 				standardCellDecimal2Comma(computeContext, calculDimResumeLCell, "")
 						.setCellFormula(calculDimResumeLFormula);
 
-				Cell calculDimResumeHCell = exuRow.createCell(20);
+				Cell calculDimResumeHCell = exuRow.createCell(idxRow++);
 				String calculDimResumeHFormula = String.format("%s%s",
 						CellReference.convertNumToColString(calculHChargeSeuilCell.getColumnIndex()),
 						calculHChargeSeuilCell.getRowIndex() + 1);
@@ -362,7 +368,7 @@ public class Q100Generator extends SheetGenerator {
 		short htitle = 20;
 		titleRow.setHeightInPoints(htitle);
 
-		XlsUtils.mergeRow(computeContext, sheet, 0, 0, 20);
+		XlsUtils.mergeRow(computeContext, sheet, 0, 0, 19);
 
 		titleRow.setRowStyle(XlsUtils.blankRow(computeContext));
 		String title = "Débits centennaux aux exutoires et dimensionnement des déversoirs";

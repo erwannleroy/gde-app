@@ -10,9 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.PrintSetup;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddressList;
 import org.r1.gde.XlsUtils;
 import org.r1.gde.service.ComputingResult;
 import org.springframework.stereotype.Component;
@@ -33,7 +32,9 @@ public class ParametresGenerator extends SheetGenerator {
 	public static final String GLO_NOM_MINE_PARAM = "NOM_MINE";
 
 	public static final double CST_COEFF_RUISS_DEFAULT = 0.9;
+	public static final double CST_COEFF_DEGRA_K_DEFAULT = 145;
 	public static final String CST_COEFF_RUISS_PARAM = "EXU_COEFF_RUISS";
+	public static final String CST_COEFF_DEGRADATION_K_PARAM = "EXU_COEFF_DEGRA_K";
 	public static final String CST_VIT_ECOUL_INF_5_PARAM = "EXU_VIT_ECOUL_INF_5";
 	public static final int CST_VIT_ECOUL_INF_5_DEFAULT = 1;
 	public static final String CST_VIT_ECOUL_5_15_PARAM = "EXU_VIT_ECOUL_5_15";
@@ -68,6 +69,9 @@ public class ParametresGenerator extends SheetGenerator {
 	public static final String METEO_TPS_CONCENTRATION_PARAM = "METEO_TPS_CONCENTRATION";
 	public static final double METEO_TPS_CONCENTRATION_DEFAULT = 6;
 
+	public static final String FORMULE_TC_PARAM = "FORMULE_TC_PARAM";
+	public static final TypeFormuleTC FORMULE_TC_DEFAULT = TypeFormuleTC.DAVAR;
+
 	int indexColumn = 0;
 
 	public void doRun() {
@@ -98,6 +102,8 @@ public class ParametresGenerator extends SheetGenerator {
 		generateParametresDecanteurs();
 
 		generateParametresOuvragesTransit();
+
+		generateFormuleCalculTC();
 
 		int column = 0;
 		while (column < 4) {
@@ -201,6 +207,69 @@ public class ParametresGenerator extends SheetGenerator {
 
 	}
 
+	private void generateFormuleCalculTC() {
+
+		rowIndexParametres++;
+
+		Row titleParam = sheet.createRow(rowIndexParametres);
+		Cell titleParamCell = titleParam.createCell(0);
+		title2(computeContext, titleParamCell, "Formule de calcul du temps de concentration");
+
+		rowIndexParametres++;
+
+		createParamList(FORMULE_TC_PARAM, "Formule choisie");
+
+	}
+
+	private void createParamList(String keyParam, String label) {
+		Row row = sheet.createRow(rowIndexParametres);
+
+		Cell titleParamCell = row.createCell(indexColumn);
+		title3(computeContext, titleParamCell, label);
+		Cell paramValueCell = row.createCell(indexColumn + 1);
+		parametres.put(keyParam, XlsUtils.getReference(paramValueCell));
+//		decimalCell(computeContext, paramValueCell, defaultValue);
+
+		// Récupérer les valeurs de l'énumération pour les utiliser dans la liste
+		String[] enumValues = getEnumValues();
+
+		String defaultValue = enumValues.length > 0 ? enumValues[0] : "";  // Sélectionne la première valeur si elle existe
+		paramValueCell.setCellValue(defaultValue);  // Définit la valeur par défaut dans la cellule
+
+		// Appliquer la liste déroulante à la cellule
+		addDropdownToCell(paramValueCell, enumValues);
+
+		rowIndexParametres++;
+	}
+
+	private String[] getEnumValues() {
+		// Récupère tous les constants de l'énumération TypeFormuleTC
+		TypeFormuleTC[] enumConstants = TypeFormuleTC.values();
+		String[] values = new String[enumConstants.length];
+
+		// Remplit le tableau avec les noms des constants
+		for (int i = 0; i < enumConstants.length; i++) {
+			values[i] = enumConstants[i].name();
+		}
+		return values;
+	}
+
+	private void addDropdownToCell(Cell cell, String[] options) {
+		DataValidationHelper validationHelper = sheet.getDataValidationHelper();
+		DataValidationConstraint constraint = validationHelper.createExplicitListConstraint(options);
+
+		// Appliquer la validation de données à la cellule (1 cellule uniquement)
+		CellRangeAddressList addressList = new CellRangeAddressList(cell.getRowIndex(), cell.getRowIndex(), cell.getColumnIndex(), cell.getColumnIndex());
+		DataValidation validation = validationHelper.createValidation(constraint, addressList);
+
+		// Permettre la validation dans tous les cas, même dans Excel plus ancien
+		if (validation instanceof org.apache.poi.xssf.usermodel.XSSFDataValidation) {
+			validation.setSuppressDropDownArrow(true);
+		}
+
+		sheet.addValidationData(validation);
+	}
+
 	private void generateConstantesDimensionnementDéfaut() {
 
 		rowIndexParametres++;
@@ -212,6 +281,7 @@ public class ParametresGenerator extends SheetGenerator {
 		rowIndexParametres++;
 
 		createParamDecimal(CST_COEFF_RUISS_PARAM, "Coefficient de ruissellement", CST_COEFF_RUISS_DEFAULT);
+		createParamDecimal(CST_COEFF_DEGRADATION_K_PARAM, "Coefficient de dégradation du BV (K)", CST_COEFF_DEGRA_K_DEFAULT);
 		createParamDecimal(CST_VIT_ECOUL_INF_5_PARAM, "Vitesse d'écoulement si pente <= 5%",
 				CST_VIT_ECOUL_INF_5_DEFAULT);
 		createParamDecimal(CST_VIT_ECOUL_5_15_PARAM, "Vitesse d'écoulement si 5% < pente <= 15%",

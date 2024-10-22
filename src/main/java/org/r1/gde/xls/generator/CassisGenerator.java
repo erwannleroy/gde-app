@@ -37,9 +37,12 @@ public class CassisGenerator extends SheetGenerator {
 	private int nbOuvragesTotal = 0;
 
 	@Autowired
+	TCGenerator tcGenerator;
+
+	@Autowired
 	ParametresGenerator parametresGenerator;
 
-	public void doRun() {
+	public void doRun() throws GDEException {
 		log.info("Génération de l'onglet Cassis");
 
 		sheet = workbook().getSheet(TITLE_SHEET);
@@ -55,7 +58,6 @@ public class CassisGenerator extends SheetGenerator {
 		sheet.setMargin(Sheet.LeftMargin, 0.4);
 		sheet.setMargin(Sheet.TopMargin, 0.4);
 		sheet.setMargin(Sheet.BottomMargin, 0.4);
-
 
 		rowIndexExutoire = 0;
 
@@ -77,21 +79,20 @@ public class CassisGenerator extends SheetGenerator {
 		sheet.setColumnWidth(7, 8 * 256);
 		sheet.setColumnWidth(8, 10 * 256);
 		sheet.setColumnWidth(9, 10 * 256);
-		sheet.setColumnWidth(10, 10 * 256);
-		sheet.setColumnWidth(11, 1 * 256);
-		sheet.setColumnWidth(12, 10 * 256);
-		sheet.setColumnWidth(13, 1 * 256);
+		sheet.setColumnWidth(10, 1 * 256);
+		sheet.setColumnWidth(11, 10 * 256);
+		sheet.setColumnWidth(12, 1 * 256);
+		sheet.setColumnWidth(13, 8 * 256);
 		sheet.setColumnWidth(14, 7 * 256);
 		sheet.setColumnWidth(15, 8 * 256);
 		sheet.setColumnWidth(16, 9 * 256);
 		sheet.setColumnWidth(17, 8 * 256);
 		sheet.setColumnWidth(18, 8 * 256);
 		sheet.setColumnWidth(19, 8 * 256);
-		sheet.setColumnWidth(20, 8 * 256);
-		sheet.setColumnWidth(21, 1 * 256);
+		sheet.setColumnWidth(20, 1 * 256);
+		sheet.setColumnWidth(21, 8 * 256);
 		sheet.setColumnWidth(22, 7 * 256);
 		sheet.setColumnWidth(23, 7 * 256);
-		sheet.setColumnWidth(24, 8 * 256);
 
 		XlsUtils.borderMergedSheet(sheet);
 
@@ -110,20 +111,20 @@ public class CassisGenerator extends SheetGenerator {
 		short htitle = 35;
 		enteteRow.setHeightInPoints(htitle);
 
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 0, 10);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 0, 9);
 		Cell caracExuTitleCell = enteteRow.createCell(0);
 		title2(computeContext, caracExuTitleCell, "Caractéristiques des BV associés aux exutoires");
 
 //		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 9, 12);
-		Cell debitTitleCell = enteteRow.createCell(12);
+		Cell debitTitleCell = enteteRow.createCell(11);
 		title2(computeContext, debitTitleCell, "Q100");
 
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 14, 20);
-		Cell fosCasTitleCell = enteteRow.createCell(14);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 13, 19);
+		Cell fosCasTitleCell = enteteRow.createCell(13);
 		title2(computeContext, fosCasTitleCell, "Dimensionnement des fossé-cassis");
 
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 22, 24);
-		Cell dimTitleCell = enteteRow.createCell(22);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 21, 23);
+		Cell dimTitleCell = enteteRow.createCell(21);
 		title2(computeContext, dimTitleCell, "Section des ouvrages");
 
 		rowIndexExutoire++;
@@ -155,52 +156,49 @@ public class CassisGenerator extends SheetGenerator {
 		Cell vitEcoulCellTitle = columnRow.createCell(7);
 		title3(computeContext, vitEcoulCellTitle, "Vitesse d'écoulement (m/s)");
 
-		Cell calcaulTpsConcCellTitle = columnRow.createCell(8);
-		title3(computeContext, calcaulTpsConcCellTitle, "Calcul du temps de concentration (mn)");
-
-		Cell tpsConcCellTitle = columnRow.createCell(9);
+		Cell tpsConcCellTitle = columnRow.createCell(8);
 		title3(computeContext, tpsConcCellTitle, "Temps de concentration retenu (mn)");
 
-		Cell intAvObjCellTitle = columnRow.createCell(10);
+		Cell intAvObjCellTitle = columnRow.createCell(9);
 		title3(computeContext, intAvObjCellTitle, "Calcul de l'intensité de l'averse (mm/h)");
 
-		Cell debitCellTitle = columnRow.createCell(12);
+		Cell debitCellTitle = columnRow.createCell(11);
 		title3(computeContext, debitCellTitle, "Calcul du débit par la méthode rationnelle (m3/s)");
 
-		Cell penteFosCasCellTitle = columnRow.createCell(14);
+		Cell penteFosCasCellTitle = columnRow.createCell(13);
 		title3(computeContext, penteFosCasCellTitle, "Pente fossé-cassis (m/m)");
 
-		Cell hauteurLameCellTitle = columnRow.createCell(15);
+		Cell hauteurLameCellTitle = columnRow.createCell(14);
 		title3(computeContext, hauteurLameCellTitle, "Hauteur de lame d'eau (m)");
 
-		Cell revancheCellTitle = columnRow.createCell(16);
+		Cell revancheCellTitle = columnRow.createCell(15);
 		title3(computeContext, revancheCellTitle, "Revanche (m)");
 		
-		Cell largFosCasCellTitle = columnRow.createCell(17);
+		Cell largFosCasCellTitle = columnRow.createCell(16);
 		title3(computeContext, largFosCasCellTitle, "Largeur du fossé-cassis (m)");
 
-		Cell hauteurFosCasCellTitle = columnRow.createCell(18);
+		Cell hauteurFosCasCellTitle = columnRow.createCell(17);
 		title3(computeContext, hauteurFosCasCellTitle, "Hauteur du fossé-cassis (m)");
 
-		Cell val1erCellTitle = columnRow.createCell(19);
+		Cell val1erCellTitle = columnRow.createCell(18);
 		title3(computeContext, val1erCellTitle, "Valeur du 1er membre");
 
-		Cell val2emeCellTitle = columnRow.createCell(20);
+		Cell val2emeCellTitle = columnRow.createCell(19);
 		title3(computeContext, val2emeCellTitle, "Valeur du 2ème membre");
 
-		Cell largeurCellTitle = columnRow.createCell(22);
+		Cell largeurCellTitle = columnRow.createCell(21);
 		title3(computeContext, largeurCellTitle, "Largeur (m)");
 
-		Cell hauteurCellTitle = columnRow.createCell(23);
+		Cell hauteurCellTitle = columnRow.createCell(22);
 		title3(computeContext, hauteurCellTitle, "Hauteur (m)");
 		
-		Cell vitMaxCellTitle = columnRow.createCell(24);
+		Cell vitMaxCellTitle = columnRow.createCell(23);
 		title3(computeContext, vitMaxCellTitle, "Vitesse max dans fossé-cassis (m/s)");
 
 		rowIndexExutoire++;
 	}
 
-	private void generateCreeks(List<Creek> creeks) {
+	private void generateCreeks(List<Creek> creeks) throws GDEException {
 
 		
 		for (Creek c : creeks) {
@@ -255,25 +253,10 @@ public class CassisGenerator extends SheetGenerator {
 						CellReference.convertNumToColString(penteCell.getColumnIndex()), penteCell.getRowIndex() + 1);
 				standardCell(computeContext, ecoulementCell, "").setCellFormula(ecoulementFormula);
 
-				Cell calculTpsConcCell = exuRow.createCell(8);
-				String calculTpsConcFormula = String.format("%s%s/%s%s/60",
-						CellReference.convertNumToColString(lgHydroCell.getColumnIndex()),
-						lgHydroCell.getRowIndex() + 1,
-						CellReference.convertNumToColString(ecoulementCell.getColumnIndex()),
-						ecoulementCell.getRowIndex() + 1);
-				standardCellDecimal2Comma(computeContext, calculTpsConcCell, "").setCellFormula(calculTpsConcFormula);
+				Cell tpsConcRetenuCell = exuRow.createCell(8);
+				standardCellDecimal2Comma(computeContext, tpsConcRetenuCell, "").setCellFormula(tcGenerator.getReferenceTC(e.getNom()));
 
-				Cell tpsConcRetenuCell = exuRow.createCell(9);
-				String tpsConcRetenuFormula = String.format("IF(%s%s>%s,%s%s, %s)",
-						CellReference.convertNumToColString(calculTpsConcCell.getColumnIndex()),
-						calculTpsConcCell.getRowIndex() + 1,
-						parametresGenerator.parametres.get(ParametresGenerator.METEO_TPS_CONCENTRATION_PARAM),
-						CellReference.convertNumToColString(calculTpsConcCell.getColumnIndex()),
-						calculTpsConcCell.getRowIndex() + 1,
-						parametresGenerator.parametres.get(ParametresGenerator.METEO_TPS_CONCENTRATION_PARAM));
-				standardCellDecimal2Comma(computeContext, tpsConcRetenuCell, "").setCellFormula(tpsConcRetenuFormula);
-
-				Cell calculAverseCell = exuRow.createCell(10);
+				Cell calculAverseCell = exuRow.createCell(9);
 				String calculAverseFormula = String.format("%s*(%s%s^-%s)",
 						parametresGenerator.parametres.get(ParametresGenerator.METEO_COEFF_MONTANA_A_PARAM),
 						CellReference.convertNumToColString(tpsConcRetenuCell.getColumnIndex()),
@@ -281,7 +264,7 @@ public class CassisGenerator extends SheetGenerator {
 						parametresGenerator.parametres.get(ParametresGenerator.METEO_COEFF_MONTANA_B_PARAM));
 				standardCellDecimal2Comma(computeContext, calculAverseCell, "").setCellFormula(calculAverseFormula);
 
-				Cell calculDebitCell = exuRow.createCell(12);
+				Cell calculDebitCell = exuRow.createCell(11);
 				String calculDebitFormula = String.format("(%s%s*%s%S*%s%s)/3.6",
 						CellReference.convertNumToColString(ruissellementCell.getColumnIndex()),
 						ruissellementCell.getRowIndex() + 1,
@@ -291,25 +274,25 @@ public class CassisGenerator extends SheetGenerator {
 						exuSurfCell.getRowIndex() + 1);
 				standardCellDecimal1Comma(computeContext, calculDebitCell, "").setCellFormula(calculDebitFormula);
 
-				Cell calculPenteFosseCell = exuRow.createCell(14);
+				Cell calculPenteFosseCell = exuRow.createCell(13);
 				String penteFosseFormula = String.format("%s",
 						parametresGenerator.parametres.get(ParametresGenerator.CST_PENTE_PARAM));
 				standardCell(computeContext, calculPenteFosseCell, "").setCellFormula(penteFosseFormula);
 
-				Cell calculHauteurLameEauCell = exuRow.createCell(15);
+				Cell calculHauteurLameEauCell = exuRow.createCell(14);
 				String calculHauteurLameEauFormula = String.format("%s",
 						parametresGenerator.parametres.get(ParametresGenerator.OUVRAGE_H_LAME_EAU_PARAM));
 				standardCell(computeContext, calculHauteurLameEauCell, "").setCellFormula(calculHauteurLameEauFormula);
 
-				Cell calculRevancheCell = exuRow.createCell(16);
+				Cell calculRevancheCell = exuRow.createCell(15);
 				String calculRevancheFormula = String.format("%s",
 						parametresGenerator.parametres.get(ParametresGenerator.OUVRAGE_REVANCHE_PARAM));
 				standardCell(computeContext, calculRevancheCell, "").setCellFormula(calculRevancheFormula);
 
-				Cell calculLargeurFosseCell = exuRow.createCell(17);
+				Cell calculLargeurFosseCell = exuRow.createCell(16);
 				standardCellDecimal2Comma(computeContext, calculLargeurFosseCell, "0.00").setCellValue(0d);
 
-				Cell calculHauteurFosseCell = exuRow.createCell(18);
+				Cell calculHauteurFosseCell = exuRow.createCell(17);
 				String calculHauteurFosseFormula = String.format("%s%s+%s%s",
 						CellReference.convertNumToColString(calculHauteurLameEauCell.getColumnIndex()),
 						calculHauteurLameEauCell.getRowIndex() + 1,
@@ -318,7 +301,7 @@ public class CassisGenerator extends SheetGenerator {
 				standardCellDecimal2Comma(computeContext, calculHauteurFosseCell, "")
 						.setCellFormula(calculHauteurFosseFormula);
 
-				Cell calculPremierMembreCell = exuRow.createCell(19);
+				Cell calculPremierMembreCell = exuRow.createCell(18);
 				String calculPremierMembreFormula = String.format("POWER(%s%s/(%s*POWER(%s%s,1/2)),3/2)",
 						CellReference.convertNumToColString(calculDebitCell.getColumnIndex()),
 						calculDebitCell.getRowIndex() + 1,
@@ -328,7 +311,7 @@ public class CassisGenerator extends SheetGenerator {
 				standardCellDecimal2Comma(computeContext, calculPremierMembreCell, "")
 						.setCellFormula(calculPremierMembreFormula);
 
-				Cell calculDeuxiemeMembreCell = exuRow.createCell(20);
+				Cell calculDeuxiemeMembreCell = exuRow.createCell(19);
 				String calculDeuxiemeMembreFormula = String.format("(POWER(%s%s*%s%s,5/2))/(2*%s%s+%s%s)",
 						CellReference.convertNumToColString(calculHauteurLameEauCell.getColumnIndex()),
 						calculHauteurLameEauCell.getRowIndex() + 1,
@@ -341,21 +324,21 @@ public class CassisGenerator extends SheetGenerator {
 				standardCellDecimal2Comma(computeContext, calculDeuxiemeMembreCell, "")
 						.setCellFormula(calculDeuxiemeMembreFormula);
 
-				Cell calculDimResumeLCell = exuRow.createCell(22);
+				Cell calculDimResumeLCell = exuRow.createCell(21);
 				String calculDimResumeLFormula = String.format("%s%s",
 						CellReference.convertNumToColString(calculLargeurFosseCell.getColumnIndex()),
 						calculLargeurFosseCell.getRowIndex() + 1);
 				standardCellDecimal2Comma(computeContext, calculDimResumeLCell, "")
 						.setCellFormula(calculDimResumeLFormula);
 
-				Cell calculDimResumeHCell = exuRow.createCell(23);
+				Cell calculDimResumeHCell = exuRow.createCell(22);
 				String calculDimResumeHFormula = String.format("%s%s",
 						CellReference.convertNumToColString(calculHauteurFosseCell.getColumnIndex()),
 						calculHauteurFosseCell.getRowIndex() + 1);
 				standardCellDecimal2Comma(computeContext, calculDimResumeHCell, "")
 						.setCellFormula(calculDimResumeHFormula);
 
-				Cell calculVitMaxCell = exuRow.createCell(24);
+				Cell calculVitMaxCell = exuRow.createCell(23);
 				String calculVitMaxFormula = String.format("%s*POWER((%s%s*%s%s)/(2*%s%s+%s%s),2/3)*POWER(%s%s,1/2)",
 						parametresGenerator.parametres.get(ParametresGenerator.CST_COEF_STRICKLER_PARAM),
 						CellReference.convertNumToColString(calculHauteurLameEauCell.getColumnIndex()),
@@ -395,7 +378,7 @@ public class CassisGenerator extends SheetGenerator {
 
 		short htitle = 20;
 		titleRow.setHeightInPoints(htitle);
-		XlsUtils.mergeRow(computeContext, sheet, 0, 0, 24);
+		XlsUtils.mergeRow(computeContext, sheet, 0, 0, 23);
 
 		titleRow.setRowStyle(XlsUtils.blankRow(computeContext));
 		String title = "Dimensionnement des ouvrages de canalisation à créer sur le site ";

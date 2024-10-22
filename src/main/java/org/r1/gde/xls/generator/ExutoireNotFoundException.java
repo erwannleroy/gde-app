@@ -2,11 +2,11 @@ package org.r1.gde.xls.generator;
 
 public class ExutoireNotFoundException extends GDEException {
 
-	String nomBV;
+	String nomExu;
 
-	public ExutoireNotFoundException(String nomBV) {
-		super("Le bassin versant " + nomBV + " n'existe pas !");
-		this.nomBV = nomBV;
+	public ExutoireNotFoundException(String nomExu) {
+		super("L'exutoire' " + nomExu + " n'existe pas !");
+		this.nomExu = nomExu;
 	}
 
 }

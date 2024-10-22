@@ -503,14 +503,14 @@ public class GDEService {
 		dec.setHauteurDigue(hauteurDigueField != null ? Double.parseDouble(hauteurDigueField.toString()) : null);
 		
 		Object bvField = map.get(Decanteur.BV_FIELD);
-		if (bvField != null || !StringUtils.isBlank(bvField.toString())) {
+		if (bvField != null && !StringUtils.isBlank(bvField.toString())) {
 			dec.setBv(bvField.toString());
 		} else {
 			this.gdeComputer.getComputeContext().getComputingResult().getInDbfDecWarns()
 					.add("L'enregistrement " + rec.getRecordNumber() + " ne mentionne pas de bv");
 		}
 		Object zoneField = map.get(Decanteur.ZONE_FIELD);
-		if (zoneField != null || !StringUtils.isBlank(zoneField.toString())) {
+		if (zoneField != null && !StringUtils.isBlank(zoneField.toString())) {
 			dec.setZone(zoneField.toString());
 		} else {
 			this.gdeComputer.getComputeContext().getComputingResult().getInDbfDecWarns()
@@ -533,6 +533,7 @@ public class GDEService {
 		Object longueurHydroField = map.get(BVExutoire.LONGUEUR_FIELD);
 		Object deniveleField = map.get(BVExutoire.DENIVELE_FIELD);
 		Object creekField = map.get(BVExutoire.CREEK_FIELD);
+		Object perimetreField = map.get(BVExutoire.PERIMETRE_FIELD);
 
 		if (nomField == null || StringUtils.isEmpty(nomField.toString())) {
 			String warnMsg = "Enregistrement " + rec.getRecordNumber() + " sans nom";
@@ -549,7 +550,11 @@ public class GDEService {
 		if (creekField == null || StringUtils.isBlank(creekField.toString())) {
 			throw new GDEException("Le creek du BV exutoire '" + exu.getNom() + "' doit être défini");
 		}
+		if (perimetreField == null) {
+			throw new GDEException("Le périmètre du BV exutoire '" + exu.getNom() + "' doit être défini");
+		}
 		exu.setCreek(creekField.toString());
+		exu.setPerimetre(Double.parseDouble(perimetreField.toString()));
 
 		return exu;
 	}

@@ -98,7 +98,7 @@ public class ObjectifsRetentionGenerator extends SheetGenerator {
 
 		XlsUtils.mergeRow(computeContext, sheet, rowIndexDimensionnement, 7, 8);
 		Cell title2MetCell = enteteGroup.createCell(7);
-		title2(computeContext, title2MetCell, "Données météorologiques");
+		title2(computeContext, title2MetCell, "Données météorologiques (décimales avec un '.' )");
 
 		Cell title2DimCell = enteteGroup.createCell(10);
 		title2(computeContext, title2DimCell, "Dimensionnement");

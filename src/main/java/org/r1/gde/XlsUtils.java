@@ -12,6 +12,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.r1.gde.service.ComputeContext;
 
 import lombok.extern.slf4j.Slf4j;
+import org.r1.gde.xls.generator.ParametresGenerator;
+import org.r1.gde.xls.generator.TypeFormuleTC;
 
 @Slf4j
 public class XlsUtils {
@@ -309,6 +311,50 @@ public class XlsUtils {
 		cell.setCellStyle(style);
 
 		cell.setCellValue(title);
+
+		return cell;
+	}
+
+
+	public static Cell title2TC(ComputeContext computeContext, Cell cell, String title, TypeFormuleTC typeFormuleTC, ParametresGenerator parametresGenerator) {
+		CellStyle style = buildDefaultStyle(computeContext, cell);
+
+		style.setBorderBottom(BorderStyle.THIN);
+		style.setBorderLeft(BorderStyle.THIN);
+		style.setBorderRight(BorderStyle.THIN);
+		style.setBorderTop(BorderStyle.THIN);
+
+		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+
+		style.setWrapText(true);
+		style.setFont(makeTitle2Font(computeContext));
+
+		cell.setCellStyle(style);
+
+		cell.setCellValue(title);
+
+		// Récupérer le SheetConditionalFormatting
+		SheetConditionalFormatting sheetCF = cell.getSheet().getSheetConditionalFormatting();
+
+		// Référence de la cellule de la liste déroulante
+		String cellRef = parametresGenerator.parametres.get(ParametresGenerator.FORMULE_TC_PARAM);
+
+		// Création de la règle de mise en forme conditionnelle basée sur une formule
+		// Ici, on utilise une formule pour comparer la valeur de la cellule à l'énumération
+		String formula = "INDIRECT(\"" + cellRef + "\")=\"" + typeFormuleTC.name() + "\"";
+		ConditionalFormattingRule ruleTCSelected = sheetCF.createConditionalFormattingRule(formula);
+
+		log.info("title2TC typeTc=" + typeFormuleTC.name() + " , cellRef=" + cellRef);
+
+		// Appliquer la mise en forme (couleur de fond)
+		PatternFormatting patternFormatting = ruleTCSelected.createPatternFormatting();
+		patternFormatting.setFillBackgroundColor(IndexedColors.LIGHT_ORANGE.index);
+		patternFormatting.setFillPattern(PatternFormatting.SOLID_FOREGROUND);
+
+		// Appliquer la mise en forme à la cellule courante
+		CellRangeAddress[] regions = { CellRangeAddress.valueOf(getReference(cell)) };
+		sheetCF.addConditionalFormatting(regions, new ConditionalFormattingRule[]{ ruleTCSelected });
 
 		return cell;
 	}

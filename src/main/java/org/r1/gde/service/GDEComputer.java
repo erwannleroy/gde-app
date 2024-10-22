@@ -33,6 +33,8 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
     @Autowired
     private RetentionGenerator retentionGenerator;
     @Autowired
+    private TCGenerator tcGenerator;
+    @Autowired
     private Q100Generator q100Generator;
     @Autowired
     private CassisGenerator cassisGenerator;
@@ -62,6 +64,7 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
         dimensionnementGenerator.addListener(this);
         retentionGenerator.addListener(this);
         cassisGenerator.addListener(this);
+        tcGenerator.addListener(this);
         q100Generator.addListener(this);
         bvDecanteurDBFGenerator.addListener(this);
         exutoireDBFGenerator.addListener(this);
@@ -99,7 +102,6 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
 
     private ByteArrayOutputStream writeBytes() throws IOException {
         log.info("Ecriture du fichier Excel");
-//        Path temp = Files.createTempFile("", "temp.xlsx");
 
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
@@ -128,7 +130,7 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
         log.info("gdeComputer updateBVExutoire");
         this.creeks = creeks;
         this.computeContext.setCreeks(creeks);
-        q100Generator.generateSheet(computeContext);
+        tcGenerator.generateSheet(computeContext);
     }
     
 
@@ -152,6 +154,10 @@ public class GDEComputer implements SheetGeneratorListener, DBFGeneratorListener
                 break;
             case CASSIS_SHEET_PROGRESS:
                 this.computeContext.getComputingResult().setCassisComputeProgress((int) value);
+                break;
+            case TC_SHEET_GENERATED:
+                this.computeContext.getComputingResult().setTcComputeOk(true);
+                q100Generator.generateSheet(computeContext);
                 break;
             case Q100_SHEET_GENERATED:
                 this.computeContext.getComputingResult().setQ100ComputeOk(true);

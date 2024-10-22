@@ -26,11 +26,13 @@ public class ComputingResult {
 	int retComputeProgress = 0;
 	int cassisComputeProgress = 0;
 	int q100ComputeProgress = 0;
+	int tcComputeProgress = 0;
 
 	boolean objRetComputeOk = false;
 	boolean retComputeOk = false;
 	boolean cassisComputeOk = false;
 	boolean q100ComputeOk = false;
+	boolean tcComputeOk = false;
 
 	int xlsComputeProgress = 0;
 	int perfDbfComputeProgress = 0;
@@ -45,6 +47,7 @@ public class ComputingResult {
 	List<String> paramWarns = new ArrayList<String>();
 	List<String> objRetWarns = new ArrayList<String>();
 	List<String> retBassinsWarns = new ArrayList<String>();
+	List<String> tcWarns = new ArrayList<String>();
 	List<String> q100Warns = new ArrayList<String>();
 	List<String> cassisWarns = new ArrayList<String>();
 	// génération DBF

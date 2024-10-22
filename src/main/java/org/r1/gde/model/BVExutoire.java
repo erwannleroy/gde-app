@@ -16,6 +16,7 @@ public class BVExutoire {
 	public static final String DENIVELE_FIELD = "DENIVELE";
 	public static final String LONGUEUR_FIELD = "LGR_HYDRO";
 	public static final String CREEK_FIELD = "CREEK";
+	public static final String PERIMETRE_FIELD = "PERIMETRE";
 	public static final int LONGUEUR_HYDRO_DEFAULT = 0;
 	public static final int DENIVELE_DEFAULT = 0;
 	
@@ -25,6 +26,8 @@ public class BVExutoire {
 	Double longueurHydro;
 	Double denivele;
 	String creek;
+	Double perimetre;
+
 
 	@Override
 	public BVExutoire clone() {
@@ -34,10 +37,11 @@ public class BVExutoire {
 		bv.setLongueurHydro(this.longueurHydro);
 		bv.setDenivele(this.denivele);
 		bv.setCreek(this.creek);
+		bv.setPerimetre(this.perimetre);
 		return bv;
 	}
 
 	public static List<String> fields() {
-		return Arrays.asList(NOM_FIELD, SURFACE_FIELD, DENIVELE_FIELD, LONGUEUR_FIELD, CREEK_FIELD);
+		return Arrays.asList(NOM_FIELD, SURFACE_FIELD, DENIVELE_FIELD, LONGUEUR_FIELD, CREEK_FIELD, PERIMETRE_FIELD);
 	}
 }
