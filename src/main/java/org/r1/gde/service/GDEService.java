@@ -437,7 +437,7 @@ public class GDEService {
 		bv.setNomOuvrage(nomField != null ? nomField.toString() : "");
 
 		Object deniveleField = map.get(BVDecanteur.DENIVELE_FIELD);
-		Integer denivele = deniveleField != null ? Integer.parseInt(deniveleField.toString()) : null;
+		Double denivele = deniveleField != null ? Double.parseDouble(deniveleField.toString()) : null;
 		if (denivele == null) {
 			String warnMsg = "Enregistrement " + rec.getRecordNumber() + " sans dénivelé";
 			log.warn(warnMsg);
@@ -446,7 +446,7 @@ public class GDEService {
 		bv.setDenivele(denivele);
 
 		Object longueurField = map.get(BVDecanteur.LONGUEUR_FIELD);
-		Integer longueur = longueurField != null ? Integer.parseInt(longueurField.toString()) : null;
+		Double longueur = longueurField != null ? Double.parseDouble(longueurField.toString()) : null;
 		if (longueur == null) {
 			String warnMsg = "Enregistrement " + rec.getRecordNumber() + " sans longueur";
 			log.warn(warnMsg);

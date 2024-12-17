@@ -55,7 +55,7 @@
         <div class="row">
           <h3 class="col-10">BV décanteurs</h3>
           <div class="col-2 onglet-icon app-enabled" (click)="openPopup(bvparams)">
-            <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/dbf.png" />
+            <img style="height:auto;width:40px;cursor: pointer;" src="assets/dbf.png" />
           </div>
         </div>
       </div>
@@ -160,7 +160,7 @@
               <span>{{bvDecResponse.nbBassins}} BV décanteurs</span>
             </div>
             <div class="col onglet-icon app-enabled" *ngIf="result.inDbfBVDecWarns && result.inDbfBVDecWarns.length !== 0" (click)="openPopup(bvdecwarns)">
-              <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/alert.png" />
+              <img style="height:auto;width:40px;cursor: pointer;" src="assets/alert.png" />
             </div>
           </div>
         </div>
@@ -178,7 +178,7 @@
         <div class="row">
           <h3 class="col-10">Décanteurs</h3>
           <div class="col-2 onglet-icon app-enabled" (click)="openPopup(decparams)">
-            <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/dbf.png" />
+            <img style="height:auto;width:40px;cursor: pointer;" src="assets/dbf.png" />
           </div>
         </div>
       </div>
@@ -302,7 +302,7 @@
                 {{decResponse.nbZones}} zones)</span>
             </div>
             <div class="col onglet-icon app-enabled" *ngIf="result.inDbfDecWarns && result.inDbfDecWarns.length !== 0" (click)="openPopup(decwarns)">
-              <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/alert.png" />
+              <img style="height:auto;width:40px;cursor: pointer;" src="assets/alert.png" />
             </div>
           </div>
         </div>
@@ -320,7 +320,7 @@
         <div class="row">
           <h3 class="col-10">BV exutoires</h3>
           <div class="col-2 onglet-icon app-enabled" (click)="openPopup(bvexuparams)">
-            <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/dbf.png" />
+            <img style="height:auto;width:40px;cursor: pointer;" src="assets/dbf.png" />
           </div>
         </div>
       </div>
@@ -369,6 +369,12 @@
               </tr>
               <tr>
                 <th scope="row">5</th>
+                <td>Périmètre</td>
+                <td>PERIMETRE</td>
+                <td>Texte - m</td>
+              </tr>
+              <tr>
+                <th scope="row">6</th>
                 <td>Creek</td>
                 <td>CREEK</td>
                 <td>Texte - Creek auquel appartient l'exutoire</td>
@@ -425,7 +431,7 @@
               <span>{{bvExuResponse.nbExutoires}} BV exutoires (pour {{bvExuResponse.nbCreeks}} creeks)</span>
             </div>
             <div class="col onglet-icon app-enabled" *ngIf="result.inDbfBVExuWarns && result.inDbfBVExuWarns.length !== 0" (click)="openPopup(bvexuwarns)">
-              <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/alert.png" />
+              <img style="height:auto;width:40px;cursor: pointer;" src="assets/alert.png" />
             </div>
           </div>
         </div>
@@ -442,7 +448,7 @@
         <div class="row">
           <h3 class="col-10">Exutoires</h3>
           <div class="col-2 onglet-icon app-enabled" (click)="openPopup(exuparams)">
-            <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/dbf.png" />
+            <img style="height:auto;width:40px;cursor: pointer;" src="assets/dbf.png" />
           </div>
         </div>
       </div>
@@ -529,7 +535,7 @@
               <span>{{exuResponse.nbExutoires}} exutoires</span>
             </div>
             <div class="col onglet-icon app-enabled" *ngIf="result.inDbfExuWarns && result.inDbfExuWarns.length !== 0" (click)="openPopup(exuwarns)">
-              <img style="height:auto;width:40px;cursor: pointer;" src="../../assets/alert.png" />
+              <img style="height:auto;width:40px;cursor: pointer;" src="assets/alert.png" />
             </div>
           </div>
         </div>

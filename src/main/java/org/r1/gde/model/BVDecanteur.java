@@ -17,8 +17,8 @@ public class BVDecanteur {
 
 	public String nomOuvrage;
 	public Double surface;
-	public Integer denivele;
-	public Integer longueur;
+	public Double denivele;
+	public Double longueur;
 	
 	public static List<String> fields() {
 		return Arrays.asList(NOM_OUVRAGE_FIELD, SURFACE_FIELD, DENIVELE_FIELD, LONGUEUR_FIELD);

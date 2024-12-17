@@ -79,18 +79,17 @@ public class Q100Generator extends SheetGenerator {
 		sheet.setColumnWidth(5, 8 * 256);
 		sheet.setColumnWidth(6, 12 * 256);
 		sheet.setColumnWidth(7, 12 * 256);
-		sheet.setColumnWidth(8, 12* 256);
-		sheet.setColumnWidth(9, 12 * 256);
-		sheet.setColumnWidth(10, 1 * 256);
-		sheet.setColumnWidth(11, 12 * 256);
-		sheet.setColumnWidth(12, 1 * 256);
-		sheet.setColumnWidth(13, 12 * 256);
+		sheet.setColumnWidth(8, 12 * 256);
+		sheet.setColumnWidth(9, 1 * 256);
+		sheet.setColumnWidth(10, 12 * 256);
+		sheet.setColumnWidth(11, 1 * 256);
+		sheet.setColumnWidth(12, 12 * 256);
+		sheet.setColumnWidth(13, 10 * 256);
 		sheet.setColumnWidth(14, 10 * 256);
-		sheet.setColumnWidth(15, 10 * 256);
-		sheet.setColumnWidth(16, 12 * 256);
-		sheet.setColumnWidth(17, 1 * 256);
-		sheet.setColumnWidth(18, 12 * 256);
-		sheet.setColumnWidth(19, 9 * 256);
+		sheet.setColumnWidth(15, 12 * 256);
+		sheet.setColumnWidth(16, 1 * 256);
+		sheet.setColumnWidth(17, 12 * 256);
+		sheet.setColumnWidth(18, 9 * 256);
 
 		XlsUtils.borderMergedSheet(sheet);
 		
@@ -109,19 +108,19 @@ public class Q100Generator extends SheetGenerator {
 		short htitle = 35;
 		enteteRow.setHeightInPoints(htitle);
 
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 0, 9);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 0, 8);
 		Cell caracExuTitleCell = enteteRow.createCell(0);
 		title2(computeContext, caracExuTitleCell, "Caractéristiques des bassins versants associés aux exutoires");
 
-		Cell debitTitleCell = enteteRow.createCell(11);
+		Cell debitTitleCell = enteteRow.createCell(10);
 		title2(computeContext, debitTitleCell, "Q100");
 
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 13, 16);
-		Cell crueTitleCell = enteteRow.createCell(13);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 12, 15);
+		Cell crueTitleCell = enteteRow.createCell(12);
 		title2(computeContext, crueTitleCell, "Dimensionnement des déversoirs");
 
-		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 18, 19);
-		Cell dimTitleCell = enteteRow.createCell(18);
+		XlsUtils.mergeRow(computeContext, sheet, rowIndexExutoire, 17, 18);
+		Cell dimTitleCell = enteteRow.createCell(17);
 		title2(computeContext, dimTitleCell, "Section des déversoirs");
 
 		rowIndexExutoire++;
@@ -150,9 +149,6 @@ public class Q100Generator extends SheetGenerator {
 
 		Cell coefRuisCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, coefRuisCellTitle, "Coefficient de ruissellement");
-
-		Cell vitEcoulCellTitle = columnRow.createCell(idxEntete++);
-		title3(computeContext, vitEcoulCellTitle, "Vitesse d'écoulement (m/s)");
 
 		Cell tpsConcCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, tpsConcCellTitle, "Temps de concentration retenu (mn)");
@@ -242,12 +238,6 @@ public class Q100Generator extends SheetGenerator {
 				Cell ruissellementCell = exuRow.createCell(idxRow++);
 				standardCell(computeContext, ruissellementCell, "")
 						.setCellFormula(parametresGenerator.parametres.get(ParametresGenerator.CST_COEFF_RUISS_PARAM));
-
-				Cell ecoulementCell = exuRow.createCell(idxRow++);
-				String ecoulementFormula = String.format("IF(%s%s<5,\"1\", IF(%s%s>15, \"4\", \"2\"))",
-						CellReference.convertNumToColString(penteCell.getColumnIndex()), penteCell.getRowIndex() + 1,
-						CellReference.convertNumToColString(penteCell.getColumnIndex()), penteCell.getRowIndex() + 1);
-				standardCell(computeContext, ecoulementCell, "").setCellFormula(ecoulementFormula);
 
 				Cell tpsConcRetenuCell = exuRow.createCell(idxRow++);
 				standardCellDecimal2Comma(computeContext, tpsConcRetenuCell, "").setCellFormula(tcGenerator.getReferenceTC(e.getNom()));
@@ -368,7 +358,7 @@ public class Q100Generator extends SheetGenerator {
 		short htitle = 20;
 		titleRow.setHeightInPoints(htitle);
 
-		XlsUtils.mergeRow(computeContext, sheet, 0, 0, 19);
+		XlsUtils.mergeRow(computeContext, sheet, 0, 0, 18);
 
 		titleRow.setRowStyle(XlsUtils.blankRow(computeContext));
 		String title = "Débits centennaux aux exutoires et dimensionnement des déversoirs";

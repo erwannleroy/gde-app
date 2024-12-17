@@ -165,7 +165,7 @@ public class TCGenerator extends SheetGenerator {
 		idxEntete++;
 
 		Cell coefDegradationCellTitle = columnRow.createCell(idxEntete++);
-		title3(computeContext, coefDegradationCellTitle, "Coeffcient de dégradation (K)");
+		title3(computeContext, coefDegradationCellTitle, "Coefficient de dégradation (K)");
 
 		Cell calculTpsConcMeunierMathysCellTitle = columnRow.createCell(idxEntete++);
 		title3(computeContext, calculTpsConcMeunierMathysCellTitle, "Calcul du temps de concentration (mn)");

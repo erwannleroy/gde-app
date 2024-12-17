@@ -86,30 +86,30 @@
 
           <h5>Excel</h5>
 
-          <div class="onglet align-self-center" [class.waiting]="bvDecSent && 
+          <div class="onglet align-self-center" [class.waiting]="bvDecSent &&
           (!result || (result && !result.objRetComputeOk && !result.error) )">
             <div class="container row-flex">
               <div class="col-sm align-self-center">Objectifs de rétention</div>
               <div class="col-sm align-self-center">
                 <span class="badge bg-secondary" *ngIf="!bvDecSent">Pas de données</span>
-                <span class="badge bg-primary waiting" *ngIf="bvDecSent && 
+                <span class="badge bg-primary waiting" *ngIf="bvDecSent &&
               (!result || (result && !result.objRetComputeOk && !result.error) )">Calcul
                   {{result.objRetComputeProgress}}%</span>
                 <span class="badge bg-success" *ngIf="result && result.objRetComputeOk">Généré</span>
                 <span class="badge bg-danger" *ngIf="bvDecSent && bvDecResponse && bvDecResponse.error">Erreur</span>
               </div>
-              <div *ngIf="result.objRetWarns && result.objRetWarns.length !== 0" (click)="openPopup(objretwarns)">
-                <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/alert.png" />
+              <div *ngIf="result?.objRetWarns?.length > 0" (click)="openPopup(objretwarns)">
+                <img style="height:auto;width:20px;cursor: pointer;" src="assets/alert.png" />
               </div>
             </div>
           </div>
-          <div class="onglet align-self-center" [class.waiting]="decSent && 
+          <div class="onglet align-self-center" [class.waiting]="decSent &&
           (!result || (result && !result.retComputeOk && !result.error) )">
             <div class="container row-flex">
               <div class="col-sm align-self-center">Rétention des bassins</div>
               <div class="col-sm align-self-center">
                 <span class="badge bg-secondary" *ngIf="!decSent">Pas de données</span>
-                <span class="badge bg-primary waiting" *ngIf="decSent && 
+                <span class="badge bg-primary waiting" *ngIf="decSent &&
                 (!result || (result && !result.retComputeOk && !result.error) )">Calcul
                   {{result.retComputeProgress}}%</span>
                 <span class="badge bg-success" *ngIf="result && result.retComputeOk">Généré</span>
@@ -117,7 +117,7 @@
               </div>
               <div *ngIf="result.retBassinsWarns && result.retBassinsWarns.length !== 0"
                 (click)="openPopup(retbassinswarns)">
-                <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/alert.png" />
+                <img style="height:auto;width:20px;cursor: pointer;" src="assets/alert.png" />
               </div>
             </div>
           </div>
@@ -135,21 +135,21 @@
                 <span class="badge bg-danger" *ngIf="bvExuSent && bvExuResponse && bvExuResponse.error">Erreur</span>
               </div>
               <div *ngIf="result.q100Warns && result.q100Warns.length !== 0" (click)="openPopup(q100warns)">
-                <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/alert.png" />
+                <img style="height:auto;width:20px;cursor: pointer;" src="assets/alert.png" />
               </div>
               <div *ngIf="result.cassisWarns && result.cassisWarns.length !== 0" (click)="openPopup(cassiswarns)">
-                <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/alert.png" />
+                <img style="height:auto;width:20px;cursor: pointer;" src="assets/alert.png" />
               </div>
             </div>
           </div>
 
           <div class="container align-self-center">
             <div *ngIf="!result || !result.xlsComputationOk" class="download-disable">
-              <img style="height:auto;width:20px" src="../../assets/download-xls-ko.png" />
+              <img style="height:auto;width:20px" src="assets/download-xls-ko.png" />
               <label style="padding-left:2px; cursor: none;">Dimensionnement</label>
             </div>
             <div *ngIf="result && result.xlsComputationOk" class="download-enable" (click)="downloadXlsFile()">
-              <div> <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/download-xls.png" />
+              <div> <img style="height:auto;width:20px;cursor: pointer;" src="assets/download-xls.png" />
                 <label style="padding-left:2px; cursor: pointer;">Dimensionnement</label>
               </div>
             </div>
@@ -193,32 +193,32 @@
           <h5>DBF</h5>
           <div class="container row-flex">
             <div *ngIf="!result || !result.perfDbfComputationOk" class=" download-disable">
-              <img style="height:auto;width:20px" src="../../assets/download-dbf-ko.png" />
+              <img style="height:auto;width:20px" src="assets/download-dbf-ko.png" />
               <label style="padding-left:2px; cursor: none;">BV décanteurs conformité 2H/2ans</label>
             </div>
             <div *ngIf="result && result.perfDbfComputationOk" class="download-enable" (click)="downloadPerfDbfFile()">
               <div>
-                <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/download-dbf.png" />
+                <img style="height:auto;width:20px;cursor: pointer;" src="assets/download-dbf.png" />
                 <label style="padding-left:2px; cursor: pointer;">BV décanteurs conformité 2H/2ans</label>
               </div>
             </div>
             <div *ngIf="result.bvDecDBFWarns && result.bvDecDBFWarns.length !== 0" (click)="openPopup(perfwarns)">
-              <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/alert.png" />
+              <img style="height:auto;width:20px;cursor: pointer;" src="assets/alert.png" />
             </div>
           </div>
           <div class="container row-flex">
             <div *ngIf="!result || !result.debitDbfComputationOk" class="download-disable">
-              <img style="height:auto;width:20px" src="../../assets/download-dbf-ko.png" />
+              <img style="height:auto;width:20px" src="assets/download-dbf-ko.png" />
               <label style="padding-left:2px; cursor: none;">Classes de débits aux exutoires</label>
             </div>
             <div *ngIf="result && result.debitDbfComputationOk" class="download-enable"
               (click)="downloadDebitDbfFile()">
-              <div><img style="height:auto;width:20px;cursor: pointer;" src="../../assets/download-dbf.png" />
+              <div><img style="height:auto;width:20px;cursor: pointer;" src="assets/download-dbf.png" />
                 <label style="padding-left:2px; cursor: pointer;">Classes de débits aux exutoires</label>
               </div>
             </div>
             <div *ngIf="result.exuDBFWarns && result.exuDBFWarns.length !== 0" (click)="openPopup(debitwarns)">
-              <img style="height:auto;width:20px;cursor: pointer;" src="../../assets/alert.png" />
+              <img style="height:auto;width:20px;cursor: pointer;" src="assets/alert.png" />
             </div>
           </div>
         </div>

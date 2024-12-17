@@ -1,7 +1,7 @@
 <div class="col align-self-center mention" style="text-align:right;"></div>
 <div class="row row-flex">
   <div class="col align-self-center" style="text-align:left;cursor: pointer;" (click)="displayHelp(help)">
-    <img style="height:auto;width:20px;" src="../../assets/help.png" />
+    <img style="height:auto;width:20px;" src="assets/help.png"/>
     Aide
   </div>
   <div class="col align-self-center" style="text-align:right;">
@@ -21,11 +21,11 @@
     <p>L'application permet de générer des tableaux de dimensionnement d'ouvrage de gestion des eaux.</p>
     <p>En entrée, il faut fournir les paramètres météorologiques ainsi que les fichiers BDF décrivant les bassins
       versants des décanteurs, les décanteurs et les
-      bassins versants des exutoires.<br />En sortie, l'application génère un fichier Excel ainsi que deux fichiers DBF.
+      bassins versants des exutoires.<br/>En sortie, l'application génère un fichier Excel ainsi que deux fichiers DBF.
     </p>
     <h3>Paramètres météo</h3>
     Trois paramètres météo sont à renseigner (décimale avec un '.')
-    <img style="height:auto;width:500px;" src="../../assets/ex-meteo.png" />
+    <img style="height:auto;width:500px;" src="assets/ex-meteo.png"/>
     <h3>Import des fichiers</h3>
     Quatre fichiers DBF sont à déposer (par glissé/déposé depuis un explorateur de fichiers), représentant :
     <ul>
@@ -36,55 +36,55 @@
     </ul>
     L'encodage des caractères des DBF doit être configuré sur ISO-8859-1 (normalement le standard dans les outils
     de cartographie).
-    <br />Le nom des fichiers n'a pas d'importance, en revanche, la structure des tables et le nom des champs doivent
+    <br/>Le nom des fichiers n'a pas d'importance, en revanche, la structure des tables et le nom des champs doivent
     respecter le canevas suivant :
     <table class="table table-striped">
       <thead>
-        <tr>
-          <th scope="col">Fichier DBF</th>
-          <th scope="col">Exemple</th>
-        </tr>
+      <tr>
+        <th scope="col">Fichier DBF</th>
+        <th scope="col">Exemple</th>
+      </tr>
       </thead>
       <tbody>
-        <tr>
-          <td><b>Bassins versants décanteurs</b></td>
-          <td>
-            <img style="height:auto;width:auto;" src="../../assets/ex-bv-decanteurs.png" />
-          </td>
-        </tr>
-        <tr>
-          <td><b>Décanteurs</b>
+      <tr>
+        <td><b>Bassins versants décanteurs</b></td>
+        <td>
+          <img style="height:auto;width:auto;" src="assets/ex-bv-decanteurs.png"/>
+        </td>
+      </tr>
+      <tr>
+        <td><b>Décanteurs</b>
 
-          </td>
-          <td>
-            <p>
-              Seules les lignes dont le type est 'FF' ou 'DECANTEUR' sont traitées.<br />
-              La colonne 'bv' doit correspondre exactement à des valeurs renseignées dans le 1er fichier.<br />
-              Définir la zone permet de regrouper les décanteurs dans
-              les tableaux de dimensionnement.
-            </p>
-            <img style="height:auto;width:auto;" src="../../assets/ex-decanteurs.png" />
-          </td>
-        </tr>
-        <tr>
-          <td><b>Bassins versants exutoires</b>
-          </td>
-          <td>
-            <p>
-              Définir le creek permet de regrouper les bassins dans les tableaux de dimensionnement.
-            </p>
-            <img style="height:auto;width:auto;" src="../../assets/ex-bv-exutoires.png" />
-          </td>
-        </tr>
+        </td>
+        <td>
+          <p>
+            Seules les lignes dont le type est 'FF' ou 'DECANTEUR' sont traitées.<br/>
+            La colonne 'bv' doit correspondre exactement à des valeurs renseignées dans le 1er fichier.<br/>
+            Définir la zone permet de regrouper les décanteurs dans
+            les tableaux de dimensionnement.
+          </p>
+          <img style="height:auto;width:auto;" src="assets/ex-decanteurs.png"/>
+        </td>
+      </tr>
+      <tr>
+        <td><b>Bassins versants exutoires</b>
+        </td>
+        <td>
+          <p>
+            Définir le creek permet de regrouper les bassins dans les tableaux de dimensionnement.
+          </p>
+          <img style="height:auto;width:auto;" src="assets/ex-bv-exutoires.png"/>
+        </td>
+      </tr>
       </tbody>
     </table>
 
     Les mesures et surface sont toutes en m ou m²
     <p>Si l'import s'est bien déroulé, vous aurez le visuel suivant :</p>
-    <img style="height:auto;width:320px;" src="../../assets/ok-import.png" />
+    <img style="height:auto;width:320px;" src="assets/ok-import.png"/>
 
     <p>Si le fichier n'a pas pu être traité, vous aurez le visuel suivant :</p>
-    <img style="height:auto;width:320px;" src="../../assets/pb-import.png" />
+    <img style="height:auto;width:320px;" src="assets/pb-import.png"/>
     <p>Dans ce cas, il vous faudra vérifier le format du fichier en entrée, les noms des colonnes, les valeurs, ...
     </p>
     <p>
@@ -92,11 +92,11 @@
     </p>
     <h3>Fichiers Excel & DBF</h3>
     Une fois que tous les imports ont été réalisés avec succès, plusieurs fichiers sont disponibles au téléchargement :
-    <br><img style="height:auto;width:600px;" src="../../assets/ex-downloads.png" />
-    <br />
+    <br><img style="height:auto;width:600px;" src="assets/ex-downloads.png"/>
+    <br/>
     <h4>Fichier Excel</h4>
-    <p> Le fichier contient 5 onglets.
-      <img style="height:auto;width:700px;" src="../../assets/onglets-excel.png" />
+    <p> Le fichier contient 6 onglets.
+      <img style="height:auto;width:700px;" src="assets/onglets-excel.png"/>
     </p>
     <p>
       L'onglet 'Paramètres' permet de personnaliser certaines valeurs, prises en compte immédiatement dans les
@@ -115,6 +115,12 @@
       premier onglet.
     </p>
     <p>
+      L'onglet 'Temps de concentration' calcule les temps de concentration suivant plusieurs formules.
+      Une fois avoir comparé les valeurs des différentes méthodes de calcul, on choisit dans l'onglet 'Paramètres' la
+      formule à retenir.
+      Le temps de concentration est ainsi repris dans les onglets suivants.
+    </p>
+    <p>
       L'onglet 'Q100' calcule le débit centennal et permet le dimensionnement des sections des déversoirs
       grâce aux données du 3ème fichier.
     </p>
@@ -126,138 +132,178 @@
     Deux fichiers sont proposés au téléchargement dans le but d'être ré-importé dans votre logiciel de cartographie :
     <ul>
       <li>Fichier BV décanteur enrichi d'une colonne performance (colonne 'perf') reprenant la capacité de rétention par
-        rapport à l'objectif</li>
+        rapport à l'objectif
+      </li>
       <ul>
         <li> > 100% : bonne</li>
-        <li> 80% < capacité < 100% : moyenne</li> <li>
+        <li> 80% < capacité < 100% : moyenne</li>
+        <li>
 
-        < 80% : faible</li> </ul> <li>Fichier des exutoires enrichi d'une colonne qualifiant la classe du débit</li>
-          <ul>
-            <li> Q100 <= à 0.1 m3/s </li> <li> 0.1 < Q100 <=0.5 m3/s </li> <li> 0.5 < Q100 <=1 m3/s </li> <li> 1 < Q100
-                      <=2 m3/s </li> <li> 2 < Q100 <=5 m3/s </li> <li>Au delà de 5 m3/s, indiquer le chiffre réel</li>
-          </ul>
+          < 80% : faible
+        </li>
       </ul>
-      A noter : les fichiers téléchargés conservent le nom d'origine et doivent être déplacés dans le répertoire
-      de travail de votre logiciel de cartographie. Il est recommandé de faire une sauvegarde des fichiers originaux
-      avant qu'ils ne soient écrasés.
-      <h3>Les formules utilisées</h3>
-      <h4>Objectifs rétention</h4>
-      <table class="table table-striped">
-        <tbody>
-          <tr>
-            <td>Pente %</td>
-            <td>( Dénivelé du bassin versant (m) / Longueur hydraulique du bassin versant (m) ) * 100</td>
-          </tr>
-          <tr>
-            <td>Volume d'eau à retenir dans le décanteur (m3)</td>
-            <td> ( Quantité max de précipitations / 1000 ) * (Superficie du BV * 1000 ) * Coefficient de ruissellement
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <h4>Rétention des bassins</h4>
-      <table class="table table-striped">
-        <tbody>
-          <tr>
-            <td>Capacité de rétention (m3)</td>
-            <td>Surface au sol * ( Profondeur - Profondeur de déversoir + Hauteur de digue )</td>
-          </tr>
-          <tr>
-            <td>% de l'objectif - 2H/2ANS</td>
-            <td> Capacité cumulée des bassins * 100 / Objectif de capacité de rétention du BV</td>
-          </tr>
-        </tbody>
-      </table>
+      <li>Fichier des exutoires enrichi d'une colonne qualifiant la classe du débit</li>
+      <ul>
+        <li> Q100 <= à 0.1 m3/s</li>
+        <li> 0.1 < Q100 <=0.5 m3/s</li>
+        <li> 0.5 < Q100 <=1 m3/s</li>
+        <li> 1 < Q100
+          <=2 m3/s
+        </li>
+        <li> 2 < Q100 <=5 m3/s</li>
+        <li>Au delà de 5 m3/s, indiquer le chiffre réel</li>
+      </ul>
+    </ul>
+    A noter : les fichiers téléchargés conservent le nom d'origine et doivent être déplacés dans le répertoire
+    de travail de votre logiciel de cartographie. Il est recommandé de faire une sauvegarde des fichiers originaux
+    avant qu'ils ne soient écrasés.
+    <h3>Les formules utilisées</h3>
+    <h4>Objectifs rétention</h4>
+    <table class="table table-striped">
+      <tbody>
+      <tr>
+        <td>Pente %</td>
+        <td>( Dénivelé du bassin versant (m) / Longueur hydraulique du bassin versant (m) ) * 100</td>
+      </tr>
+      <tr>
+        <td>Volume d'eau à retenir dans le décanteur (m3)</td>
+        <td> ( Quantité max de précipitations / 1000 ) * (Superficie du BV * 1000 ) * Coefficient de ruissellement
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <h4>Rétention des bassins</h4>
+    <table class="table table-striped">
+      <tbody>
+      <tr>
+        <td>Capacité de rétention (m3)</td>
+        <td>Surface au sol * ( Profondeur - Profondeur de déversoir + Hauteur de digue )</td>
+      </tr>
+      <tr>
+        <td>% de l'objectif - 2H/2ANS</td>
+        <td> Capacité cumulée des bassins * 100 / Objectif de capacité de rétention du BV</td>
+      </tr>
+      </tbody>
+    </table>
 
-      <h4>Q100</h4>
-      <table class="table table-striped">
-        <tbody>
-          <tr>
-            <td>Pente BV %</td>
-            <td> ( Dénivelé / Longueur hydraulique ) * 100 </td>
-          </tr>
-          <tr>
-            <td>Vitesse d'écoulement</td>
-            <td> si 'Pente BV'
-              < 5 alors vitesse=1 <br />
-              si 5
-              <= 'Pente BV' < 15 alors vitesse = 2 <br />
-              si 'Pente BV' >= 15 alors vitesse = 4 <br /></td>
-          </tr>
-          <tr>
-            <td>Calcul du temps de concentration</td>
-            <td> ( Longueur hydraulique / Vitesse d'écoulement ) / 60 </td>
-          </tr>
-          <tr>
-            <td>Temps de concentration retenu</td>
-            <td> si 'Calcul du temps de concentration' > 'Paramètre [Temps de concentration minimal retenu]' => 'Calcul
-              du temps de concentration' <br />
-              sinon => 'Paramètre [Temps de concentration minimal retenu]'</td>
-          </tr>
-          <tr>
-            <td>Calcul de l'intensité de l'averse</td>
-            <td> Coefficient de Montana A * ( Temps de concentration retenu ^ - Coefficient de Montana B ) </td>
-          </tr>
-          <tr>
-            <td>Calcul du débit par la méthode rationelle</td>
-            <td> ( Coefficient de ruissellement * Calcul de l'intensité de l'averse * Superficie BV * 0.01 ) / 3.6 </td>
-          </tr>
-          <tr>
-            <td>Largeur de l'évacuateur</td>
-            <td> Calcul du débit par la méthode rationnelle / ( Constante rhéolgique * ( 2 * Gravité ) ^ 0.5 * Hauteur
-              de
-              lame d'eau ^ 1.5 ) </td>
-          </tr>
-          <tr>
-            <td>Hauteur de l'évacuateur</td>
-            <td> Hauteur de lame d'eau + Revanche </td>
-          </tr>
-          <tr>
-            <td>Largeur de la zone de passage d'eau</td>
-            <td>Largeur de l'évacuateur arrondie au 0.5 supérieur </td>
-          </tr>
-          <tr>
-            <td>Hauteur de la zone de passage d'eau</td>
-            <td>Hauteur de la charge sur le seuil</td>
-          </tr>
-        </tbody>
-      </table>
+    <h4>Temps de concentration</h4>
+    <table class="table table-striped">
+      <tbody>
+      <tr>
+        <td>Pente BV %</td>
+        <td> ( Dénivelé / Longueur hydraulique ) * 100</td>
+      </tr>
+      <tr>
+        <td>[DAVAR] Vitesse d'écoulement</td>
+        <td> si 'Pente BV'
+          < 5 alors vitesse=1 <br/>
+          si 5
+          <= 'Pente BV' < 15 alors vitesse = 2 <br/>
+          si 'Pente BV' >= 15 alors vitesse = 4 <br/></td>
+      </tr>
+      <tr>
+        <td>[DAVAR] Calcul du temps de concentration</td>
+        <td> ( Longueur hydraulique / Vitesse d'écoulement ) / 60</td>
+      </tr>
+      <tr>
+        <td>[MEUNIER-MATHYS] Coefficient de dégradation (K)</td>
+        <td> Paramètre à définir dans l'onglet 'Paramètres'</td>
+      </tr>
+      <tr>
+        <td>[MEUNIER-MATHYS] Calcul du temps de concentration</td>
+        <td> K * Superficie^0.312 * Pente^−0.625</td>
+      </tr>
+      <tr>
+        <td>[MONNIER] Indice de compacité de Gravelius (Kg)</td>
+        <td> Perimetre / ( 2 * Racine( PI * Superficie) )</td>
+      </tr>
+      <tr>
+        <td>[MONNIER] Longueur équivalente</td>
+        <td> ( Kg * Racine( Superficie ) / 1.12 * ( Racine( 1 - (1,12/Kg)^2 ) ) </td>
+      </tr>
+      <tr>
+        <td>[MONNIER] Pente moyenne</td>
+        <td> ( Dénivelé / Longueur équivalente ) * 100 </td>
+      </tr>
+      <tr>
+        <td>[GIANDOTTI] Calcul du temps de concentration</td>
+        <td> ( 24 * Superficie^0.5 + 0.09 * Longueur hydraulique ) / ( ( Pente BV * Longueur hydraulique)^0.5 ) </td>
+      </tr>
+      </tbody>
+    </table>
 
-      <h4>Dimensionnement cassis fossés</h4>
-      Les formules reprennent celles du précédent onglet et utilisent les suivantes :
-      <table class="table table-striped">
-        <tbody>
-          <tr>
-            <td>Valeur du 1er membre</td>
-            <td> ( Calcul du débit par la méthode rationnelle / Coef de Strickler * ( Pente fossé-cassis ^ 0.5 ) ) ^ 1.5
-            </td>
-          </tr>
-          <tr>
-            <td>Valeur du 2ème membre</td>
-            <td> ( Hauteur de lame d'eau * Largeur du fossé-cassis ) ^ 1.5 / ( 2 * Hauteur de lame d'eau + Largeur du
-              fossé-cassis )<br /></td>
-          </tr>
-          <tr>
-            <td>Vitesse max dans fossé-cassis</td>
-            <td> Coef de Strickler * ( ( Hauteur de lame d'eau * Largeur du fossé-cassis ) / ( 2 * Hauteur de lame d'eau
-              +
-              Largeur du fossé-cassis ) ) ^ 2/3 * Pente du fossé-cassis ^ 0.5<br /></td>
-          </tr>
-        </tbody>
-      </table>
-      <h3>Sous Excel</h3>
+    <h4>Q100</h4>
+    <table class="table table-striped">
+      <tbody>
+      <tr>
+        <td>Pente BV %</td>
+        <td> ( Dénivelé / Longueur hydraulique ) * 100</td>
+      </tr>
+      <tr>
+        <td>Calcul de l'intensité de l'averse</td>
+        <td> Coefficient de Montana A * ( Temps de concentration retenu ^ - Coefficient de Montana B )</td>
+      </tr>
+      <tr>
+        <td>Calcul du débit par la méthode rationelle</td>
+        <td> ( Coefficient de ruissellement * Calcul de l'intensité de l'averse * Superficie BV * 0.01 ) / 3.6</td>
+      </tr>
+      <tr>
+        <td>Largeur de l'évacuateur</td>
+        <td> Calcul du débit par la méthode rationnelle / ( Constante rhéolgique * ( 2 * Gravité ) ^ 0.5 * Hauteur
+          de
+          lame d'eau ^ 1.5 )
+        </td>
+      </tr>
+      <tr>
+        <td>Hauteur de l'évacuateur</td>
+        <td> Hauteur de lame d'eau + Revanche</td>
+      </tr>
+      <tr>
+        <td>Largeur de la zone de passage d'eau</td>
+        <td>Largeur de l'évacuateur arrondie au 0.5 supérieur</td>
+      </tr>
+      <tr>
+        <td>Hauteur de la zone de passage d'eau</td>
+        <td>Hauteur de la charge sur le seuil</td>
+      </tr>
+      </tbody>
+    </table>
 
-      <h4>Affichage</h4>
-      Dans le cas de fichiers ayant beaucoup de lignes, les entêtes des tableaux restent
-      affichées lors du défilement.
-      <br />Cela permet d'avoir à tout moment la signification d'une cellule.
-      <br />Ces choix sont évidemment modifiables dans l'application Excel via le menu 'Affichage'.
-      <h4>Impression</h4>
-      A l'impression, les entêtes des tableaux se répètent également sur chaque page.
-      <br />Les deux premiers onglets sont paramétrés pour être imprimé sur du format A4
-      en mode Paysage. <br />Les deux derniers, étant plus riches, sont paramétrés pour être
-      imprimé sur du format A3 en mode Paysage.
-      <br />Ces choix sont évidemment modifiables dans l'application Excel via le menu 'Mise en page'.
+    <h4>Dimensionnement cassis fossés</h4>
+    Les formules reprennent celles du précédent onglet et utilisent les suivantes :
+    <table class="table table-striped">
+      <tbody>
+      <tr>
+        <td>Valeur du 1er membre</td>
+        <td> ( Calcul du débit par la méthode rationnelle / Coef de Strickler * ( Pente fossé-cassis ^ 0.5 ) ) ^ 1.5
+        </td>
+      </tr>
+      <tr>
+        <td>Valeur du 2ème membre</td>
+        <td> ( Hauteur de lame d'eau * Largeur du fossé-cassis ) ^ 1.5 / ( 2 * Hauteur de lame d'eau + Largeur du
+          fossé-cassis )<br/></td>
+      </tr>
+      <tr>
+        <td>Vitesse max dans fossé-cassis</td>
+        <td> Coef de Strickler * ( ( Hauteur de lame d'eau * Largeur du fossé-cassis ) / ( 2 * Hauteur de lame d'eau
+          +
+          Largeur du fossé-cassis ) ) ^ 2/3 * Pente du fossé-cassis ^ 0.5<br/></td>
+      </tr>
+      </tbody>
+    </table>
+    <h3>Sous Excel</h3>
+
+    <h4>Affichage</h4>
+    Dans le cas de fichiers ayant beaucoup de lignes, les entêtes des tableaux restent
+    affichées lors du défilement.
+    <br/>Cela permet d'avoir à tout moment la signification d'une cellule.
+    <br/>Ces choix sont évidemment modifiables dans l'application Excel via le menu 'Affichage'.
+    <h4>Impression</h4>
+    A l'impression, les entêtes des tableaux se répètent également sur chaque page.
+    <br/>Les deux premiers onglets sont paramétrés pour être imprimé sur du format A4
+    en mode Paysage. <br/>Les deux derniers, étant plus riches, sont paramétrés pour être
+    imprimé sur du format A3 en mode Paysage.
+    <br/>Ces choix sont évidemment modifiables dans l'application Excel via le menu 'Mise en page'.
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Fermer</button>
